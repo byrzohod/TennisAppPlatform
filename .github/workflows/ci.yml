@@ -131,6 +131,9 @@ jobs:
     #   run: cd TennisApp && dotnet format TennisApp.sln --verify-no-changes --verbosity diagnostic
     #   continue-on-error: true
       
+    - name: Restore dependencies for security scan
+      run: dotnet restore TennisApp/TennisApp.sln
+      
     - name: Security scan
       run: |
         cd TennisApp && dotnet list package --vulnerable --include-transitive
