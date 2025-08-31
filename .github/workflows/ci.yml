@@ -86,12 +86,10 @@ jobs:
     - name: Build Angular app
       run: npm run build -- --configuration production
       working-directory: tennis-app-client
-      continue-on-error: true
       
     - name: Lint Angular code
       run: npm run lint
       working-directory: tennis-app-client
-      continue-on-error: true
 
     - name: Run Angular tests
       run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
