@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,10 @@ try
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// Configure FluentValidation (validators only, no auto-validation for now)
+// builder.Services.AddFluentValidationAutoValidation();
+// builder.Services.AddFluentValidationClientsideAdapters();
 
 // Configure API Versioning
 builder.Services.AddApiVersioning(options =>
@@ -130,6 +135,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+// Configure FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<AutoMapperProfile>();
 
 // Configure Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
