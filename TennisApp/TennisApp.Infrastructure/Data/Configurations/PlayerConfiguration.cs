@@ -39,9 +39,12 @@ public class PlayerConfiguration : BaseEntityConfiguration<Player>
         builder.Property(p => p.ProfileImageUrl)
             .HasMaxLength(500);
             
+        builder.Property(p => p.DateOfBirth)
+            .HasColumnType("timestamp without time zone");
+            
         builder.HasIndex(p => p.Email)
             .IsUnique()
-            .HasFilter("[Email] IS NOT NULL");
+            .HasFilter("\"Email\" IS NOT NULL");
             
         builder.HasIndex(p => new { p.FirstName, p.LastName });
         builder.HasIndex(p => p.CurrentRanking);

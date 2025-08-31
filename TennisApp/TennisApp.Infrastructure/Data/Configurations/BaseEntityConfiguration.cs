@@ -11,11 +11,19 @@ public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
     {
         builder.HasKey(e => e.Id);
         
+        builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd();
+        
         builder.Property(e => e.CreatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
             
         builder.Property(e => e.UpdatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("timestamp without time zone");
+            
+        builder.Property(e => e.DeletedAt)
+            .HasColumnType("timestamp without time zone");
             
         builder.Property(e => e.CreatedBy)
             .HasMaxLength(100);

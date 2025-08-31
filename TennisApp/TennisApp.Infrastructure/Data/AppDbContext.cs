@@ -38,6 +38,18 @@ public class AppDbContext : DbContext
                 v => JsonSerializer.Deserialize<Score>(v, (JsonSerializerOptions)null!)!)
             .HasColumnType("jsonb");
 
+        // Configure all DateTime properties to use timestamp without time zone
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetColumnType("timestamp without time zone");
+                }
+            }
+        }
+        
         // Global query filters for soft delete
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
@@ -72,6 +84,7 @@ public class AppDbContext : DbContext
                     break;
             }
         }
+        
 
         return base.SaveChangesAsync(cancellationToken);
     }

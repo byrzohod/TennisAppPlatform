@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
@@ -40,35 +40,37 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         // Create and configure the factory with the test database
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
             {
-                // Remove the existing DbContext registration
-                services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
-
-                // Add DbContext using test PostgreSQL database
-                services.AddDbContext<AppDbContext>(options =>
+                builder.ConfigureServices(services =>
                 {
-                    options.UseNpgsql(connectionString);
+                    // Remove the existing DbContext registration
+                    var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                    
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+
+                    // Add DbContext using test PostgreSQL database
+                    services.AddDbContext<AppDbContext>(options =>
+                    {
+                        options.UseNpgsql(connectionString);
+                        options.EnableSensitiveDataLogging();
+                        options.EnableDetailedErrors();
+                    });
                 });
-
-                // Build service provider
-                var sp = services.BuildServiceProvider();
-
-                // Create scope and get the database context
-                using (var scope = sp.CreateScope())
-                {
-                    var scopedServices = scope.ServiceProvider;
-                    var db = scopedServices.GetRequiredService<AppDbContext>();
-
-                    // Ensure database is created and migrated
-                    db.Database.EnsureCreated();
-                }
             });
-        });
 
-        // Recreate the client after reconfiguration
+        // Create the client
         Client = _factory.CreateClient();
+
+        // Ensure database is created
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await dbContext.Database.EnsureCreatedAsync();
+        }
     }
 
     public async Task DisposeAsync()
