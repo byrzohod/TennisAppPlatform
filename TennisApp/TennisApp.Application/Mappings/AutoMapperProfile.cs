@@ -1,5 +1,6 @@
 using AutoMapper;
 using TennisApp.Application.DTOs.Blog;
+using TennisApp.Application.DTOs.Bracket;
 using TennisApp.Application.DTOs.Match;
 using TennisApp.Application.DTOs.Player;
 using TennisApp.Application.DTOs.Tournament;
@@ -45,5 +46,13 @@ public class AutoMapperProfile : Profile
                 opt => opt.MapFrom(src => src.Player != null ? $"{src.Player.FirstName} {src.Player.LastName}" : string.Empty));
         CreateMap<RegisterPlayerDto, TournamentPlayer>();
         CreateMap<UpdateRegistrationDto, TournamentPlayer>();
+
+        // Bracket mappings
+        CreateMap<Bracket, BracketDto>()
+            .ForMember(dest => dest.Nodes, 
+                opt => opt.MapFrom(src => src.Nodes.OrderBy(n => n.Round).ThenBy(n => n.Position)));
+        CreateMap<BracketNode, BracketNodeDto>()
+            .ForMember(dest => dest.PlayerName,
+                opt => opt.MapFrom(src => src.Player != null ? $"{src.Player.FirstName} {src.Player.LastName}" : null));
     }
 }

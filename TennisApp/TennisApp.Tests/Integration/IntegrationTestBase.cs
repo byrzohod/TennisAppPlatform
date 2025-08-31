@@ -18,7 +18,7 @@ namespace TennisApp.Tests.Integration;
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
     protected HttpClient Client { get; private set; } = null!;
-    private WebApplicationFactory<Program> _factory = null!;
+    protected WebApplicationFactory<Program> Factory { get; private set; } = null!;
     private readonly SharedDatabaseFixture _fixture;
 
     protected IntegrationTestBase(SharedDatabaseFixture fixture)
@@ -31,7 +31,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         // Create and configure the factory with the shared test database
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
         
-        _factory = new WebApplicationFactory<Program>()
+        Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
@@ -56,7 +56,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
             });
 
         // Create the client
-        Client = _factory.CreateClient();
+        Client = Factory.CreateClient();
 
         // Clean database before test
         await CleanDatabaseAsync();
@@ -71,16 +71,16 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await CleanDatabaseAsync();
         
         Client?.Dispose();
-        _factory?.Dispose();
+        Factory?.Dispose();
     }
     
     private async Task CleanDatabaseAsync()
     {
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         
         // Use raw SQL to truncate tables with CASCADE to handle foreign key constraints
-        await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Matches\", \"TournamentPlayers\", \"Tournaments\", \"Players\" CASCADE");
+        await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"BracketNodes\", \"Brackets\", \"Matches\", \"TournamentPlayers\", \"Tournaments\", \"Players\", \"Users\" CASCADE");
     }
     
     protected virtual Task SeedTestDataAsync()

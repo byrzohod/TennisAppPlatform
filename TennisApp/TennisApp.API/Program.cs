@@ -150,6 +150,7 @@ if (!builder.Environment.IsEnvironment("Test"))
     builder.Services.AddScoped<ITournamentRegistrationService, TournamentRegistrationService>();
     builder.Services.AddScoped<IAuthService, TennisApp.Application.Services.Auth.AuthService>();
     builder.Services.AddScoped<TennisApp.Application.Services.Match.IMatchService, TennisApp.Application.Services.Match.MatchService>();
+    builder.Services.AddScoped<TennisApp.Application.Services.Bracket.IBracketService, TennisApp.Application.Services.Bracket.BracketService>();
     builder.Services.AddScoped<JwtService>();
     builder.Services.AddScoped<PasswordHasher>();
 

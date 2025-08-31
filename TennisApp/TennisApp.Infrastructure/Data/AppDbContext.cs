@@ -28,6 +28,8 @@ public class AppDbContext : DbContext
     public DbSet<BlogTag> BlogTags { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<TournamentPlayer> TournamentPlayers { get; set; } = null!;
+    public DbSet<Bracket> Brackets { get; set; } = null!;
+    public DbSet<BracketNode> BracketNodes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
