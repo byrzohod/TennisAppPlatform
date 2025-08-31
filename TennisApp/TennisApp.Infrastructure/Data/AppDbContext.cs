@@ -9,6 +9,12 @@ namespace TennisApp.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {
+    static AppDbContext()
+    {
+        // Configure Npgsql to handle DateTime with unspecified kind as UTC
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    }
+    
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
@@ -38,14 +44,14 @@ public class AppDbContext : DbContext
                 v => JsonSerializer.Deserialize<Score>(v, (JsonSerializerOptions)null!)!)
             .HasColumnType("jsonb");
 
-        // Configure all DateTime properties to use timestamp without time zone
+        // Configure all DateTime properties to use timestamp with time zone
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (var property in entityType.GetProperties())
             {
                 if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
                 {
-                    property.SetColumnType("timestamp without time zone");
+                    property.SetColumnType("timestamp with time zone");
                 }
             }
         }
@@ -85,6 +91,24 @@ public class AppDbContext : DbContext
             }
         }
         
+        // Convert all DateTime values to UTC for PostgreSQL timestamptz
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            foreach (var property in entry.Properties)
+            {
+                if (property.CurrentValue is DateTime dateTime)
+                {
+                    if (dateTime.Kind == DateTimeKind.Unspecified)
+                    {
+                        property.CurrentValue = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+                    }
+                    else if (dateTime.Kind == DateTimeKind.Local)
+                    {
+                        property.CurrentValue = dateTime.ToUniversalTime();
+                    }
+                }
+            }
+        }
 
         return base.SaveChangesAsync(cancellationToken);
     }

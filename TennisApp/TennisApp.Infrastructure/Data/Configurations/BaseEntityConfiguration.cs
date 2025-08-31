@@ -15,15 +15,10 @@ public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
             .ValueGeneratedOnAdd();
         
         builder.Property(e => e.CreatedAt)
-            .IsRequired()
-            .HasColumnType("timestamp without time zone");
+            .IsRequired();
             
         builder.Property(e => e.UpdatedAt)
-            .IsRequired()
-            .HasColumnType("timestamp without time zone");
-            
-        builder.Property(e => e.DeletedAt)
-            .HasColumnType("timestamp without time zone");
+            .IsRequired();
             
         builder.Property(e => e.CreatedBy)
             .HasMaxLength(100);
