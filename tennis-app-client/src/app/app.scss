@@ -1,0 +1,270 @@
+.app-container {
+  min-height: 100vh;
+  background: #f7f9fc;
+}
+
+// Navigation Bar
+.navbar {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .logo {
+      font-size: 2rem;
+    }
+
+    .brand-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+  }
+
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    margin-left: 3rem;
+
+    &.desktop-menu {
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #6c757d;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+    }
+
+    &.active {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+    }
+
+    .nav-label {
+      font-size: 0.95rem;
+    }
+  }
+
+  .navbar-end {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+
+      .user-email {
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
+
+      .btn-logout {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: #c82333;
+        }
+
+        .logout-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+
+      @media (max-width: 768px) {
+        display: block;
+      }
+
+      .hamburger {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background: #1a1a2e;
+        position: relative;
+        transition: all 0.3s ease;
+
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          width: 25px;
+          height: 3px;
+          background: #1a1a2e;
+          transition: all 0.3s ease;
+        }
+
+        &::before {
+          top: -8px;
+        }
+
+        &::after {
+          bottom: -8px;
+        }
+
+        &.open {
+          transform: rotate(45deg);
+
+          &::before {
+            top: 0;
+            transform: rotate(90deg);
+          }
+
+          &::after {
+            bottom: 0;
+            opacity: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile Menu
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 99;
+  animation: slideDown 0.3s ease;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+
+  &.open {
+    display: block;
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    width: 100%;
+
+    &:hover {
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+    }
+
+    &.active {
+      background: rgba(102, 126, 234, 0.15);
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+    }
+
+    .nav-label {
+      font-size: 1rem;
+    }
+  }
+
+  .mobile-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: #c82333;
+    }
+
+    .logout-icon {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Main Content
+.main-content {
+  min-height: calc(100vh - 64px);
+  padding: 0;
+  background: #f7f9fc;
+}
