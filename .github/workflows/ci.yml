@@ -45,8 +45,7 @@ jobs:
           --filter "FullyQualifiedName~TennisApp.Tests.Unit" \
           --verbosity normal \
           --logger "trx;LogFileName=unit-test-results.trx" \
-          --logger "html;LogFileName=unit-test-results.html" \
-          --collect:"XPlat Code Coverage"
+          --logger "console;verbosity=detailed"
       
     - name: Run integration tests
       run: |
@@ -54,16 +53,7 @@ jobs:
           --filter "FullyQualifiedName~TennisApp.Tests.Integration" \
           --verbosity normal \
           --logger "trx;LogFileName=integration-test-results.trx" \
-          --logger "html;LogFileName=integration-test-results.html" \
-          --collect:"XPlat Code Coverage"
-      
-    - name: Generate test report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()
-      with:
-        name: .NET Test Results
-        path: '**/*.trx'
-        reporter: dotnet-trx
+          --logger "console;verbosity=detailed"
         
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -72,18 +62,7 @@ jobs:
         name: test-results
         path: |
           **/*.trx
-          **/*.html
-          **/coverage.cobertura.xml
         retention-days: 30
-        
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      if: success()
-      with:
-        files: '**/coverage.cobertura.xml'
-        flags: backend
-        name: backend-coverage
-        fail_ci_if_error: false
         
   build-angular:
     name: Build Angular Frontend
@@ -147,12 +126,12 @@ jobs:
         dotnet tool install --global dotnet-reportgenerator-globaltool
         
     - name: Check code formatting
-      run: dotnet format TennisApp/TennisApp.sln --verify-no-changes --verbosity diagnostic
+      run: cd TennisApp && dotnet format TennisApp.sln --verify-no-changes --verbosity diagnostic
       continue-on-error: true
       
     - name: Security scan
       run: |
-        dotnet list package --vulnerable --include-transitive
+        cd TennisApp && dotnet list package --vulnerable --include-transitive
         
   docker-build:
     name: Build Docker Images
@@ -169,7 +148,7 @@ jobs:
     - name: Build API Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ./TennisApp
         file: ./TennisApp/TennisApp.API/Dockerfile
         push: false
         tags: tennisapp-api:${{ github.sha }}
