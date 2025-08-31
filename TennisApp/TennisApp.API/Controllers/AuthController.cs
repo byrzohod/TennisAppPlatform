@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
         var result = await _authService.RegisterAsync(registerDto);
         
         if (result == null)
-            return BadRequest(new { message = "Registration failed. Email may already be in use." });
+            return BadRequest(new { message = "Registration failed. Email may already be in use or passwords don't match." });
 
         return Ok(result);
     }
