@@ -1,0 +1,170 @@
+<div class="player-form-container">
+  <div class="form-header">
+    <h1>{{ isEditMode ? 'Edit Player' : 'Add New Player' }}</h1>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading player data...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ error }}
+    </div>
+  }
+
+  <form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="player-form">
+    <div class="form-grid">
+      <!-- First Name -->
+      <div class="form-group">
+        <label for="firstName">First Name <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="firstName" 
+          formControlName="firstName"
+          class="form-control"
+          [class.error]="firstName?.invalid && firstName?.touched"
+          placeholder="Enter first name"
+        />
+        @if (firstName?.invalid && firstName?.touched) {
+          <div class="field-error">
+            @if (firstName?.errors?.['required']) {
+              First name is required
+            }
+            @if (firstName?.errors?.['minlength']) {
+              First name must be at least 2 characters
+            }
+            @if (firstName?.errors?.['maxlength']) {
+              First name cannot exceed 50 characters
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-group">
+        <label for="lastName">Last Name <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="lastName" 
+          formControlName="lastName"
+          class="form-control"
+          [class.error]="lastName?.invalid && lastName?.touched"
+          placeholder="Enter last name"
+        />
+        @if (lastName?.invalid && lastName?.touched) {
+          <div class="field-error">
+            @if (lastName?.errors?.['required']) {
+              Last name is required
+            }
+            @if (lastName?.errors?.['minlength']) {
+              Last name must be at least 2 characters
+            }
+            @if (lastName?.errors?.['maxlength']) {
+              Last name cannot exceed 50 characters
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          [class.error]="email?.invalid && email?.touched"
+          placeholder="player@example.com"
+        />
+        @if (email?.invalid && email?.touched) {
+          <div class="field-error">
+            @if (email?.errors?.['required']) {
+              Email is required
+            }
+            @if (email?.errors?.['email']) {
+              Please enter a valid email address
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          formControlName="phone"
+          class="form-control"
+          [class.error]="phone?.invalid && phone?.touched"
+          placeholder="+1 234 567 8900"
+        />
+        @if (phone?.invalid && phone?.touched) {
+          <div class="field-error">
+            @if (phone?.errors?.['pattern']) {
+              Please enter a valid phone number
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="form-group">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input 
+          type="date" 
+          id="dateOfBirth" 
+          formControlName="dateOfBirth"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Ranking Points (only in edit mode) -->
+      @if (isEditMode) {
+        <div class="form-group">
+          <label for="rankingPoints">Ranking Points</label>
+          <input 
+            type="number" 
+            id="rankingPoints" 
+            formControlName="rankingPoints"
+            class="form-control"
+            [class.error]="rankingPoints?.invalid && rankingPoints?.touched"
+            min="0"
+          />
+          @if (rankingPoints?.invalid && rankingPoints?.touched) {
+            <div class="field-error">
+              @if (rankingPoints?.errors?.['min']) {
+                Ranking points cannot be negative
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <a routerLink="/players" class="btn btn-secondary">
+        Cancel
+      </a>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="submitting || playerForm.invalid"
+      >
+        @if (submitting) {
+          <span class="spinner-small"></span>
+          {{ isEditMode ? 'Updating...' : 'Creating...' }}
+        } @else {
+          {{ isEditMode ? 'Update Player' : 'Create Player' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

@@ -22,8 +22,30 @@ export const routes: Routes = [
   },
   {
     path: 'players',
-    loadComponent: () => import('./features/players/players.component').then(m => m.PlayersComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'list',
+        pathMatch: 'full'
+      },
+      {
+        path: 'list',
+        loadComponent: () => import('./features/players/player-list/player-list.component').then(m => m.PlayerListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/players/player-form/player-form.component').then(m => m.PlayerFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/players/player-detail/player-detail.component').then(m => m.PlayerDetailComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/players/player-form/player-form.component').then(m => m.PlayerFormComponent)
+      }
+    ]
   },
   {
     path: 'tournaments',
