@@ -5,8 +5,6 @@ import { AuthService } from './core/services/auth.service';
 import { of } from 'rxjs';
 
 describe('App', () => {
-  let authService: jasmine.SpyObj<AuthService>;
-
   beforeEach(async () => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'logout'], {
       isAuthenticated$: of(false),
@@ -21,8 +19,6 @@ describe('App', () => {
         { provide: AuthService, useValue: authServiceSpy }
       ]
     }).compileComponents();
-
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   });
 
   it('should create the app', () => {

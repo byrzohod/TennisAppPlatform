@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 
@@ -33,8 +33,8 @@ describe('AuthGuard', () => {
     authServiceSpy.isAuthenticated.and.returnValue(true);
 
     const result = guard.canActivate(
-      {} as any,
-      { url: '/protected' } as any
+      {} as ActivatedRouteSnapshot,
+      { url: '/protected' } as RouterStateSnapshot
     );
 
     expect(result).toBe(true);
@@ -45,8 +45,8 @@ describe('AuthGuard', () => {
     authServiceSpy.isAuthenticated.and.returnValue(false);
 
     const result = guard.canActivate(
-      {} as any,
-      { url: '/protected' } as any
+      {} as ActivatedRouteSnapshot,
+      { url: '/protected' } as RouterStateSnapshot
     );
 
     expect(result).toBe(false);
@@ -61,8 +61,8 @@ describe('AuthGuard', () => {
     const attemptedUrl = '/tournaments/123/details';
 
     guard.canActivate(
-      {} as any,
-      { url: attemptedUrl } as any
+      {} as ActivatedRouteSnapshot,
+      { url: attemptedUrl } as RouterStateSnapshot
     );
 
     expect(routerSpy.navigate).toHaveBeenCalledWith(

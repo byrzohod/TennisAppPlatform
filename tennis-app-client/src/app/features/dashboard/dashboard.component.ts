@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -11,6 +11,8 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
+  private authService = inject(AuthService);
+
   user$;
   
   stats = {
@@ -33,7 +35,7 @@ export class DashboardComponent implements OnInit {
     { type: 'match', message: 'Match result updated: Smith vs Johnson', time: '1 day ago' }
   ];
 
-  constructor(private authService: AuthService) {
+  constructor() {
     this.user$ = this.authService.currentUser$;
   }
 

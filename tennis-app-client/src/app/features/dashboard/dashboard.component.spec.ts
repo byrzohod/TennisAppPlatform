@@ -7,8 +7,6 @@ import { of } from 'rxjs';
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
-
   beforeEach(async () => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', [], {
       currentUser$: of({ email: 'test@example.com' })
@@ -22,8 +20,6 @@ describe('DashboardComponent', () => {
       ]
     })
     .compileComponents();
-
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

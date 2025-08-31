@@ -29,15 +29,7 @@ module.exports = tseslint.config(
           prefix: "app",
           style: "kebab-case",
         },
-      ],
-      // Disable strict rules for existing code
-      "@angular-eslint/prefer-inject": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@angular-eslint/no-empty-lifecycle-method": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "no-useless-escape": "off",
-      "prefer-const": "warn"
+      ]
     },
   },
   {
@@ -46,9 +38,6 @@ module.exports = tseslint.config(
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
     ],
-    rules: {
-      // Disable template accessibility rules for existing code
-      "@angular-eslint/template/label-has-associated-control": "off"
-    },
+    rules: {},
   }
 );

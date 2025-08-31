@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
@@ -11,6 +11,9 @@ import { AuthService } from './core/services/auth.service';
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   title = 'Tennis App';
   isAuthenticated$;
   currentUser$;
@@ -23,10 +26,7 @@ export class App implements OnInit {
     { label: 'Profile', route: '/profile', icon: '👤' }
   ];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
+  constructor() {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.currentUser$ = this.authService.currentUser$;
   }

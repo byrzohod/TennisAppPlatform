@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,8 @@ import { PlayerService, Player, PagedResult } from '../../../core/services/playe
   styleUrl: './player-list.component.scss'
 })
 export class PlayerListComponent implements OnInit, OnDestroy {
+  private playerService = inject(PlayerService);
+
   Math = Math; // Expose Math to template
   players: Player[] = [];
   loading = false;
@@ -32,8 +34,6 @@ export class PlayerListComponent implements OnInit, OnDestroy {
   // Search subject for debouncing
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
-
-  constructor(private playerService: PlayerService) {}
 
   ngOnInit() {
     this.loadPlayers();

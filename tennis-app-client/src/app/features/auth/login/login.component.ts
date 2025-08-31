@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -13,18 +13,16 @@ import { finalize } from 'rxjs/operators';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   loginForm!: FormGroup;
   loading = false;
   submitted = false;
   error = '';
   returnUrl = '/';
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService
-  ) {}
 
   ngOnInit(): void {
     this.initializeForm();

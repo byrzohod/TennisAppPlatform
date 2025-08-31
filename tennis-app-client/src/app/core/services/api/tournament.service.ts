@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tournament, CreateTournament, UpdateTournament } from '../../models/tournament.model';
@@ -8,9 +8,9 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class TournamentService {
-  private apiUrl = `${environment.apiUrl}/api/tournaments`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/api/tournaments`;
 
   getAllTournaments(): Observable<Tournament[]> {
     return this.http.get<Tournament[]>(this.apiUrl);

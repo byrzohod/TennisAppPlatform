@@ -21,8 +21,8 @@
     </div>
     
     <div class="page-size-selector">
-      <label>Show:</label>
-      <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
+      <label for="page-size-select">Show:</label>
+      <select id="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
         <option [value]="10">10</option>
         <option [value]="25">25</option>
         <option [value]="50">50</option>

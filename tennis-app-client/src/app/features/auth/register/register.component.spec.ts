@@ -214,6 +214,7 @@ describe('RegisterComponent', () => {
       tick();
       
       const { confirmPassword, ...expectedData } = formData;
+      void confirmPassword; // ESLint: intentionally unused
       expect(authServiceSpy.register).toHaveBeenCalledWith(expectedData);
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
     }));

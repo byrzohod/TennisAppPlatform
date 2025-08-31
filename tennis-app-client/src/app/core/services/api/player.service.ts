@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Player, CreatePlayer, UpdatePlayer } from '../../models/player.model';
@@ -8,9 +8,9 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class PlayerService {
-  private apiUrl = `${environment.apiUrl}/api/players`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/api/players`;
 
   getAllPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(this.apiUrl);
