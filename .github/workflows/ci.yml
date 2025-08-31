@@ -88,16 +88,14 @@ jobs:
       working-directory: tennis-app-client
       continue-on-error: true
       
-    # Angular tests and linting disabled until Angular app is fully configured
-    # - name: Lint Angular code
-    #   run: npm run lint
-    #   working-directory: tennis-app-client
-    #   continue-on-error: true
-    #
-    # - name: Run Angular tests
-    #   run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
-    #   working-directory: tennis-app-client
-    #   continue-on-error: true
+    - name: Lint Angular code
+      run: npm run lint
+      working-directory: tennis-app-client
+      continue-on-error: true
+
+    - name: Run Angular tests
+      run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      working-directory: tennis-app-client
       
     - name: Upload Angular artifacts
       uses: actions/upload-artifact@v4
