@@ -4,40 +4,30 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Testcontainers.PostgreSql;
 using TennisApp.API;
 using TennisApp.Infrastructure.Data;
+using Xunit;
 
 namespace TennisApp.Tests.Integration;
 
+[Collection("Database Collection")]
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
     protected HttpClient Client { get; private set; } = null!;
     private WebApplicationFactory<Program> _factory = null!;
-    private readonly PostgreSqlContainer _postgresContainer;
+    private readonly SharedDatabaseFixture _fixture;
 
-    protected IntegrationTestBase()
+    protected IntegrationTestBase(SharedDatabaseFixture fixture)
     {
-        // Create PostgreSQL test container
-        _postgresContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:15-alpine")
-            .WithDatabase("testdb")
-            .WithUsername("testuser")
-            .WithPassword("testpass")
-            .Build();
+        _fixture = fixture;
     }
 
     public async Task InitializeAsync()
     {
-        // Start the PostgreSQL container
-        await _postgresContainer.StartAsync();
-
-        // Get the connection string from the container
-        var connectionString = _postgresContainer.GetConnectionString();
-
-        // Create and configure the factory with the test database
+        // Create and configure the factory with the shared test database
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
@@ -52,10 +42,10 @@ public abstract class IntegrationTestBase : IAsyncLifetime
                         services.Remove(descriptor);
                     }
 
-                    // Add DbContext using test PostgreSQL database
+                    // Add DbContext using shared test PostgreSQL database
                     services.AddDbContext<AppDbContext>(options =>
                     {
-                        options.UseNpgsql(connectionString);
+                        options.UseNpgsql(_fixture.ConnectionString);
                         options.EnableSensitiveDataLogging();
                         options.EnableDetailedErrors();
                     });
@@ -65,18 +55,34 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         // Create the client
         Client = _factory.CreateClient();
 
-        // Ensure database is created
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            await dbContext.Database.EnsureCreatedAsync();
-        }
+        // Clean database before test
+        await CleanDatabaseAsync();
+        
+        // Seed test data if needed
+        await SeedTestDataAsync();
     }
 
     public async Task DisposeAsync()
     {
+        // Clean up database after test (create a new scope for cleanup)
+        await CleanDatabaseAsync();
+        
         Client?.Dispose();
         _factory?.Dispose();
-        await _postgresContainer.DisposeAsync();
+    }
+    
+    private async Task CleanDatabaseAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        // Use raw SQL to truncate tables with CASCADE to handle foreign key constraints
+        await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Matches\", \"TournamentPlayers\", \"Tournaments\", \"Players\" CASCADE");
+    }
+    
+    protected virtual Task SeedTestDataAsync()
+    {
+        // Override in derived classes to seed test data
+        return Task.CompletedTask;
     }
 }

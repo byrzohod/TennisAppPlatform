@@ -14,7 +14,7 @@ public class TournamentControllerIntegrationTests : IntegrationTestBase
 {
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public TournamentControllerIntegrationTests() : base()
+    public TournamentControllerIntegrationTests(SharedDatabaseFixture fixture) : base(fixture)
     {
         _jsonOptions = new JsonSerializerOptions
         {

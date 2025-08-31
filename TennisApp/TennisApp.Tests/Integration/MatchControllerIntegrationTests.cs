@@ -19,7 +19,7 @@ public class MatchControllerIntegrationTests : IntegrationTestBase
 {
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public MatchControllerIntegrationTests() : base()
+    public MatchControllerIntegrationTests(SharedDatabaseFixture fixture) : base(fixture)
     {
         _jsonOptions = new JsonSerializerOptions
         {

@@ -14,7 +14,7 @@ public class PlayerControllerIntegrationTests : IntegrationTestBase
 {
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public PlayerControllerIntegrationTests() : base()
+    public PlayerControllerIntegrationTests(SharedDatabaseFixture fixture) : base(fixture)
     {
         _jsonOptions = new JsonSerializerOptions
         {
