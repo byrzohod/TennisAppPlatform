@@ -1,0 +1,20 @@
+{
+  "validUser": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePassword123!"
+  },
+  "adminUser": {
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@tennisapp.com",
+    "password": "AdminPassword123!"
+  },
+  "invalidUser": {
+    "firstName": "",
+    "lastName": "",
+    "email": "invalid-email",
+    "password": "123"
+  }
+}
