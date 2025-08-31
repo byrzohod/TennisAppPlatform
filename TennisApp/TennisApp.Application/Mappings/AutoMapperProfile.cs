@@ -36,5 +36,14 @@ public class AutoMapperProfile : Profile
                 opt => opt.MapFrom(src => src.Tags.Select(t => t.Name)));
         CreateMap<CreateBlogPostDto, BlogPost>();
         CreateMap<UpdateBlogPostDto, BlogPost>();
+
+        // Tournament Registration mappings
+        CreateMap<TournamentPlayer, TournamentRegistrationDto>()
+            .ForMember(dest => dest.TournamentName, 
+                opt => opt.MapFrom(src => src.Tournament != null ? src.Tournament.Name : string.Empty))
+            .ForMember(dest => dest.PlayerName,
+                opt => opt.MapFrom(src => src.Player != null ? $"{src.Player.FirstName} {src.Player.LastName}" : string.Empty));
+        CreateMap<RegisterPlayerDto, TournamentPlayer>();
+        CreateMap<UpdateRegistrationDto, TournamentPlayer>();
     }
 }

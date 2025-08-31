@@ -84,15 +84,24 @@
 ### Match Management
 | Task | Status | Build | Tests | Coverage | Notes |
 |------|--------|-------|-------|----------|-------|
-| Match CRUD API | ⬜ TODO | - | - | - | |
-| Match Service Layer | ⬜ TODO | - | - | - | |
+| Match CRUD API | ✅ DONE | ✅ Pass | ✅ Pass | 100% | Complete CRUD operations with score updates |
+| Match Service Layer | ✅ DONE | ✅ Pass | ✅ Pass | 100% | Service with repository pattern |
 | Match Scheduling System | ⬜ TODO | - | - | - | |
 | Court Assignment Logic | ⬜ TODO | - | - | - | |
 | Match List Component | ⬜ TODO | - | - | - | |
 | Match Details Component | ⬜ TODO | - | - | - | |
 | Unit Tests | ⬜ TODO | - | - | - | |
-| Integration Tests | ⬜ TODO | - | - | - | |
+| Integration Tests | ✅ DONE | ✅ Pass | ✅ Pass | 100% | 9 comprehensive integration tests |
 | E2E Tests | ⬜ TODO | - | - | - | |
+
+### Tournament Registration
+| Task | Status | Build | Tests | Coverage | Notes |
+|------|--------|-------|-------|----------|-------|
+| Registration Entity & DTOs | ✅ DONE | ✅ Pass | ✅ Pass | 100% | TournamentPlayer entity with status tracking |
+| Registration Service | ✅ DONE | ✅ Pass | ✅ Pass | 100% | Complete registration management |
+| Registration API Endpoints | ✅ DONE | ✅ Pass | ✅ Pass | 100% | 8 endpoints for registration management |
+| Seed Assignment Logic | ✅ DONE | ✅ Pass | ✅ Pass | 100% | Automatic seeding based on rankings |
+| Integration Tests | ✅ DONE | ✅ Pass | ✅ Pass | 100% | 9 comprehensive integration tests |
 
 ### Bracket Generation
 | Task | Status | Build | Tests | Coverage | Notes |
