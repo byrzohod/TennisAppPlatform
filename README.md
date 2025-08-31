@@ -1,6 +1,6 @@
 # Tennis Tournament Management System
 
-[![CI/CD Pipeline](https://github.com/yourusername/TennisApp/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/TennisApp/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/byrzohod/TennisAppPlatform/actions/workflows/ci.yml/badge.svg)](https://github.com/byrzohod/TennisAppPlatform/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-17-DD0031)](https://angular.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -39,8 +39,8 @@ A comprehensive tennis tournament management platform built with ASP.NET Core an
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/TennisApp.git
-   cd TennisApp
+   git clone https://github.com/byrzohod/TennisAppPlatform.git
+   cd TennisAppPlatform
    ```
 
 2. **Setup Backend**
