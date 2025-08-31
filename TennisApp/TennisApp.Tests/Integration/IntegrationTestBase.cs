@@ -1,70 +1,80 @@
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Testcontainers.PostgreSql;
 using TennisApp.API;
 using TennisApp.Infrastructure.Data;
 
 namespace TennisApp.Tests.Integration;
 
-public abstract class IntegrationTestBase : IDisposable
+public abstract class IntegrationTestBase : IAsyncLifetime
 {
-    protected readonly HttpClient Client;
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly SqliteConnection _connection;
+    protected HttpClient Client { get; private set; } = null!;
+    private WebApplicationFactory<Program> _factory = null!;
+    private readonly PostgreSqlContainer _postgresContainer;
 
     protected IntegrationTestBase()
     {
-        // Create unique in-memory database for this test
-        _connection = new SqliteConnection("DataSource=:memory:");
-        _connection.Open();
+        // Create PostgreSQL test container
+        _postgresContainer = new PostgreSqlBuilder()
+            .WithImage("postgres:15-alpine")
+            .WithDatabase("testdb")
+            .WithUsername("testuser")
+            .WithPassword("testpass")
+            .Build();
+    }
 
+    public async Task InitializeAsync()
+    {
+        // Start the PostgreSQL container
+        await _postgresContainer.StartAsync();
+
+        // Get the connection string from the container
+        var connectionString = _postgresContainer.GetConnectionString();
+
+        // Create and configure the factory with the test database
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureServices(services =>
             {
-                builder.ConfigureServices(services =>
+                // Remove the existing DbContext registration
+                services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
+
+                // Add DbContext using test PostgreSQL database
+                services.AddDbContext<AppDbContext>(options =>
                 {
-                    // Remove the existing DbContext registration
-                    var descriptor = services.SingleOrDefault(
-                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-                    
-                    if (descriptor != null)
-                    {
-                        services.Remove(descriptor);
-                    }
-
-                    // Add DbContext using in-memory database for tests
-                    services.AddDbContext<AppDbContext>(options =>
-                    {
-                        options.UseSqlite(_connection);
-                    });
-
-                    // Build service provider
-                    var sp = services.BuildServiceProvider();
-
-                    // Create scope and get the database context
-                    using (var scope = sp.CreateScope())
-                    {
-                        var scopedServices = scope.ServiceProvider;
-                        var db = scopedServices.GetRequiredService<AppDbContext>();
-
-                        // Ensure database is created
-                        db.Database.EnsureCreated();
-                    }
+                    options.UseNpgsql(connectionString);
                 });
-            });
 
+                // Build service provider
+                var sp = services.BuildServiceProvider();
+
+                // Create scope and get the database context
+                using (var scope = sp.CreateScope())
+                {
+                    var scopedServices = scope.ServiceProvider;
+                    var db = scopedServices.GetRequiredService<AppDbContext>();
+
+                    // Ensure database is created and migrated
+                    db.Database.EnsureCreated();
+                }
+            });
+        });
+
+        // Recreate the client after reconfiguration
         Client = _factory.CreateClient();
     }
 
-    public void Dispose()
+    public async Task DisposeAsync()
     {
         Client?.Dispose();
         _factory?.Dispose();
-        _connection?.Dispose();
+        await _postgresContainer.DisposeAsync();
     }
 }

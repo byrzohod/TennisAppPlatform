@@ -35,7 +35,8 @@ public class AppDbContext : DbContext
             .Property(m => m.Score)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
-                v => JsonSerializer.Deserialize<Score>(v, (JsonSerializerOptions)null!)!);
+                v => JsonSerializer.Deserialize<Score>(v, (JsonSerializerOptions)null!)!)
+            .HasColumnType("jsonb");
 
         // Global query filters for soft delete
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

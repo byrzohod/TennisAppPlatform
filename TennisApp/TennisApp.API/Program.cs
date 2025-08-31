@@ -14,31 +14,31 @@ using TennisApp.Infrastructure.Data;
 using TennisApp.Infrastructure.Repositories.Base;
 using TennisApp.Infrastructure.Services;
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-    .Enrich.FromLogContext()
-    .Enrich.WithProperty("Application", "TennisApp")
-    .WriteTo.Console(
-        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-    .WriteTo.File(
-        "logs/tennisapp-.log",
-        rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}",
-        retainedFileCountLimit: 30)
-    .CreateLogger();
+var builder = WebApplication.CreateBuilder(args);
 
-try
+// Configure Serilog only if not in test environment
+if (!builder.Environment.IsEnvironment("Test"))
 {
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+        .Enrich.FromLogContext()
+        .Enrich.WithProperty("Application", "TennisApp")
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+        .WriteTo.File(
+            "logs/tennisapp-.log",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}",
+            retainedFileCountLimit: 30)
+        .CreateLogger();
+
+    builder.Host.UseSerilog();
     Log.Information("Starting Tennis App API");
 
-    var builder = WebApplication.CreateBuilder(args);
-
-    // Add Serilog to the logging pipeline
-    builder.Host.UseSerilog();
+}
 
     // Add services to the container.
     builder.Services.AddControllers();
@@ -238,14 +238,5 @@ try
     app.MapControllers();
 
     app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application terminated unexpectedly");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
 
 public partial class Program { }
