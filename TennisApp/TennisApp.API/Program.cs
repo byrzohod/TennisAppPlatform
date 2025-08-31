@@ -196,6 +196,26 @@ if (!builder.Environment.IsEnvironment("Test"))
 
     var app = builder.Build();
 
+    // Apply database migrations on startup (skip in test environment)
+    if (!app.Environment.IsEnvironment("Test"))
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            try
+            {
+                Log.Information("Applying database migrations...");
+                dbContext.Database.Migrate();
+                Log.Information("Database migrations applied successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "An error occurred while applying database migrations");
+                throw;
+            }
+        }
+    }
+
     // Configure Swagger UI
     if (app.Environment.IsDevelopment())
     {
@@ -216,17 +236,20 @@ if (!builder.Environment.IsEnvironment("Test"))
     // Add global exception handling middleware
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-    // Configure Serilog request logging
-    app.UseSerilogRequestLogging(options =>
+    // Configure Serilog request logging (skip in test environment)
+    if (!app.Environment.IsEnvironment("Test"))
     {
-        options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
-        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+        app.UseSerilogRequestLogging(options =>
         {
-            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "Unknown");
-            diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString() ?? "Unknown");
-            diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
-        };
-    });
+            options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            {
+                diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "Unknown");
+                diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString() ?? "Unknown");
+                diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            };
+        });
+    }
 
     app.UseHttpsRedirection();
 

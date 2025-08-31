@@ -70,10 +70,7 @@ export class RegisterComponent implements OnInit {
 
     this.loading = true;
     
-    const { confirmPassword, ...registerData } = this.registerForm.value;
-    void confirmPassword; // ESLint: intentionally unused
-    
-    this.authService.register(registerData)
+    this.authService.register(this.registerForm.value)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: () => {

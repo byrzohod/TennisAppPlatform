@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -28,6 +29,8 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     public async Task InitializeAsync()
     {
         // Create and configure the factory with the shared test database
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+        
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
