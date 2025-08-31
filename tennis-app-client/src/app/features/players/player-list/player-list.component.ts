@@ -13,6 +13,7 @@ import { PlayerService, Player, PagedResult } from '../../../core/services/playe
   styleUrl: './player-list.component.scss'
 })
 export class PlayerListComponent implements OnInit, OnDestroy {
+  Math = Math; // Expose Math to template
   players: Player[] = [];
   loading = false;
   error: string | null = null;
