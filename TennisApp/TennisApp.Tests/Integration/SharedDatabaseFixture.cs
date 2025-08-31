@@ -31,6 +31,8 @@ public class SharedDatabaseFixture : IAsyncLifetime
             .Options;
             
         using var context = new AppDbContext(options);
+        // Use EnsureDeleted first to clean any existing schema, then EnsureCreated
+        await context.Database.EnsureDeletedAsync();
         await context.Database.EnsureCreatedAsync();
     }
     
