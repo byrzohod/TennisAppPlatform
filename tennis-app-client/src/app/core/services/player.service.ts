@@ -51,11 +51,11 @@ export class PlayerService {
   constructor(private http: HttpClient) {}
 
   getPlayers(
-    pageNumber: number = 1,
-    pageSize: number = 10,
+    pageNumber = 1,
+    pageSize = 10,
     searchTerm?: string,
     sortBy?: string,
-    sortDescending: boolean = false
+    sortDescending = false
   ): Observable<PagedResult<Player>> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
