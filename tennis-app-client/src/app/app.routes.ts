@@ -1,21 +1,42 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
-  { 
-    path: 'tournaments', 
-    loadComponent: () => import('./features/tournaments/tournament-list/tournament-list').then(m => m.TournamentListComponent)
+  {
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
   },
-  { 
-    path: 'players', 
-    loadComponent: () => import('./features/players/player-list/player-list').then(m => m.PlayerListComponent)
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
-  { 
-    path: 'rankings', 
-    loadComponent: () => import('./features/rankings/rankings-table/rankings-table').then(m => m.RankingsTableComponent)
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
   },
-  { 
-    path: 'blog', 
-    loadComponent: () => import('./features/blog/blog-list/blog-list').then(m => m.BlogListComponent)
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'players',
+    loadComponent: () => import('./features/players/players.component').then(m => m.PlayersComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'tournaments',
+    loadComponent: () => import('./features/tournaments/tournaments.component').then(m => m.TournamentsComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: '**',
+    redirectTo: '/dashboard'
   }
 ];
