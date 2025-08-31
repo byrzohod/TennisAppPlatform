@@ -196,20 +196,23 @@ if (!builder.Environment.IsEnvironment("Test"))
 
     var app = builder.Build();
 
-    // Apply database migrations on startup
-    using (var scope = app.Services.CreateScope())
+    // Apply database migrations on startup (skip in test environment)
+    if (!app.Environment.IsEnvironment("Test"))
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        try
+        using (var scope = app.Services.CreateScope())
         {
-            Log.Information("Applying database migrations...");
-            dbContext.Database.Migrate();
-            Log.Information("Database migrations applied successfully");
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "An error occurred while applying database migrations");
-            throw;
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            try
+            {
+                Log.Information("Applying database migrations...");
+                dbContext.Database.Migrate();
+                Log.Information("Database migrations applied successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "An error occurred while applying database migrations");
+                throw;
+            }
         }
     }
 
