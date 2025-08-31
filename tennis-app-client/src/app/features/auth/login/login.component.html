@@ -1,0 +1,85 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Sign In</h2>
+    <p class="auth-subtitle">Welcome back to Tennis App</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      @if (error) {
+        <div class="alert alert-error" role="alert">
+          {{ error }}
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          [class.is-invalid]="submitted && f['email'].errors"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+        @if (submitted && f['email'].errors) {
+          <div class="invalid-feedback">
+            @if (f['email'].errors['required']) {
+              <span>Email is required</span>
+            }
+            @if (f['email'].errors['email']) {
+              <span>Please enter a valid email address</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          [class.is-invalid]="submitted && f['password'].errors"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+        @if (submitted && f['password'].errors) {
+          <div class="invalid-feedback">
+            @if (f['password'].errors['required']) {
+              <span>Password is required</span>
+            }
+            @if (f['password'].errors['minlength']) {
+              <span>Password must be at least 6 characters</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-block"
+          [disabled]="loading"
+        >
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm mr-2"></span>
+            Signing in...
+          } @else {
+            Sign In
+          }
+        </button>
+      </div>
+
+      <div class="form-footer">
+        <p>
+          Don't have an account? 
+          <a routerLink="/register" class="link-primary">Sign up</a>
+        </p>
+        <p>
+          <a routerLink="/forgot-password" class="link-secondary">Forgot your password?</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

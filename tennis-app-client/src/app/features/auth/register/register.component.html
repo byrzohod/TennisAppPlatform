@@ -1,0 +1,153 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Create Account</h2>
+    <p class="auth-subtitle">Join Tennis App today</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      @if (error) {
+        <div class="alert alert-error" role="alert">
+          {{ error }}
+        </div>
+      }
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName" class="form-label">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            class="form-control"
+            formControlName="firstName"
+            [class.is-invalid]="submitted && f['firstName'].errors"
+            placeholder="Enter your first name"
+            autocomplete="given-name"
+          />
+          @if (submitted && f['firstName'].errors) {
+            <div class="invalid-feedback">
+              @if (f['firstName'].errors['required']) {
+                <span>First name is required</span>
+              }
+              @if (f['firstName'].errors['minlength']) {
+                <span>First name must be at least 2 characters</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            class="form-control"
+            formControlName="lastName"
+            [class.is-invalid]="submitted && f['lastName'].errors"
+            placeholder="Enter your last name"
+            autocomplete="family-name"
+          />
+          @if (submitted && f['lastName'].errors) {
+            <div class="invalid-feedback">
+              @if (f['lastName'].errors['required']) {
+                <span>Last name is required</span>
+              }
+              @if (f['lastName'].errors['minlength']) {
+                <span>Last name must be at least 2 characters</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          [class.is-invalid]="submitted && f['email'].errors"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+        @if (submitted && f['email'].errors) {
+          <div class="invalid-feedback">
+            @if (f['email'].errors['required']) {
+              <span>Email is required</span>
+            }
+            @if (f['email'].errors['email']) {
+              <span>Please enter a valid email address</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          [class.is-invalid]="submitted && f['password'].errors"
+          placeholder="Create a password"
+          autocomplete="new-password"
+        />
+        @if (submitted && f['password'].errors) {
+          <div class="invalid-feedback">
+            @if (f['password'].errors['required']) {
+              <span>Password is required</span>
+            }
+            @if (f['password'].errors['minlength']) {
+              <span>Password must be at least 6 characters</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          class="form-control"
+          formControlName="confirmPassword"
+          [class.is-invalid]="submitted && f['confirmPassword'].errors"
+          placeholder="Confirm your password"
+          autocomplete="new-password"
+        />
+        @if (submitted && f['confirmPassword'].errors) {
+          <div class="invalid-feedback">
+            @if (f['confirmPassword'].errors['required']) {
+              <span>Please confirm your password</span>
+            }
+            @if (f['confirmPassword'].errors['passwordMismatch']) {
+              <span>Passwords do not match</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary btn-block"
+          [disabled]="loading"
+        >
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm mr-2"></span>
+            Creating account...
+          } @else {
+            Create Account
+          }
+        </button>
+      </div>
+
+      <div class="form-footer">
+        <p>
+          Already have an account? 
+          <a routerLink="/login" class="link-primary">Sign in</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
