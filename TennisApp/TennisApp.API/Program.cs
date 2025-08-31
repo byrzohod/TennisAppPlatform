@@ -236,17 +236,20 @@ if (!builder.Environment.IsEnvironment("Test"))
     // Add global exception handling middleware
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-    // Configure Serilog request logging
-    app.UseSerilogRequestLogging(options =>
+    // Configure Serilog request logging (skip in test environment)
+    if (!app.Environment.IsEnvironment("Test"))
     {
-        options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
-        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+        app.UseSerilogRequestLogging(options =>
         {
-            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "Unknown");
-            diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString() ?? "Unknown");
-            diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
-        };
-    });
+            options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            {
+                diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? "Unknown");
+                diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString() ?? "Unknown");
+                diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            };
+        });
+    }
 
     app.UseHttpsRedirection();
 
