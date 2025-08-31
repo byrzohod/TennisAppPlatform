@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlayerService, Player } from '../../../core/services/player.service';
@@ -11,6 +11,10 @@ import { PlayerService, Player } from '../../../core/services/player.service';
   styleUrl: './player-detail.component.scss'
 })
 export class PlayerDetailComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private playerService = inject(PlayerService);
+
   player: Player | null = null;
   loading = true;
   error: string | null = null;
@@ -26,12 +30,6 @@ export class PlayerDetailComponent implements OnInit {
     { name: 'Summer Open 2024', status: 'Registered', startDate: '2024-02-01' },
     { name: 'Spring Championship', status: 'Completed', position: '2nd', startDate: '2024-01-01' }
   ];
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private playerService: PlayerService
-  ) {}
 
   ngOnInit() {
     const playerId = this.route.snapshot.paramMap.get('id');

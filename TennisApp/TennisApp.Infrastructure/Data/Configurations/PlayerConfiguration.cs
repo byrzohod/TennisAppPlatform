@@ -41,7 +41,7 @@ public class PlayerConfiguration : BaseEntityConfiguration<Player>
             
         builder.HasIndex(p => p.Email)
             .IsUnique()
-            .HasFilter("[Email] IS NOT NULL");
+            .HasFilter("\"Email\" IS NOT NULL");
             
         builder.HasIndex(p => new { p.FirstName, p.LastName });
         builder.HasIndex(p => p.CurrentRanking);

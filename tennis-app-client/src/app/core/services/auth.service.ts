@@ -1,6 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, map } from 'rxjs';
+import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { LoginRequest, RegisterRequest, AuthResponse, User } from '../models/auth.model';
@@ -9,6 +9,9 @@ import { LoginRequest, RegisterRequest, AuthResponse, User } from '../models/aut
   providedIn: 'root'
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   private readonly apiUrl = `${environment.apiUrl}/api/${environment.apiVersion}/auth`;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'user_data';
@@ -19,10 +22,7 @@ export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {
+  constructor() {
     // Check token validity on service initialization
     this.checkTokenValidity();
   }
@@ -108,7 +108,7 @@ export class AuthService {
     }
   }
 
-  private parseJwt(token: string): any {
+  private parseJwt(token: string): { exp: number; [key: string]: unknown } {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(

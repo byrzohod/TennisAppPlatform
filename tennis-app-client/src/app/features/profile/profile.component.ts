@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -34,12 +34,13 @@ import { AuthService } from '../../core/services/auth.service';
     }
   `]
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent {
+  private authService = inject(AuthService);
+
   user$;
 
-  constructor(private authService: AuthService) {
+  constructor() {
     this.user$ = this.authService.currentUser$;
   }
 
-  ngOnInit() {}
 }

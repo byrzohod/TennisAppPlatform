@@ -13,7 +13,7 @@ public class AuthControllerIntegrationTests : IntegrationTestBase
 {
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public AuthControllerIntegrationTests() : base()
+    public AuthControllerIntegrationTests(SharedDatabaseFixture fixture) : base(fixture)
     {
         _jsonOptions = new JsonSerializerOptions
         {

@@ -58,28 +58,28 @@
         <h2>Personal Information</h2>
         <div class="info-grid">
           <div class="info-item">
-            <label>Email</label>
-            <span>{{ player.email }}</span>
+            <label for="player-email">Email</label>
+            <span id="player-email">{{ player.email }}</span>
           </div>
           <div class="info-item">
-            <label>Phone</label>
-            <span>{{ player.phone || 'Not provided' }}</span>
+            <label for="player-phone">Phone</label>
+            <span id="player-phone">{{ player.phone || 'Not provided' }}</span>
           </div>
           <div class="info-item">
-            <label>Date of Birth</label>
-            <span>{{ formatDate(player.dateOfBirth) }}</span>
+            <label for="player-dob">Date of Birth</label>
+            <span id="player-dob">{{ formatDate(player.dateOfBirth) }}</span>
           </div>
           <div class="info-item">
-            <label>Age</label>
-            <span>{{ getAge(player.dateOfBirth) }} years</span>
+            <label for="player-age">Age</label>
+            <span id="player-age">{{ getAge(player.dateOfBirth) }} years</span>
           </div>
           <div class="info-item">
-            <label>Member Since</label>
-            <span>{{ formatDate(player.createdAt) }}</span>
+            <label for="player-member-since">Member Since</label>
+            <span id="player-member-since">{{ formatDate(player.createdAt) }}</span>
           </div>
           <div class="info-item">
-            <label>Last Updated</label>
-            <span>{{ formatDate(player.updatedAt) }}</span>
+            <label for="player-last-updated">Last Updated</label>
+            <span id="player-last-updated">{{ formatDate(player.updatedAt) }}</span>
           </div>
         </div>
       </div>

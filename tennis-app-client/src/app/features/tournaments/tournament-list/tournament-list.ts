@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentService } from '../../../core/services/api/tournament.service';
 import { Tournament } from '../../../core/models/tournament.model';
@@ -11,10 +11,10 @@ import { Tournament } from '../../../core/models/tournament.model';
   styleUrl: './tournament-list.scss'
 })
 export class TournamentListComponent implements OnInit {
+  private tournamentService = inject(TournamentService);
+
   tournaments: Tournament[] = [];
   loading = false;
-
-  constructor(private tournamentService: TournamentService) {}
 
   ngOnInit(): void {
     this.loadTournaments();

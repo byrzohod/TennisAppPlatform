@@ -81,8 +81,9 @@ public class GlobalExceptionHandlingMiddleware
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Message = "An error occurred while processing your request";
                 
-                // Only include exception details in development environment
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                // Include exception details in development and test environments
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                if (environment == "Development" || environment == "Test")
                 {
                     response.Details = exception.Message;
                     response.StackTrace = exception.StackTrace;

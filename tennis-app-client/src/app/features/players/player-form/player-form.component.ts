@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { PlayerService, Player, PlayerCreateDto, PlayerUpdateDto } from '../../../core/services/player.service';
+import { PlayerService, PlayerCreateDto, PlayerUpdateDto } from '../../../core/services/player.service';
 
 @Component({
   selector: 'app-player-form',
@@ -12,6 +12,11 @@ import { PlayerService, Player, PlayerCreateDto, PlayerUpdateDto } from '../../.
   styleUrl: './player-form.component.scss'
 })
 export class PlayerFormComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private playerService = inject(PlayerService);
+
   playerForm: FormGroup;
   isEditMode = false;
   playerId: string | null = null;
@@ -19,12 +24,7 @@ export class PlayerFormComponent implements OnInit {
   submitting = false;
   error: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private playerService: PlayerService
-  ) {
+  constructor() {
     this.playerForm = this.createForm();
   }
 
@@ -41,7 +41,7 @@ export class PlayerFormComponent implements OnInit {
       firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^[\d\s\-\+\(\)]+$/)]],
+      phone: ['', [Validators.pattern(/^[\d\s-+()]+$/)]],
       dateOfBirth: [''],
       rankingPoints: [0, [Validators.min(0)]]
     });

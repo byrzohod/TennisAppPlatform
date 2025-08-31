@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -13,16 +13,14 @@ import { finalize } from 'rxjs/operators';
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
   registerForm!: FormGroup;
   loading = false;
   submitted = false;
   error = '';
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private authService: AuthService
-  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -73,6 +71,7 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
     
     const { confirmPassword, ...registerData } = this.registerForm.value;
+    void confirmPassword; // ESLint: intentionally unused
     
     this.authService.register(registerData)
       .pipe(finalize(() => this.loading = false))

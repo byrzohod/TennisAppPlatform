@@ -4,8 +4,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../../core/services/auth.service';
-import { DebugElement, Component } from '@angular/core';
-import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
 describe('LoginComponent', () => {
@@ -13,7 +11,7 @@ describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let activatedRouteSpy: any;
+  let activatedRouteSpy: { snapshot: { queryParams: Record<string, string> } };
   let compiled: HTMLElement;
 
   beforeEach(async () => {
