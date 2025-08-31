@@ -146,6 +146,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ITournamentService, TournamentService>();
 builder.Services.AddScoped<IAuthService, TennisApp.Application.Services.Auth.AuthService>();
+builder.Services.AddScoped<TennisApp.Application.Services.Match.IMatchService, TennisApp.Application.Services.Match.MatchService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<PasswordHasher>();
 

@@ -44,3 +44,19 @@ public class UpdateMatchDto
     public string? ScoreDisplay { get; set; }
     public int Duration { get; set; }
 }
+
+public class MatchScoreDto
+{
+    public List<SetScoreDto> Sets { get; set; } = new List<SetScoreDto>();
+    public bool IsRetired { get; set; }
+    public bool IsWalkover { get; set; }
+    public int? WinnerId { get; set; }
+}
+
+public class SetScoreDto
+{
+    public int Player1Games { get; set; }
+    public int Player2Games { get; set; }
+    public int? TiebreakScore1 { get; set; }
+    public int? TiebreakScore2 { get; set; }
+}
