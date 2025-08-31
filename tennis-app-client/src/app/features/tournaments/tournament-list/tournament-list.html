@@ -1,0 +1,27 @@
+<div class="tournament-list">
+  <h2>Tennis Tournaments</h2>
+  
+  <div *ngIf="loading" class="loading">Loading tournaments...</div>
+  
+  <div *ngIf="!loading && tournaments.length === 0" class="no-data">
+    No tournaments found
+  </div>
+  
+  <div class="tournaments-grid" *ngIf="!loading && tournaments.length > 0">
+    <div class="tournament-card" *ngFor="let tournament of tournaments">
+      <div class="tournament-header">
+        <h3>{{ tournament.name }}</h3>
+        <span class="status" [ngClass]="'status-' + tournament.status.toLowerCase()">
+          {{ tournament.status }}
+        </span>
+      </div>
+      <div class="tournament-details">
+        <p><strong>Location:</strong> {{ tournament.location }}</p>
+        <p><strong>Surface:</strong> {{ tournament.surface }}</p>
+        <p><strong>Draw Size:</strong> {{ tournament.drawSize }}</p>
+        <p><strong>Prize Money:</strong> ${{ tournament.prizeMoney | number }}</p>
+        <p><strong>Dates:</strong> {{ tournament.startDate | date }} - {{ tournament.endDate | date }}</p>
+      </div>
+    </div>
+  </div>
+</div>

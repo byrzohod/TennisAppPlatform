@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  tennisapp-api:
+    build:
+      context: ./TennisApp
+      dockerfile: TennisApp.API/Dockerfile
+    container_name: tennisapp-api
+    ports:
+      - "5221:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/tennisapp.db
+      - Jwt__SecretKey=${JWT_SECRET_KEY:-TennisApp_Super_Secret_Key_That_Should_Be_Changed_In_Production_2024}
+      - Jwt__Issuer=TennisApp
+      - Jwt__Audience=TennisAppUsers
+    volumes:
+      - ./data:/app/data
+    networks:
+      - tennisapp-network
+    restart: unless-stopped
+
+  tennisapp-client:
+    build:
+      context: ./tennis-app-client
+      dockerfile: Dockerfile
+    container_name: tennisapp-client
+    ports:
+      - "4200:80"
+    depends_on:
+      - tennisapp-api
+    networks:
+      - tennisapp-network
+    restart: unless-stopped
+
+networks:
+  tennisapp-network:
+    driver: bridge
+
+volumes:
+  tennisapp-data:

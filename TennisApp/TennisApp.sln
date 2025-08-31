@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisApp.Domain", "TennisApp.Domain\TennisApp.Domain.csproj", "{EB280132-378E-42F8-95D8-9E754B0391A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisApp.Application", "TennisApp.Application\TennisApp.Application.csproj", "{7D323F9D-3667-4CE6-B0F8-F19DE90E4D53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisApp.Infrastructure", "TennisApp.Infrastructure\TennisApp.Infrastructure.csproj", "{31DCF0B0-72E2-4233-87FC-77E03CB50CB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisApp.API", "TennisApp.API\TennisApp.API.csproj", "{8CCC5436-BE5D-4C5B-8A70-D35EAA8CECE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisApp.Tests", "TennisApp.Tests\TennisApp.Tests.csproj", "{6588D515-9550-48F5-A7C8-80BC82C18C07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB280132-378E-42F8-95D8-9E754B0391A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB280132-378E-42F8-95D8-9E754B0391A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB280132-378E-42F8-95D8-9E754B0391A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB280132-378E-42F8-95D8-9E754B0391A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D323F9D-3667-4CE6-B0F8-F19DE90E4D53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D323F9D-3667-4CE6-B0F8-F19DE90E4D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D323F9D-3667-4CE6-B0F8-F19DE90E4D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D323F9D-3667-4CE6-B0F8-F19DE90E4D53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31DCF0B0-72E2-4233-87FC-77E03CB50CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31DCF0B0-72E2-4233-87FC-77E03CB50CB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31DCF0B0-72E2-4233-87FC-77E03CB50CB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31DCF0B0-72E2-4233-87FC-77E03CB50CB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CCC5436-BE5D-4C5B-8A70-D35EAA8CECE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CCC5436-BE5D-4C5B-8A70-D35EAA8CECE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CCC5436-BE5D-4C5B-8A70-D35EAA8CECE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CCC5436-BE5D-4C5B-8A70-D35EAA8CECE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6588D515-9550-48F5-A7C8-80BC82C18C07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6588D515-9550-48F5-A7C8-80BC82C18C07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6588D515-9550-48F5-A7C8-80BC82C18C07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6588D515-9550-48F5-A7C8-80BC82C18C07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,51 @@
+using TennisApp.Domain.Enums;
+
+namespace TennisApp.Application.DTOs.Tournament;
+
+public class TournamentDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TournamentType Type { get; set; }
+    public Surface Surface { get; set; }
+    public int DrawSize { get; set; }
+    public decimal PrizeMoney { get; set; }
+    public int RankingPoints { get; set; }
+    public string? Description { get; set; }
+    public string? LogoUrl { get; set; }
+    public TournamentStatus Status { get; set; }
+}
+
+public class CreateTournamentDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TournamentType Type { get; set; }
+    public Surface Surface { get; set; }
+    public int DrawSize { get; set; }
+    public decimal PrizeMoney { get; set; }
+    public int RankingPoints { get; set; }
+    public string? Description { get; set; }
+    public string? LogoUrl { get; set; }
+}
+
+public class UpdateTournamentDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TournamentType Type { get; set; }
+    public Surface Surface { get; set; }
+    public int DrawSize { get; set; }
+    public decimal PrizeMoney { get; set; }
+    public int RankingPoints { get; set; }
+    public string? Description { get; set; }
+    public string? LogoUrl { get; set; }
+    public TournamentStatus Status { get; set; }
+}

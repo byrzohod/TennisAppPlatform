@@ -1,0 +1,450 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace TennisApp.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class InitialCreate : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "BlogCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Slug = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlogCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlogPosts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Slug = table.Column<string>(type: "TEXT", nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    Summary = table.Column<string>(type: "TEXT", nullable: false),
+                    FeaturedImageUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    AuthorId = table.Column<string>(type: "TEXT", nullable: false),
+                    AuthorName = table.Column<string>(type: "TEXT", nullable: false),
+                    IsPublished = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PublishedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ViewCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlogPosts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlogTags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Slug = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlogTags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Country = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ProfileImageUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    CurrentRanking = table.Column<int>(type: "INTEGER", nullable: false),
+                    RankingPoints = table.Column<int>(type: "INTEGER", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    Phone = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    CoachName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    Gender = table.Column<string>(type: "TEXT", maxLength: 1, nullable: false, defaultValue: "M"),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tournaments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Location = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Surface = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    DrawSize = table.Column<int>(type: "INTEGER", nullable: false),
+                    PrizeMoney = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
+                    RankingPoints = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    LogoUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tournaments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Username = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", nullable: false),
+                    Role = table.Column<string>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LastLoginAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlogCategoryBlogPost",
+                columns: table => new
+                {
+                    BlogPostsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CategoriesId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlogCategoryBlogPost", x => new { x.BlogPostsId, x.CategoriesId });
+                    table.ForeignKey(
+                        name: "FK_BlogCategoryBlogPost_BlogCategories_CategoriesId",
+                        column: x => x.CategoriesId,
+                        principalTable: "BlogCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlogCategoryBlogPost_BlogPosts_BlogPostsId",
+                        column: x => x.BlogPostsId,
+                        principalTable: "BlogPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlogPostBlogTag",
+                columns: table => new
+                {
+                    BlogPostsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TagsId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlogPostBlogTag", x => new { x.BlogPostsId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_BlogPostBlogTag_BlogPosts_BlogPostsId",
+                        column: x => x.BlogPostsId,
+                        principalTable: "BlogPosts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlogPostBlogTag_BlogTags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "BlogTags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rankings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Position = table.Column<int>(type: "INTEGER", nullable: false),
+                    Points = table.Column<int>(type: "INTEGER", nullable: false),
+                    PreviousPosition = table.Column<int>(type: "INTEGER", nullable: false),
+                    WeekDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Category = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rankings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rankings_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Matches",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TournamentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Player1Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    Player2Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    WinnerId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Round = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ScheduledTime = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Court = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Score = table.Column<string>(type: "TEXT", nullable: true),
+                    Duration = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Matches", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Matches_Players_Player1Id",
+                        column: x => x.Player1Id,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Players_Player2Id",
+                        column: x => x.Player2Id,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Players_WinnerId",
+                        column: x => x.WinnerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Matches_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TournamentPlayers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TournamentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PlayerId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Seed = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsWildcard = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsQualifier = table.Column<bool>(type: "INTEGER", nullable: false),
+                    RegisteredAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentPlayers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TournamentPlayers_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TournamentPlayers_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlogCategoryBlogPost_CategoriesId",
+                table: "BlogCategoryBlogPost",
+                column: "CategoriesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlogPostBlogTag_TagsId",
+                table: "BlogPostBlogTag",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_IsDeleted",
+                table: "Matches",
+                column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_Player1Id_Player2Id",
+                table: "Matches",
+                columns: new[] { "Player1Id", "Player2Id" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_Player2Id",
+                table: "Matches",
+                column: "Player2Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_ScheduledTime",
+                table: "Matches",
+                column: "ScheduledTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_Status",
+                table: "Matches",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_TournamentId_Round",
+                table: "Matches",
+                columns: new[] { "TournamentId", "Round" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_WinnerId",
+                table: "Matches",
+                column: "WinnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_Country",
+                table: "Players",
+                column: "Country");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_CurrentRanking",
+                table: "Players",
+                column: "CurrentRanking");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_Email",
+                table: "Players",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_FirstName_LastName",
+                table: "Players",
+                columns: new[] { "FirstName", "LastName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_IsDeleted",
+                table: "Players",
+                column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rankings_PlayerId",
+                table: "Rankings",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentPlayers_PlayerId",
+                table: "TournamentPlayers",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentPlayers_TournamentId",
+                table: "TournamentPlayers",
+                column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_IsDeleted",
+                table: "Tournaments",
+                column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_StartDate",
+                table: "Tournaments",
+                column: "StartDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_StartDate_EndDate",
+                table: "Tournaments",
+                columns: new[] { "StartDate", "EndDate" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tournaments_Status",
+                table: "Tournaments",
+                column: "Status");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "BlogCategoryBlogPost");
+
+            migrationBuilder.DropTable(
+                name: "BlogPostBlogTag");
+
+            migrationBuilder.DropTable(
+                name: "Matches");
+
+            migrationBuilder.DropTable(
+                name: "Rankings");
+
+            migrationBuilder.DropTable(
+                name: "TournamentPlayers");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "BlogCategories");
+
+            migrationBuilder.DropTable(
+                name: "BlogPosts");
+
+            migrationBuilder.DropTable(
+                name: "BlogTags");
+
+            migrationBuilder.DropTable(
+                name: "Players");
+
+            migrationBuilder.DropTable(
+                name: "Tournaments");
+        }
+    }
+}
