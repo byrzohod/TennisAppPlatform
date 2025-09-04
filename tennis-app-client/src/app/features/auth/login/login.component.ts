@@ -64,8 +64,10 @@ export class LoginComponent implements OnInit {
         error: (error) => {
           if (error.status === 401) {
             this.error = 'Invalid email or password';
-          } else if (error.status === 0) {
-            this.error = 'Unable to connect to server. Please try again later.';
+          } else if (error.status === 0 || error.name === 'HttpErrorResponse') {
+            this.error = 'Network error. Please try again.';
+          } else if (error.status >= 500) {
+            this.error = 'Something went wrong. Please try again later.';
           } else {
             this.error = error.error?.message || 'An error occurred during login';
           }

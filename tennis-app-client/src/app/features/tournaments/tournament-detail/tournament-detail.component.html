@@ -1,0 +1,248 @@
+<div class="tournament-detail-container" *ngIf="tournament">
+  <div class="tournament-header">
+    <div class="tournament-title">
+      <h1 class="tournament-name">{{ tournament.name }}</h1>
+      <span class="tournament-status">{{ tournament.status }}</span>
+    </div>
+    
+    @if (isAdmin && !isInProgress) {
+      <div class="tournament-actions">
+        <button
+          class="btn btn-secondary"
+          data-testid="edit-tournament-btn"
+          (click)="editTournament()">
+          Edit
+        </button>
+        <button
+          class="btn btn-danger"
+          data-testid="delete-tournament-btn"
+          (click)="deleteTournament()">
+          Delete
+        </button>
+      </div>
+    }
+    @if (isAdmin && isInProgress) {
+      <div class="tournament-actions">
+        <button
+          class="btn btn-secondary"
+          data-testid="edit-tournament-btn"
+          disabled>
+          Edit
+        </button>
+        <div class="info-message">Cannot edit tournament in progress</div>
+      </div>
+    }
+  </div>
+
+  <div class="tournament-info">
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="label">Location</span>
+        <span class="value tournament-location">{{ tournament.location }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Dates</span>
+        <span class="value tournament-dates">{{ tournament.startDate }} - {{ tournament.endDate }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Surface</span>
+        <span class="value tournament-surface">{{ tournament.surface }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Draw Size</span>
+        <span class="value tournament-draw-size">{{ tournament.drawSize }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Type</span>
+        <span class="value">{{ tournament.type }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Status</span>
+        <span class="value">{{ tournament.status }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tournament-tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'overview'"
+      data-testid="tab-overview"
+      (click)="selectTab('overview')">
+      Overview
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'players'"
+      data-testid="tab-players"
+      (click)="selectTab('players')">
+      Players
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'bracket'"
+      data-testid="tab-bracket"
+      (click)="selectTab('bracket')">
+      Bracket
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'matches'"
+      data-testid="tab-matches"
+      (click)="selectTab('matches')">
+      Matches
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'results'"
+      data-testid="tab-results"
+      (click)="selectTab('results')">
+      Results
+    </button>
+  </div>
+
+  <div class="tab-content">
+    @if (activeTab === 'overview') {
+      <div class="overview-content">
+        <h2>Tournament Overview</h2>
+        <p>{{ tournament.description || 'No description available.' }}</p>
+        
+        @if (tournament.prizeMoneyUSD) {
+          <div class="prize-info">
+            <h3>Prize Money</h3>
+            <p>${{ tournament.prizeMoneyUSD | number }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    @if (activeTab === 'players') {
+      <div class="players-content">
+        <div class="players-header">
+          <h2>Registered Players</h2>
+          @if (isAdmin) {
+            <button
+              class="btn btn-primary"
+              data-testid="register-player-btn"
+              (click)="openRegisterModal()">
+              Register Player
+            </button>
+          }
+        </div>
+        
+        <div class="player-list">
+          @for (player of players; track player.id) {
+            <div class="player-row" data-testid="player-row">
+              <div class="player-info">
+                <span class="player-name">{{ player.firstName }} {{ player.lastName }}</span>
+                <span class="player-country">{{ player.country }}</span>
+                @if (player.ranking) {
+                  <span class="player-ranking">Ranking: {{ player.ranking }}</span>
+                }
+                @if (player.seed) {
+                  <span class="player-seed">Seed: {{ player.seed }}</span>
+                }
+                @if (player.status === 'Withdrawn') {
+                  <span class="status-withdrawn">Withdrawn</span>
+                }
+              </div>
+              
+              @if (isAdmin && player.status !== 'Withdrawn') {
+                <div class="player-actions">
+                  <input
+                    type="number"
+                    class="seed-input"
+                    data-testid="seed-input"
+                    placeholder="Seed"
+                    [value]="player.seed"
+                    (input)="updateSeed(player.id, $any($event.target).value)"
+                  />
+                  <button
+                    class="btn btn-sm"
+                    data-testid="save-seed"
+                    (click)="saveSeed(player.id)">
+                    Save
+                  </button>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    data-testid="withdraw-player"
+                    (click)="withdrawPlayer(player.id)">
+                    Withdraw
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeTab === 'bracket') {
+      <div class="bracket-container">
+        <h2>Tournament Bracket</h2>
+        <p>Bracket visualization will appear here</p>
+      </div>
+    }
+
+    @if (activeTab === 'matches') {
+      <div class="matches-list">
+        <h2>Matches Schedule</h2>
+        <p>Matches will appear here</p>
+      </div>
+    }
+
+    @if (activeTab === 'results') {
+      <div class="results-content">
+        <h2>Tournament Results</h2>
+        <p>Results will appear here</p>
+      </div>
+    }
+  </div>
+
+  <!-- Register Player Modal -->
+  @if (showRegisterModal) {
+    <div class="modal" (click)="closeRegisterModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h3>Register Player</h3>
+        
+        <input
+          type="text"
+          class="search-input"
+          data-testid="player-search"
+          placeholder="Search players..."
+          [(ngModel)]="playerSearchTerm"
+        />
+        
+        <div class="player-options">
+          @for (player of filteredAvailablePlayers; track player.id) {
+            <div
+              class="player-option"
+              data-testid="player-option"
+              [class.selected]="selectedPlayerId === player.id"
+              (click)="selectPlayer(player.id)">
+              {{ player.firstName }} {{ player.lastName }}
+              @if (player.ranking) {
+                (Ranking: {{ player.ranking }})
+              }
+            </div>
+          }
+        </div>
+        
+        <div class="modal-actions">
+          <button
+            class="btn btn-secondary"
+            data-testid="cancel-registration"
+            (click)="closeRegisterModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            data-testid="confirm-registration"
+            [disabled]="!selectedPlayerId"
+            (click)="confirmRegistration()">
+            Register
+          </button>
+        </div>
+      </div>
+    </div>
+  }

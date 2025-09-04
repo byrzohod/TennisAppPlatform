@@ -1,0 +1,279 @@
+<div class="bracket-page">
+  <!-- No bracket generated state -->
+  @if (!bracketGenerated) {
+    <div class="no-bracket">
+      <p data-testid="bracket-status">No bracket generated</p>
+      <button
+        class="btn btn-primary"
+        data-testid="generate-bracket-btn"
+        (click)="openGenerateModal()">
+        Generate Bracket
+      </button>
+    </div>
+  }
+
+  <!-- Bracket generated state -->
+  @if (bracketGenerated) {
+    <div class="bracket-header">
+      <h2>Tournament Bracket</h2>
+      <div class="bracket-actions">
+        <button
+          class="btn btn-secondary"
+          data-testid="regenerate-bracket-btn"
+          (click)="regenerateBracket()">
+          Regenerate
+        </button>
+        <button
+          class="btn btn-secondary"
+          data-testid="edit-bracket-btn"
+          [disabled]="matchesStarted"
+          (click)="enableEditMode()">
+          Edit
+        </button>
+        <button
+          class="btn btn-secondary"
+          data-testid="export-bracket"
+          (click)="exportBracket()">
+          Export PDF
+        </button>
+        <button
+          class="btn btn-secondary"
+          data-testid="print-bracket"
+          (click)="printBracket()">
+          Print
+        </button>
+        <button
+          class="btn btn-secondary"
+          data-testid="share-bracket"
+          (click)="shareBracket()">
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Zoom controls -->
+    <div class="zoom-controls">
+      <button data-testid="zoom-in" (click)="zoomIn()">Zoom In</button>
+      <button data-testid="zoom-out" (click)="zoomOut()">Zoom Out</button>
+      <button data-testid="zoom-reset" (click)="resetZoom()">Reset</button>
+    </div>
+
+    <!-- Bracket display -->
+    <div class="bracket-scroll-container" data-testid="bracket-scroll-container">
+      <div
+        class="bracket-container"
+        data-testid="bracket-container"
+        [style.transform]="'scale(' + zoomLevel + ')'">
+        
+        <div class="bracket-tree" data-testid="bracket-tree">
+          @for (round of rounds; track $index) {
+            <div class="bracket-round" data-testid="bracket-round">
+              <div class="round-header" data-testid="round-header">
+                {{ getRoundName($index + 1) }}
+              </div>
+              
+              @for (match of round; track match.matchId) {
+                <div
+                  class="bracket-match"
+                  data-testid="bracket-match"
+                  [attr.data-match-id]="match.matchId"
+                  [class.highlighted]="selectedMatch === match"
+                  (click)="selectMatch(match)"
+                  (mouseenter)="selectedMatch = match"
+                  (mouseleave)="selectedMatch = null">
+                  
+                  <!-- First round matches -->
+                  @if (match.round === 1) {
+                    <div
+                      class="bracket-node"
+                      [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 1)"
+                      [attr.data-testid]="'player-slot-' + ((match.position - 1) * 2 + 1)"
+                      draggable="true"
+                      (dragstart)="drag($event, match.player1 || '')"
+                      (dragover)="allowDrop($event)"
+                      (drop)="drop($event, match, 1)">
+                      @if (match.seed1) {
+                        <span>[{{ match.seed1 }}]</span>
+                      }
+                      {{ match.player1 || 'TBD' }}
+                    </div>
+                    
+                    <div
+                      class="bracket-node"
+                      [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 2)"
+                      [attr.data-testid]="'player-slot-' + ((match.position - 1) * 2 + 2)"
+                      draggable="true"
+                      (dragstart)="drag($event, match.player2 || '')"
+                      (dragover)="allowDrop($event)"
+                      (drop)="drop($event, match, 2)">
+                      @if (match.seed2) {
+                        <span>[{{ match.seed2 }}]</span>
+                      }
+                      {{ match.player2 || 'TBD' }}
+                    </div>
+                  } @else {
+                    <!-- Later round matches -->
+                    <div class="bracket-node" data-testid="bracket-node">
+                      {{ match.winner || 'TBD' }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Match tooltip -->
+    @if (selectedMatch) {
+      <div class="match-tooltip" data-testid="match-tooltip">
+        <div class="match-number">Match {{ selectedMatch.matchId }}</div>
+        <div class="player-names">
+          {{ selectedMatch.player1 || 'TBD' }} vs {{ selectedMatch.player2 || 'TBD' }}
+        </div>
+        <div class="match-time">Scheduled: TBD</div>
+        <div class="court-assignment">Court: TBD</div>
+        @if (!matchesStarted) {
+          <button
+            class="btn btn-sm"
+            data-testid="start-match"
+            (click)="startMatch(selectedMatch)">
+            Start Match
+          </button>
+        }
+      </div>
+    }
+
+    @if (matchesStarted && editMode) {
+      <div class="info-message">
+        Cannot edit bracket after matches have started
+      </div>
+    }
+  }
+
+  <!-- Generate Bracket Modal -->
+  @if (showGenerateModal) {
+    <div class="modal" (click)="closeGenerateModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2 class="modal-title">Generate Bracket</h2>
+        
+        <div class="form-group">
+          <label>Bracket Type</label>
+          <select
+            data-testid="bracket-type"
+            [(ngModel)]="bracketType">
+            <option value="Main">Main</option>
+            <option value="Qualifying">Qualifying</option>
+            <option value="Consolation">Consolation</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Draw Size</label>
+          <select
+            data-testid="draw-size"
+            [(ngModel)]="drawSize">
+            <option [value]="16">16</option>
+            <option [value]="32">32</option>
+            <option [value]="64">64</option>
+            <option [value]="128">128</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <input
+              type="checkbox"
+              data-testid="auto-seed-toggle"
+              [(ngModel)]="autoSeed">
+            Automatic Seeding
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <button
+            class="btn btn-secondary"
+            data-testid="manual-seed-option"
+            (click)="openSeedingModal()">
+            Manual Seed Assignment
+          </button>
+        </div>
+        
+        @if (validateDrawSize()) {
+          <div class="error-message">{{ validateDrawSize() }}</div>
+        }
+        
+        <div class="modal-actions">
+          <button
+            class="btn btn-secondary"
+            (click)="closeGenerateModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            data-testid="confirm-generate"
+            (click)="generateBracket()">
+            Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Seed Assignment Modal -->
+  @if (showSeedingModal) {
+    <div class="modal" data-testid="seed-assignment-modal">
+      <div class="modal-content">
+        <h2>Manual Seed Assignment</h2>
+        
+        <div class="player-list" data-testid="player-list">
+          @for (player of players; track player.id) {
+            <div class="player-row" data-testid="player-row">
+              <span>{{ player.name }}</span>
+              <input
+                type="number"
+                min="1"
+                [max]="drawSize"
+                data-testid="seed-input"
+                placeholder="Seed"
+                (input)="updateManualSeed(player.id, $any($event.target).value)">
+            </div>
+          }
+        </div>
+        
+        <div class="modal-actions">
+          <button
+            class="btn btn-secondary"
+            (click)="closeSeedingModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            data-testid="apply-seeds"
+            (click)="applySeeds()">
+            Apply Seeds
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Share Modal -->
+  @if (false) {
+    <div class="modal" data-testid="share-modal">
+      <div class="modal-content">
+        <h3>Share Bracket</h3>
+        <input
+          type="text"
+          data-testid="share-link"
+          [value]="'/public/bracket/' + tournamentId"
+          readonly>
+        <button
+          class="btn btn-primary"
+          data-testid="copy-link">
+          Copy Link
+        </button>
+      </div>
+    </div>
+  }

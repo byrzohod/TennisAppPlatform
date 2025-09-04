@@ -1,11 +1,11 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h2 class="auth-title">Create Account</h2>
+    <h2 class="auth-title">Register</h2>
     <p class="auth-subtitle">Join Tennis App today</p>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       @if (error) {
-        <div class="alert alert-error" role="alert">
+        <div class="alert alert-danger" role="alert">
           {{ error }}
         </div>
       }
@@ -16,6 +16,7 @@
           <input
             type="text"
             id="firstName"
+            name="firstName"
             class="form-control"
             formControlName="firstName"
             [class.is-invalid]="submitted && f['firstName'].errors"
@@ -23,7 +24,7 @@
             autocomplete="given-name"
           />
           @if (submitted && f['firstName'].errors) {
-            <div class="invalid-feedback">
+            <div class="error-message">
               @if (f['firstName'].errors['required']) {
                 <span>First name is required</span>
               }
@@ -39,6 +40,7 @@
           <input
             type="text"
             id="lastName"
+            name="lastName"
             class="form-control"
             formControlName="lastName"
             [class.is-invalid]="submitted && f['lastName'].errors"
@@ -46,7 +48,7 @@
             autocomplete="family-name"
           />
           @if (submitted && f['lastName'].errors) {
-            <div class="invalid-feedback">
+            <div class="error-message">
               @if (f['lastName'].errors['required']) {
                 <span>Last name is required</span>
               }
@@ -63,6 +65,7 @@
         <input
           type="email"
           id="email"
+          name="email"
           class="form-control"
           formControlName="email"
           [class.is-invalid]="submitted && f['email'].errors"
@@ -70,12 +73,12 @@
           autocomplete="email"
         />
         @if (submitted && f['email'].errors) {
-          <div class="invalid-feedback">
+          <div class="error-message">
             @if (f['email'].errors['required']) {
               <span>Email is required</span>
             }
             @if (f['email'].errors['email']) {
-              <span>Please enter a valid email address</span>
+              Please enter a valid email
             }
           </div>
         }
@@ -83,22 +86,41 @@
 
       <div class="form-group">
         <label for="password" class="form-label">Password</label>
-        <input
-          type="password"
-          id="password"
-          class="form-control"
-          formControlName="password"
-          [class.is-invalid]="submitted && f['password'].errors"
-          placeholder="Create a password"
-          autocomplete="new-password"
-        />
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            name="password"
+            class="form-control"
+            formControlName="password"
+            [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Create a password"
+            autocomplete="new-password"
+            (input)="updatePasswordStrength()"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            data-testid="toggle-password"
+            (click)="togglePassword()"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div class="password-strength" [class.weak]="passwordStrength === 'weak'" 
+             [class.medium]="passwordStrength === 'medium'" 
+             [class.strong]="passwordStrength === 'strong'">
+          @if (passwordStrength) {
+            <span>Password strength: {{ passwordStrength }}</span>
+          }
+        </div>
         @if (submitted && f['password'].errors) {
-          <div class="invalid-feedback">
+          <div class="error-message">
             @if (f['password'].errors['required']) {
               <span>Password is required</span>
             }
             @if (f['password'].errors['minlength']) {
-              <span>Password must be at least 6 characters</span>
+              Password must be at least 6 characters
             }
           </div>
         }
@@ -109,6 +131,7 @@
         <input
           type="password"
           id="confirmPassword"
+          name="confirmPassword"
           class="form-control"
           formControlName="confirmPassword"
           [class.is-invalid]="submitted && f['confirmPassword'].errors"
@@ -116,12 +139,12 @@
           autocomplete="new-password"
         />
         @if (submitted && f['confirmPassword'].errors) {
-          <div class="invalid-feedback">
+          <div class="error-message">
             @if (f['confirmPassword'].errors['required']) {
               <span>Please confirm your password</span>
             }
             @if (f['confirmPassword'].errors['passwordMismatch']) {
-              <span>Passwords do not match</span>
+              Passwords do not match
             }
           </div>
         }
@@ -137,15 +160,14 @@
             <span class="spinner-border spinner-border-sm mr-2"></span>
             Creating account...
           } @else {
-            Create Account
+            Register
           }
         </button>
       </div>
 
       <div class="form-footer">
         <p>
-          Already have an account? 
-          <a routerLink="/login" class="link-primary">Sign in</a>
+          <a routerLink="/login" class="link-primary">Already have an account? Login</a>
         </p>
       </div>
     </form>

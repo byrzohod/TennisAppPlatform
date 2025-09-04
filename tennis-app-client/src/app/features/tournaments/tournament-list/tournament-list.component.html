@@ -1,0 +1,118 @@
+<div class="tournaments-container">
+  <div class="tournaments-header">
+    <h1>Tournaments</h1>
+    @if (isAdmin) {
+      <button 
+        class="btn btn-primary"
+        data-testid="create-tournament-btn"
+        (click)="createTournament()">
+        Create Tournament
+      </button>
+    }
+  </div>
+
+  <div class="filters-section">
+    <input
+      type="text"
+      class="search-input"
+      data-testid="search-input"
+      placeholder="Search tournaments..."
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+    />
+    
+    <select
+      class="filter-select"
+      data-testid="status-filter"
+      [(ngModel)]="statusFilter"
+      (change)="onStatusFilterChange()">
+      <option value="All">All Status</option>
+      <option value="Upcoming">Upcoming</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+    
+    <select
+      class="sort-select"
+      data-testid="sort-select"
+      [(ngModel)]="sortBy"
+      (change)="onSortChange()">
+      <option>Date (Newest First)</option>
+      <option>Date (Oldest First)</option>
+      <option>Name</option>
+    </select>
+  </div>
+
+  <div class="tournament-list" data-testid="tournament-list">
+    @for (tournament of paginatedTournaments; track tournament.id) {
+      <div 
+        class="tournament-card"
+        data-testid="tournament-card"
+        (click)="viewTournament(tournament.id)">
+        
+        <div class="tournament-header">
+          <h3 class="tournament-name">{{ tournament.name }}</h3>
+          <span class="tournament-status status-{{ tournament.status.toLowerCase().replace(' ', '-') }}">
+            {{ tournament.status }}
+          </span>
+        </div>
+        
+        <div class="tournament-info">
+          <div class="info-item">
+            <span class="label">Location:</span>
+            <span class="tournament-location">{{ tournament.location }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Dates:</span>
+            <span class="tournament-dates">{{ tournament.startDate }} - {{ tournament.endDate }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Surface:</span>
+            <span class="tournament-surface">{{ tournament.surface }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Draw Size:</span>
+            <span class="tournament-draw-size">{{ tournament.drawSize }}</span>
+          </div>
+          
+          @if (tournament.prizeMoneyUSD) {
+            <div class="info-item">
+              <span class="label">Prize Money:</span>
+              <span>${{ tournament.prizeMoneyUSD | number }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (totalPages > 1) {
+    <div class="pagination" data-testid="pagination">
+      <button 
+        class="page-btn"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)">
+        Previous
+      </button>
+      
+      @for (page of [].constructor(totalPages); track $index) {
+        <button
+          class="page-btn"
+          [class.active]="currentPage === $index + 1"
+          [attr.data-testid]="'page-' + ($index + 1)"
+          (click)="goToPage($index + 1)">
+          {{ $index + 1 }}
+        </button>
+      }
+      
+      <button
+        class="page-btn"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)">
+        Next
+      </button>
+    </div>
+  }

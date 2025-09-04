@@ -49,8 +49,29 @@ export const routes: Routes = [
   },
   {
     path: 'tournaments',
-    loadComponent: () => import('./features/tournaments/tournaments.component').then(m => m.TournamentsComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/tournaments/tournament-list/tournament-list.component').then(m => m.TournamentListComponent)
+      },
+      {
+        path: 'create',
+        loadComponent: () => import('./features/tournaments/tournament-form/tournament-form.component').then(m => m.TournamentFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/tournaments/tournament-detail/tournament-detail.component').then(m => m.TournamentDetailComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/tournaments/tournament-form/tournament-form.component').then(m => m.TournamentFormComponent)
+      },
+      {
+        path: ':id/bracket',
+        loadComponent: () => import('./features/tournaments/bracket/bracket.component').then(m => m.BracketComponent)
+      }
+    ]
   },
   {
     path: 'profile',

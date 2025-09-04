@@ -1,0 +1,208 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
+
+interface Tournament {
+  id: number;
+  name: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  type: string;
+  surface: string;
+  drawSize: number;
+  status: string;
+  prizeMoneyUSD?: number;
+  entryFee?: number;
+  description?: string;
+}
+
+interface Player {
+  id: number;
+  firstName: string;
+  lastName: string;
+  country: string;
+  ranking?: number;
+  seed?: number;
+  status?: string;
+}
+
+@Component({
+  selector: 'app-tournament-detail',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './tournament-detail.component.html',
+  styleUrl: './tournament-detail.component.scss'
+})
+export class TournamentDetailComponent implements OnInit {
+  tournament: Tournament | null = null;
+  activeTab = 'overview';
+  players: Player[] = [];
+  isAdmin = true; // For testing
+  showRegisterModal = false;
+  availablePlayers: Player[] = [];
+  selectedPlayerId: number | null = null;
+  playerSearchTerm = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit() {
+    const id = this.route.snapshot.params['id'];
+    this.loadTournament(id);
+    this.loadPlayers();
+    this.loadAvailablePlayers();
+  }
+
+  loadTournament(id: number) {
+    // Mock data for now
+    this.tournament = {
+      id: id,
+      name: 'Wimbledon',
+      location: 'London, UK',
+      startDate: '2024-07-01',
+      endDate: '2024-07-14',
+      type: 'Grand Slam',
+      surface: 'Grass',
+      drawSize: 128,
+      status: 'Upcoming',
+      prizeMoneyUSD: 50000000,
+      description: 'The oldest tennis tournament in the world'
+    };
+  }
+
+  loadPlayers() {
+    // Mock registered players
+    this.players = [
+      {
+        id: 1,
+        firstName: 'Novak',
+        lastName: 'Djokovic',
+        country: 'Serbia',
+        ranking: 1,
+        seed: 1,
+        status: 'Registered'
+      },
+      {
+        id: 2,
+        firstName: 'Carlos',
+        lastName: 'Alcaraz',
+        country: 'Spain',
+        ranking: 2,
+        seed: 2,
+        status: 'Registered'
+      }
+    ];
+  }
+
+  loadAvailablePlayers() {
+    // Mock available players for registration
+    this.availablePlayers = [
+      {
+        id: 3,
+        firstName: 'Rafael',
+        lastName: 'Nadal',
+        country: 'Spain',
+        ranking: 3
+      },
+      {
+        id: 4,
+        firstName: 'Daniil',
+        lastName: 'Medvedev',
+        country: 'Russia',
+        ranking: 4
+      }
+    ];
+  }
+
+  selectTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  editTournament() {
+    if (this.tournament) {
+      this.router.navigate(['/tournaments', this.tournament.id, 'edit']);
+    }
+  }
+
+  deleteTournament() {
+    if (confirm('Are you sure you want to delete this tournament?')) {
+      // Delete logic here
+      this.router.navigate(['/tournaments']);
+    }
+  }
+
+  openRegisterModal() {
+    this.showRegisterModal = true;
+  }
+
+  closeRegisterModal() {
+    this.showRegisterModal = false;
+    this.selectedPlayerId = null;
+    this.playerSearchTerm = '';
+  }
+
+  selectPlayer(playerId: number) {
+    this.selectedPlayerId = playerId;
+  }
+
+  confirmRegistration() {
+    if (this.selectedPlayerId) {
+      const player = this.availablePlayers.find(p => p.id === this.selectedPlayerId);
+      if (player) {
+        this.players.push({
+          ...player,
+          seed: undefined,
+          status: 'Registered'
+        });
+        this.availablePlayers = this.availablePlayers.filter(p => p.id !== this.selectedPlayerId);
+        this.closeRegisterModal();
+      }
+    }
+  }
+
+  updateSeed(playerId: number, seed: string) {
+    const player = this.players.find(p => p.id === playerId);
+    if (player) {
+      player.seed = seed ? parseInt(seed) : undefined;
+    }
+  }
+
+  saveSeed(playerId: number) {
+    const player = this.players.find(p => p.id === playerId);
+    if (player) {
+      // Save seed logic here
+      console.log(`Seed updated for player ${playerId}: ${player.seed}`);
+    }
+  }
+
+  withdrawPlayer(playerId: number) {
+    if (confirm('Confirm withdrawal?')) {
+      const player = this.players.find(p => p.id === playerId);
+      if (player) {
+        player.status = 'Withdrawn';
+      }
+    }
+  }
+
+  get filteredAvailablePlayers() {
+    if (!this.playerSearchTerm) {
+      return this.availablePlayers;
+    }
+    const search = this.playerSearchTerm.toLowerCase();
+    return this.availablePlayers.filter(p => 
+      p.firstName.toLowerCase().includes(search) ||
+      p.lastName.toLowerCase().includes(search)
+    );
+  }
+
+  get isInProgress() {
+    return this.tournament?.status === 'In Progress';
+  }
+}

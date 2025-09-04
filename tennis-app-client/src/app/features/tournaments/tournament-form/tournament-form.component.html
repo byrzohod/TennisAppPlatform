@@ -1,0 +1,165 @@
+<div class="tournament-form-container">
+  <h1>{{ isEditMode ? 'Edit Tournament' : 'Create Tournament' }}</h1>
+
+  <form [formGroup]="tournamentForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Tournament Name *</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        class="form-control"
+        formControlName="name"
+        [class.is-invalid]="submitted && tournamentForm.get('name')?.errors"
+      />
+      @if (submitted && tournamentForm.get('name')?.errors) {
+        <div class="error-message">Name is required</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="location">Location *</label>
+      <input
+        type="text"
+        id="location"
+        name="location"
+        class="form-control"
+        formControlName="location"
+        [class.is-invalid]="submitted && tournamentForm.get('location')?.errors"
+      />
+      @if (submitted && tournamentForm.get('location')?.errors) {
+        <div class="error-message">Location is required</div>
+      }
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startDate">Start Date *</label>
+        <input
+          type="date"
+          id="startDate"
+          name="startDate"
+          class="form-control"
+          formControlName="startDate"
+          [class.is-invalid]="submitted && tournamentForm.get('startDate')?.errors"
+        />
+        @if (submitted && tournamentForm.get('startDate')?.errors) {
+          <div class="error-message">Start date is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">End Date *</label>
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          class="form-control"
+          formControlName="endDate"
+          [class.is-invalid]="submitted && tournamentForm.get('endDate')?.errors"
+        />
+        @if (submitted && tournamentForm.get('endDate')?.errors) {
+          <div class="error-message">End date is required</div>
+        }
+        @if (tournamentForm.hasError('dateRange')) {
+          <div class="error-message">End date must be after start date</div>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="type">Tournament Type *</label>
+        <select
+          id="type"
+          name="type"
+          class="form-control"
+          formControlName="type">
+          <option value="GrandSlam">Grand Slam</option>
+          <option value="ATP1000">ATP 1000</option>
+          <option value="ATP500">ATP 500</option>
+          <option value="ATP250">ATP 250</option>
+          <option value="Challenger">Challenger</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="surface">Surface *</label>
+        <select
+          id="surface"
+          name="surface"
+          class="form-control"
+          formControlName="surface">
+          <option value="HardCourt">Hard Court</option>
+          <option value="Clay">Clay</option>
+          <option value="Grass">Grass</option>
+          <option value="Indoor">Indoor</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="drawSize">Draw Size *</label>
+      <select
+        id="drawSize"
+        name="drawSize"
+        class="form-control"
+        formControlName="drawSize">
+        <option [value]="16">16</option>
+        <option [value]="32">32</option>
+        <option [value]="64">64</option>
+        <option [value]="128">128</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="prizeMoneyUSD">Prize Money (USD)</label>
+        <input
+          type="number"
+          id="prizeMoneyUSD"
+          name="prizeMoneyUSD"
+          class="form-control"
+          formControlName="prizeMoneyUSD"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="entryFee">Entry Fee</label>
+        <input
+          type="number"
+          id="entryFee"
+          name="entryFee"
+          class="form-control"
+          formControlName="entryFee"
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        class="form-control"
+        formControlName="description"
+        rows="4">
+      </textarea>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancel()">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading">
+        {{ loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create') }} Tournament
+      </button>
+    </div>
+  </form>
+</div>

@@ -21,6 +21,8 @@ export class RegisterComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
+  showPassword = false;
+  passwordStrength: 'weak' | 'medium' | 'strong' | '' = '';
 
   ngOnInit(): void {
     this.initializeForm();
@@ -86,5 +88,40 @@ export class RegisterComponent implements OnInit {
           }
         }
       });
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  updatePasswordStrength(): void {
+    const password = this.registerForm.get('password')?.value || '';
+    
+    if (password.length === 0) {
+      this.passwordStrength = '';
+      return;
+    }
+    
+    // Simple password strength calculation
+    let strength = 0;
+    
+    // Length check
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    
+    // Character type checks
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+    
+    // Determine strength level
+    if (strength <= 2) {
+      this.passwordStrength = 'weak';
+    } else if (strength <= 4) {
+      this.passwordStrength = 'medium';
+    } else {
+      this.passwordStrength = 'strong';
+    }
   }
 }

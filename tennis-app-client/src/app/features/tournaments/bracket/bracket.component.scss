@@ -1,0 +1,332 @@
+.bracket-page {
+  padding: 2rem;
+  background: #f5f5f5;
+  min-height: 100vh;
+
+  .no-bracket {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+
+    p {
+      font-size: 1.25rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+    }
+  }
+
+  .bracket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    h2 {
+      margin: 0;
+      color: #333;
+    }
+
+    .bracket-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  .zoom-controls {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 100;
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
+
+  .bracket-scroll-container {
+    overflow: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .bracket-container {
+    transform-origin: top left;
+    transition: transform 0.3s ease;
+  }
+
+  .bracket-tree {
+    display: flex;
+    gap: 3rem;
+    padding: 2rem;
+    min-width: fit-content;
+  }
+
+  .bracket-round {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+    min-width: 200px;
+
+    .round-header {
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.875rem;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .bracket-match {
+    background: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      border-color: #4CAF50;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+    }
+
+    &.highlighted {
+      border-color: #2196F3;
+      background: #e3f2fd;
+    }
+  }
+
+  .bracket-node {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 36px;
+    cursor: move;
+
+    span {
+      font-weight: bold;
+      color: #666;
+      font-size: 0.875rem;
+    }
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+
+  .match-tooltip {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 200;
+    min-width: 300px;
+
+    .match-number {
+      font-weight: bold;
+      color: #4CAF50;
+      margin-bottom: 0.5rem;
+    }
+
+    .player-names {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .match-time, .court-assignment {
+      font-size: 0.875rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+
+    button {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  .info-message {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    text-align: center;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+
+    .modal-title {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .player-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+
+      .player-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        input {
+          width: 80px;
+          padding: 0.25rem 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+      }
+    }
+
+    .error-message {
+      color: #f44336;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background: #ffebee;
+      border-radius: 4px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+  }
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &.btn-primary {
+    background: #4CAF50;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #45a049;
+    }
+  }
+
+  &.btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+
+    &:hover:not(:disabled) {
+      background: #e0e0e0;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
