@@ -40,3 +40,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Cypress test artifacts
+cypress/videos/
+cypress/screenshots/
+cypress-results.txt
+cypress/downloads/
