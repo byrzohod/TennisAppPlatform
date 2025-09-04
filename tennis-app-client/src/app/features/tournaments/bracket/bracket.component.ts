@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -31,12 +31,12 @@ export class BracketComponent implements OnInit {
   bracketType = 'Main';
   drawSize = 32;
   autoSeed = true;
-  manualSeeds: Map<number, number> = new Map();
+  manualSeeds = new Map<number, number>();
   
   // Bracket data
   rounds: BracketNode[][] = [];
   totalRounds = 0;
-  players: any[] = [];
+  players: { id: number; name: string; ranking: number }[] = [];
   
   // UI state
   zoomLevel = 1;
@@ -44,7 +44,7 @@ export class BracketComponent implements OnInit {
   editMode = false;
   matchesStarted = false;
   
-  constructor(private route: ActivatedRoute) {}
+  private route = inject(ActivatedRoute);
   
   ngOnInit() {
     this.tournamentId = +this.route.snapshot.params['id'];
@@ -201,7 +201,7 @@ export class BracketComponent implements OnInit {
     this.selectedMatch = node;
   }
   
-  startMatch(node: BracketNode) {
+  startMatch() {
     this.matchesStarted = true;
     // Start match logic
   }

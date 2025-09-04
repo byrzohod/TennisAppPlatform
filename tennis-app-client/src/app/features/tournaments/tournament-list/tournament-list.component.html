@@ -12,7 +12,9 @@
   </div>
 
   <div class="filters-section">
+    <label for="tournament-search">Search Tournaments</label>
     <input
+      id="tournament-search"
       type="text"
       class="search-input"
       data-testid="search-input"
@@ -21,7 +23,9 @@
       (input)="onSearchChange()"
     />
     
+    <label for="status-filter-select">Filter by Status</label>
     <select
+      id="status-filter-select"
       class="filter-select"
       data-testid="status-filter"
       [(ngModel)]="statusFilter"
@@ -32,7 +36,9 @@
       <option value="Completed">Completed</option>
     </select>
     
+    <label for="sort-select-input">Sort by</label>
     <select
+      id="sort-select-input"
       class="sort-select"
       data-testid="sort-select"
       [(ngModel)]="sortBy"
@@ -48,7 +54,12 @@
       <div 
         class="tournament-card"
         data-testid="tournament-card"
-        (click)="viewTournament(tournament.id)">
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="'View ' + tournament.name + ' tournament details'"
+        (click)="viewTournament(tournament.id)"
+        (keydown.enter)="viewTournament(tournament.id)"
+        (keydown.space)="viewTournament(tournament.id)">
         
         <div class="tournament-header">
           <h3 class="tournament-name">{{ tournament.name }}</h3>
@@ -94,6 +105,7 @@
       <button 
         class="page-btn"
         [disabled]="currentPage === 1"
+        aria-label="Go to previous page"
         (click)="goToPage(currentPage - 1)">
         Previous
       </button>
@@ -103,6 +115,7 @@
           class="page-btn"
           [class.active]="currentPage === $index + 1"
           [attr.data-testid]="'page-' + ($index + 1)"
+          [attr.aria-label]="'Go to page ' + ($index + 1)"
           (click)="goToPage($index + 1)">
           {{ $index + 1 }}
         </button>
@@ -111,6 +124,7 @@
       <button
         class="page-btn"
         [disabled]="currentPage === totalPages"
+        aria-label="Go to next page"
         (click)="goToPage(currentPage + 1)">
         Next
       </button>

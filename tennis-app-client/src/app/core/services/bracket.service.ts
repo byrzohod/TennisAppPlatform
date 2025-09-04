@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface BracketMatch {
@@ -40,8 +40,7 @@ export interface BracketGenerationOptions {
 })
 export class BracketService {
   private apiUrl = `${environment.apiUrl}/api/v1/brackets`;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getBracket(tournamentId: number): Observable<Bracket> {
     return this.http.get<Bracket>(`${this.apiUrl}/tournament/${tournamentId}`);

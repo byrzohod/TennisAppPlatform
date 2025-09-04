@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { environment } from '../../../../environments/environment';
 
 interface Tournament {
   id: number;
@@ -47,11 +46,9 @@ export class TournamentDetailComponent implements OnInit {
   selectedPlayerId: number | null = null;
   playerSearchTerm = '';
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private http: HttpClient
-  ) {}
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private http = inject(HttpClient);
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
