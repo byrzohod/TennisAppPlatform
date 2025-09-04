@@ -60,11 +60,50 @@ This document defines the criteria that must be met before any feature can be co
 - [ ] Service integration tests
 - [ ] Routing tests (if applicable)
 
-#### E2E Tests (for user-facing features)
-- [ ] Critical user journeys tested
-- [ ] Cross-browser testing (Chrome, Firefox, Safari)
-- [ ] Mobile responsiveness tested
-- [ ] Performance benchmarks met
+#### UI Tests
+- [ ] Visual regression tests for components
+- [ ] Accessibility tests (WCAG 2.1 AA compliance)
+- [ ] Keyboard navigation tests
+- [ ] Screen reader compatibility tests
+- [ ] Form interaction tests
+- [ ] Error state visual tests
+- [ ] Loading state tests
+- [ ] Responsive design tests (mobile, tablet, desktop)
+
+#### E2E Tests (REQUIRED for ALL user-facing features)
+- [ ] **Critical User Journeys**: All primary workflows tested
+  - [ ] Happy path scenarios
+  - [ ] Alternative paths
+  - [ ] Error recovery scenarios
+- [ ] **Cross-browser Testing**: 
+  - [ ] Chrome (latest)
+  - [ ] Firefox (latest)
+  - [ ] Safari (latest)
+  - [ ] Edge (latest)
+- [ ] **Device Testing**:
+  - [ ] Desktop (1920x1080, 1366x768)
+  - [ ] Tablet (iPad, Android tablet)
+  - [ ] Mobile (iPhone, Android phone)
+- [ ] **Performance Tests**:
+  - [ ] Page load time < 3 seconds
+  - [ ] Time to interactive < 5 seconds
+  - [ ] API response times logged
+  - [ ] No memory leaks detected
+- [ ] **Data Validation**:
+  - [ ] Form submissions with valid data
+  - [ ] Form submissions with invalid data
+  - [ ] Boundary value testing
+  - [ ] SQL injection prevention verified
+  - [ ] XSS prevention verified
+- [ ] **State Management**:
+  - [ ] Browser refresh maintains state correctly
+  - [ ] Browser back/forward navigation works
+  - [ ] Session timeout handled gracefully
+- [ ] **Integration Tests**:
+  - [ ] Third-party service integration
+  - [ ] Payment processing (if applicable)
+  - [ ] Email notifications verified
+  - [ ] Real-time updates (WebSocket/SignalR)
 
 ### 4. Code Quality
 
@@ -158,6 +197,21 @@ This document defines the criteria that must be met before any feature can be co
 - [ ] Team agrees on timeline for addressing
 - [ ] Technical debt does not compromise security or data integrity
 
+## E2E Testing Framework Requirements
+
+### Tools & Technologies
+- **E2E Framework**: Cypress or Playwright
+- **Visual Testing**: Percy or Chromatic
+- **Accessibility Testing**: axe-core integration
+- **Performance Testing**: Lighthouse CI
+- **API Testing**: Postman/Newman or REST Client
+
+### Test Data Management
+- Test data should be isolated and reproducible
+- Database seeding for E2E tests
+- Cleanup after test execution
+- No dependency on production data
+
 ## Definition of "Working"
 
 A feature is considered "working" when:
@@ -167,6 +221,9 @@ A feature is considered "working" when:
 4. It integrates seamlessly with existing features
 5. It maintains or improves overall system performance
 6. It doesn't break any existing functionality
+7. All E2E tests pass in CI/CD pipeline
+8. UI is accessible and responsive across all supported devices
+9. Performance metrics meet defined thresholds
 
 ## Exceptions
 

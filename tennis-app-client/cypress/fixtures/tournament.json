@@ -1,0 +1,72 @@
+{
+  "validTournament": {
+    "name": "Test Championship",
+    "location": "New York, USA",
+    "startDate": "2024-07-01",
+    "endDate": "2024-07-14",
+    "type": "ATP500",
+    "surface": "HardCourt",
+    "drawSize": 32,
+    "prizeMoneyUSD": 500000,
+    "entryFee": 100,
+    "description": "Annual test championship tournament"
+  },
+  "players": [
+    {
+      "id": 1,
+      "firstName": "Novak",
+      "lastName": "Djokovic",
+      "country": "Serbia",
+      "ranking": 1
+    },
+    {
+      "id": 2,
+      "firstName": "Carlos",
+      "lastName": "Alcaraz",
+      "country": "Spain",
+      "ranking": 2
+    },
+    {
+      "id": 3,
+      "firstName": "Daniil",
+      "lastName": "Medvedev",
+      "country": "Russia",
+      "ranking": 3
+    },
+    {
+      "id": 4,
+      "firstName": "Jannik",
+      "lastName": "Sinner",
+      "country": "Italy",
+      "ranking": 4
+    },
+    {
+      "id": 5,
+      "firstName": "Stefanos",
+      "lastName": "Tsitsipas",
+      "country": "Greece",
+      "ranking": 5
+    },
+    {
+      "id": 6,
+      "firstName": "Alexander",
+      "lastName": "Zverev",
+      "country": "Germany",
+      "ranking": 6
+    },
+    {
+      "id": 7,
+      "firstName": "Holger",
+      "lastName": "Rune",
+      "country": "Denmark",
+      "ranking": 7
+    },
+    {
+      "id": 8,
+      "firstName": "Hubert",
+      "lastName": "Hurkacz",
+      "country": "Poland",
+      "ranking": 8
+    }
+  ]
+}

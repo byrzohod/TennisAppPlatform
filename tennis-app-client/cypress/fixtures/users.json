@@ -1,20 +1,30 @@
 {
-  "validUser": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john.doe@example.com",
-    "password": "SecurePassword123!"
-  },
-  "adminUser": {
+  "admin": {
+    "email": "admin@tennisapp.com",
+    "password": "Admin123!",
     "firstName": "Admin",
     "lastName": "User",
-    "email": "admin@tennisapp.com",
-    "password": "AdminPassword123!"
+    "role": "Admin"
   },
-  "invalidUser": {
-    "firstName": "",
-    "lastName": "",
-    "email": "invalid-email",
-    "password": "123"
+  "player": {
+    "email": "player@example.com",
+    "password": "Player123!",
+    "firstName": "John",
+    "lastName": "Player",
+    "role": "Player"
+  },
+  "organizer": {
+    "email": "organizer@example.com",
+    "password": "Organizer123!",
+    "firstName": "Jane",
+    "lastName": "Organizer",
+    "role": "Organizer"
+  },
+  "testUser": {
+    "email": "test@example.com",
+    "password": "Test123!",
+    "firstName": "Test",
+    "lastName": "User",
+    "role": "User"
   }
 }
