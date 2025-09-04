@@ -221,34 +221,55 @@ public class BracketService : IBracketService
 
     private List<int> GenerateSeedingOrderForSize(int size)
     {
-        // Generate seeding order for larger draw sizes using the same pattern as 32
-        // This ensures proper seed separation
+        // Generate seeding order for larger draw sizes
+        // The pattern ensures proper tennis bracket seeding where:
+        // - Seed 1 goes to position 1
+        // - Seed 2 goes to the last position in the draw (e.g., 64 for a 64-draw)
+        // - Position 2 gets the weakest seed (appears last in the seeding order)
         var order = new List<int>();
-        var queue = new Queue<(int start, int end)>();
-        queue.Enqueue((1, size));
+        var reserved = new HashSet<int> { 2 }; // Reserve position 2 for last
         
-        while (queue.Count > 0 && order.Count < size)
-        {
-            var (start, end) = queue.Dequeue();
-            
-            if (start <= end)
-            {
-                order.Add(start);
-                if (start != end)
-                {
-                    order.Add(end);
-                    
-                    if (start + 1 <= end - 1)
-                    {
-                        var mid = (start + end) / 2;
-                        queue.Enqueue((start + 1, mid));
-                        queue.Enqueue((mid + 1, end - 1));
-                    }
-                }
-            }
-        }
+        // Use the recursive algorithm but skip position 2
+        GenerateSeedingRecursiveWithReserved(1, size, order, reserved);
+        
+        // Add position 2 at the very end (for the weakest seed)
+        order.Add(2);
         
         return order;
+    }
+    
+    private void GenerateSeedingRecursiveWithReserved(int start, int end, List<int> order, HashSet<int> reserved)
+    {
+        if (start > end) return;
+        
+        // Skip reserved positions
+        while (reserved.Contains(start) && start <= end)
+            start++;
+        while (reserved.Contains(end) && end >= start)
+            end--;
+            
+        if (start > end) return;
+        
+        // Add the first position
+        order.Add(start);
+        
+        // If not the same, add the last position
+        if (start < end)
+        {
+            order.Add(end);
+            
+            // Recursively process the two halves
+            if (end - start > 1)
+            {
+                int mid = (start + end) / 2;
+                
+                // Process upper half
+                GenerateSeedingRecursiveWithReserved(start + 1, mid, order, reserved);
+                
+                // Process lower half
+                GenerateSeedingRecursiveWithReserved(mid + 1, end - 1, order, reserved);
+            }
+        }
     }
 
     private List<int> GetByePositions(int drawSize, int byesNeeded)
