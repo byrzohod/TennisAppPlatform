@@ -22,11 +22,11 @@ export class LoginComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
-  returnUrl = '/';
+  returnUrl = '/dashboard';
 
   ngOnInit(): void {
     this.initializeForm();
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     
     // Redirect if already logged in
     if (this.authService.isAuthenticated()) {

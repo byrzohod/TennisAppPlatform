@@ -13,7 +13,7 @@ export default defineConfig({
     requestTimeout: 10000,
     responseTimeout: 10000,
     env: {
-      apiUrl: 'http://localhost:5000/api/v1',
+      apiUrl: 'http://localhost:5221/api/v1',
     },
     retries: {
       runMode: 2,

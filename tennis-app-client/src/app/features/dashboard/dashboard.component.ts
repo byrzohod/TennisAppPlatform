@@ -53,4 +53,8 @@ export class DashboardComponent implements OnInit {
       recentResults: 12
     };
   }
+
+  logout() {
+    this.authService.logout();
+  }
 }

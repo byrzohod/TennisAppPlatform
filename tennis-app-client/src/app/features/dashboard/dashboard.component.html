@@ -1,7 +1,13 @@
 <div class="dashboard-container">
   <div class="dashboard-header">
     <h1 class="dashboard-title">Dashboard</h1>
-    <p class="dashboard-subtitle">Welcome back, {{ (user$ | async)?.email || 'User' }}!</p>
+    <p class="dashboard-subtitle welcome-message">Welcome back, {{ (user$ | async)?.email || 'User' }}!</p>
+    <button 
+      class="btn btn-secondary logout-btn" 
+      data-testid="logout-button" 
+      (click)="logout()">
+      Logout
+    </button>
   </div>
 
   <!-- Stats Section -->

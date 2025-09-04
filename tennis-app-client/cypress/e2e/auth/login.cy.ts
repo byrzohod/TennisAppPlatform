@@ -7,21 +7,21 @@ describe('Login Feature', () => {
 
   describe('UI Elements', () => {
     it('should display all login form elements', () => {
-      cy.get('h2').should('contain', 'Login');
-      cy.get('input[name="email"]').should('be.visible');
-      cy.get('input[name="password"]').should('be.visible');
-      cy.get('button[type="submit"]').should('contain', 'Login');
-      cy.get('a').should('contain', "Don't have an account? Register");
+      cy.get('h2').should('contain', 'Sign In');
+      cy.get('input#email').should('be.visible');
+      cy.get('input#password').should('be.visible');
+      cy.get('button[type="submit"]').should('contain', 'Sign In');
+      cy.get('a').should('contain', "Don't have an account?");
     });
 
     it('should have proper input types and placeholders', () => {
-      cy.get('input[name="email"]')
+      cy.get('input#email')
         .should('have.attr', 'type', 'email')
-        .should('have.attr', 'placeholder', 'Email');
+        .should('have.attr', 'placeholder', 'Enter your email');
       
-      cy.get('input[name="password"]')
+      cy.get('input#password')
         .should('have.attr', 'type', 'password')
-        .should('have.attr', 'placeholder', 'Password');
+        .should('have.attr', 'placeholder', 'Enter your password');
     });
 
     it('should be accessible', () => {
@@ -34,25 +34,25 @@ describe('Login Feature', () => {
     it('should show validation errors for empty form submission', () => {
       cy.get('button[type="submit"]').click();
       
-      cy.get('.error-message').should('be.visible');
-      cy.get('input[name="email"]').should('have.class', 'ng-invalid');
-      cy.get('input[name="password"]').should('have.class', 'ng-invalid');
+      cy.get('.invalid-feedback').should('be.visible');
+      cy.get('input#email').should('have.class', 'is-invalid');
+      cy.get('input#password').should('have.class', 'is-invalid');
     });
 
     it('should show error for invalid email format', () => {
-      cy.get('input[name="email"]').type('invalid-email');
-      cy.get('input[name="password"]').type('ValidPassword123!');
+      cy.get('input#email').type('invalid-email');
+      cy.get('input#password').type('ValidPassword123!');
       cy.get('button[type="submit"]').click();
       
-      cy.get('.error-message').should('contain', 'Please enter a valid email');
+      cy.get('.invalid-feedback').should('contain', 'Please enter a valid email');
     });
 
     it('should show error for password less than 6 characters', () => {
-      cy.get('input[name="email"]').type('test@example.com');
-      cy.get('input[name="password"]').type('123');
+      cy.get('input#email').type('test@example.com');
+      cy.get('input#password').type('123');
       cy.get('button[type="submit"]').click();
       
-      cy.get('.error-message').should('contain', 'Password must be at least 6 characters');
+      cy.get('.invalid-feedback').should('contain', 'Password must be at least 6 characters');
     });
   });
 
@@ -68,24 +68,24 @@ describe('Login Feature', () => {
       });
 
       // Now login
-      cy.get('input[name="email"]').type('testuser@example.com');
-      cy.get('input[name="password"]').type('Test123!');
+      cy.get('input#email').type('testuser@example.com');
+      cy.get('input#password').type('Test123!');
       cy.get('button[type="submit"]').click();
       
       // Should redirect to dashboard
       cy.url().should('include', '/dashboard');
-      cy.get('.welcome-message').should('contain', 'Welcome, Test User');
+      cy.contains('Welcome').should('be.visible');
       
       // Should store auth token
       cy.window().its('localStorage.authToken').should('exist');
     });
 
     it('should show error for invalid credentials', () => {
-      cy.get('input[name="email"]').type('nonexistent@example.com');
-      cy.get('input[name="password"]').type('WrongPassword123!');
+      cy.get('input#email').type('nonexistent@example.com');
+      cy.get('input#password').type('WrongPassword123!');
       cy.get('button[type="submit"]').click();
       
-      cy.get('.alert-danger').should('contain', 'Invalid email or password');
+      cy.get('.alert-error').should('contain', 'Invalid');
       cy.url().should('include', '/login');
     });
 

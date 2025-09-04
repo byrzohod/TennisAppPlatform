@@ -13,8 +13,8 @@ export class AuthService {
   private router = inject(Router);
 
   private readonly apiUrl = `${environment.apiUrl}/api/${environment.apiVersion}/auth`;
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'user_data';
+  private readonly TOKEN_KEY = 'authToken';
+  private readonly USER_KEY = 'user';
   
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
