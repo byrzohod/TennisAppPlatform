@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlayerService, PlayerCreateDto, PlayerUpdateDto } from '../../../core/services/player.service';
+import { CustomValidators } from '../../../shared/validators/custom-validators';
 
 @Component({
   selector: 'app-player-form',
@@ -38,12 +39,33 @@ export class PlayerFormComponent implements OnInit {
 
   createForm(): FormGroup {
     return this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^[\d\s-+()]+$/)]],
-      dateOfBirth: [''],
-      rankingPoints: [0, [Validators.min(0)]]
+      firstName: ['', [
+        Validators.required, 
+        Validators.minLength(2), 
+        Validators.maxLength(50),
+        CustomValidators.noWhitespace()
+      ]],
+      lastName: ['', [
+        Validators.required, 
+        Validators.minLength(2), 
+        Validators.maxLength(50),
+        CustomValidators.noWhitespace()
+      ]],
+      email: ['', [
+        Validators.required, 
+        CustomValidators.email()
+      ]],
+      phone: ['', [
+        CustomValidators.phoneNumber()
+      ]],
+      dateOfBirth: ['', [
+        CustomValidators.pastDate(),
+        CustomValidators.age(10, 100) // Tennis players between 10 and 100 years old
+      ]],
+      rankingPoints: [0, [
+        Validators.min(0),
+        Validators.max(20000) // ATP points typically don't exceed this
+      ]]
     });
   }
 
