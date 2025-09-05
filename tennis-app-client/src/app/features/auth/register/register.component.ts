@@ -3,12 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { CustomValidators } from '../../../shared/validators/custom-validators';
 import { finalize } from 'rxjs/operators';
+
+import { CardComponent } from '../../../shared/components/ui/card/card.component';
+import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
+import { InputComponent } from '../../../shared/components/ui/input/input.component';
+import { AlertComponent } from '../../../shared/components/ui/alert/alert.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CardComponent, ButtonComponent, InputComponent, AlertComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -37,26 +43,12 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.formBuilder.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
-    }, {
-      validators: this.passwordMatchValidator
+      email: ['', [Validators.required, CustomValidators.email()]],
+      password: ['', [Validators.required, CustomValidators.passwordStrength()]],
+      confirmPassword: ['', [Validators.required, CustomValidators.matchField('password')]]
     });
   }
 
-  private passwordMatchValidator(formGroup: FormGroup) {
-    const password = formGroup.get('password');
-    const confirmPassword = formGroup.get('confirmPassword');
-    
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ passwordMismatch: true });
-    } else if (confirmPassword?.hasError('passwordMismatch')) {
-      confirmPassword.setErrors(null);
-    }
-    
-    return null;
-  }
 
   get f() {
     return this.registerForm.controls;
