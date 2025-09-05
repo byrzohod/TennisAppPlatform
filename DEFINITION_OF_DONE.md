@@ -227,6 +227,11 @@ This document defines the criteria that must be met before any feature can be co
 - [ ] Code review feedback addressed
 - [ ] Approved by at least one reviewer
 
+#### Merge to Main (MANDATORY)
+- [ ] **PR successfully merged to main branch**
+- [ ] All automated checks pass in main branch
+- [ ] Post-merge verification completed
+
 ### 9. Post-Merge
 
 - [ ] Feature branch deleted
