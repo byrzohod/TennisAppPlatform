@@ -53,9 +53,30 @@
 
     <!-- Zoom controls -->
     <div class="zoom-controls">
-      <button data-testid="zoom-in" (click)="zoomIn()">Zoom In</button>
-      <button data-testid="zoom-out" (click)="zoomOut()">Zoom Out</button>
-      <button data-testid="zoom-reset" (click)="resetZoom()">Reset</button>
+      <button 
+        data-testid="zoom-in" 
+        (click)="zoomIn()" 
+        (keydown.enter)="zoomIn()" 
+        (keydown.space)="zoomIn()"
+        aria-label="Zoom in on bracket">
+        Zoom In
+      </button>
+      <button 
+        data-testid="zoom-out" 
+        (click)="zoomOut()" 
+        (keydown.enter)="zoomOut()" 
+        (keydown.space)="zoomOut()"
+        aria-label="Zoom out on bracket">
+        Zoom Out
+      </button>
+      <button 
+        data-testid="zoom-reset" 
+        (click)="resetZoom()" 
+        (keydown.enter)="resetZoom()" 
+        (keydown.space)="resetZoom()"
+        aria-label="Reset bracket zoom to default">
+        Reset
+      </button>
     </div>
 
     <!-- Bracket display -->
@@ -78,7 +99,12 @@
                   data-testid="bracket-match"
                   [attr.data-match-id]="match.matchId"
                   [class.highlighted]="selectedMatch === match"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-label]="'Select match ' + match.matchId"
                   (click)="selectMatch(match)"
+                  (keydown.enter)="selectMatch(match)"
+                  (keydown.space)="selectMatch(match)"
                   (mouseenter)="selectedMatch = match"
                   (mouseleave)="selectedMatch = null">
                   
@@ -87,11 +113,15 @@
                     <div
                       class="bracket-node"
                       [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 1)"
-                      [attr.data-testid]="'player-slot-' + ((match.position - 1) * 2 + 1)"
                       draggable="true"
+                      tabindex="0"
+                      role="button"
+                      [attr.aria-label]="'Player slot for ' + (match.player1 || 'TBD')"
                       (dragstart)="drag($event, match.player1 || '')"
                       (dragover)="allowDrop($event)"
-                      (drop)="drop($event, match, 1)">
+                      (drop)="drop($event, match, 1)"
+                      (keydown.enter)="selectMatch(match)"
+                      (keydown.space)="selectMatch(match)">
                       @if (match.seed1) {
                         <span>[{{ match.seed1 }}]</span>
                       }
@@ -101,11 +131,15 @@
                     <div
                       class="bracket-node"
                       [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 2)"
-                      [attr.data-testid]="'player-slot-' + ((match.position - 1) * 2 + 2)"
                       draggable="true"
+                      tabindex="0"
+                      role="button"
+                      [attr.aria-label]="'Player slot for ' + (match.player2 || 'TBD')"
                       (dragstart)="drag($event, match.player2 || '')"
                       (dragover)="allowDrop($event)"
-                      (drop)="drop($event, match, 2)">
+                      (drop)="drop($event, match, 2)"
+                      (keydown.enter)="selectMatch(match)"
+                      (keydown.space)="selectMatch(match)">
                       @if (match.seed2) {
                         <span>[{{ match.seed2 }}]</span>
                       }
@@ -138,7 +172,7 @@
           <button
             class="btn btn-sm"
             data-testid="start-match"
-            (click)="startMatch(selectedMatch)">
+            (click)="startMatch()">
             Start Match
           </button>
         }
@@ -154,13 +188,14 @@
 
   <!-- Generate Bracket Modal -->
   @if (showGenerateModal) {
-    <div class="modal" (click)="closeGenerateModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <h2 class="modal-title">Generate Bracket</h2>
+    <div class="modal" tabindex="0" role="dialog" aria-labelledby="modal-title" (click)="closeGenerateModal()" (keydown.escape)="closeGenerateModal()">
+      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeGenerateModal()">
+        <h2 id="modal-title" class="modal-title">Generate Bracket</h2>
         
         <div class="form-group">
-          <label>Bracket Type</label>
+          <label for="bracket-type-select">Bracket Type</label>
           <select
+            id="bracket-type-select"
             data-testid="bracket-type"
             [(ngModel)]="bracketType">
             <option value="Main">Main</option>
@@ -170,8 +205,9 @@
         </div>
         
         <div class="form-group">
-          <label>Draw Size</label>
+          <label for="draw-size-select">Draw Size</label>
           <select
+            id="draw-size-select"
             data-testid="draw-size"
             [(ngModel)]="drawSize">
             <option [value]="16">16</option>
@@ -182,8 +218,9 @@
         </div>
         
         <div class="form-group">
-          <label>
+          <label for="auto-seed-checkbox">
             <input
+              id="auto-seed-checkbox"
               type="checkbox"
               data-testid="auto-seed-toggle"
               [(ngModel)]="autoSeed">
@@ -223,9 +260,9 @@
 
   <!-- Seed Assignment Modal -->
   @if (showSeedingModal) {
-    <div class="modal" data-testid="seed-assignment-modal">
-      <div class="modal-content">
-        <h2>Manual Seed Assignment</h2>
+    <div class="modal" data-testid="seed-assignment-modal" tabindex="0" role="dialog" aria-labelledby="seeding-modal-title" (click)="closeSeedingModal()" (keydown.escape)="closeSeedingModal()">
+      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeSeedingModal()">
+        <h2 id="seeding-modal-title">Manual Seed Assignment</h2>
         
         <div class="player-list" data-testid="player-list">
           @for (player of players; track player.id) {

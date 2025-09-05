@@ -63,40 +63,60 @@
     </div>
   </div>
 
-  <div class="tournament-tabs">
+  <div class="tournament-tabs" role="tablist">
     <button
       class="tab-btn"
       [class.active]="activeTab === 'overview'"
       data-testid="tab-overview"
-      (click)="selectTab('overview')">
+      role="tab"
+      [attr.aria-selected]="activeTab === 'overview'"
+      (click)="selectTab('overview')"
+      (keydown.enter)="selectTab('overview')"
+      (keydown.space)="selectTab('overview')">
       Overview
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab === 'players'"
       data-testid="tab-players"
-      (click)="selectTab('players')">
+      role="tab"
+      [attr.aria-selected]="activeTab === 'players'"
+      (click)="selectTab('players')"
+      (keydown.enter)="selectTab('players')"
+      (keydown.space)="selectTab('players')">
       Players
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab === 'bracket'"
       data-testid="tab-bracket"
-      (click)="selectTab('bracket')">
+      role="tab"
+      [attr.aria-selected]="activeTab === 'bracket'"
+      (click)="selectTab('bracket')"
+      (keydown.enter)="selectTab('bracket')"
+      (keydown.space)="selectTab('bracket')">
       Bracket
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab === 'matches'"
       data-testid="tab-matches"
-      (click)="selectTab('matches')">
+      role="tab"
+      [attr.aria-selected]="activeTab === 'matches'"
+      (click)="selectTab('matches')"
+      (keydown.enter)="selectTab('matches')"
+      (keydown.space)="selectTab('matches')">
       Matches
     </button>
     <button
       class="tab-btn"
       [class.active]="activeTab === 'results'"
       data-testid="tab-results"
-      (click)="selectTab('results')">
+      role="tab"
+      [attr.aria-selected]="activeTab === 'results'"
+      (click)="selectTab('results')"
+      (keydown.enter)="selectTab('results')"
+      (keydown.space)="selectTab('results')">
       Results
     </button>
   </div>
@@ -149,7 +169,9 @@
               
               @if (isAdmin && player.status !== 'Withdrawn') {
                 <div class="player-actions">
+                  <label for="seed-input-{{player.id}}" class="visually-hidden">Seed for {{player.firstName}} {{player.lastName}}</label>
                   <input
+                    id="seed-input-{{player.id}}"
                     type="number"
                     class="seed-input"
                     data-testid="seed-input"
@@ -201,11 +223,13 @@
 
   <!-- Register Player Modal -->
   @if (showRegisterModal) {
-    <div class="modal" (click)="closeRegisterModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <h3>Register Player</h3>
+    <div class="modal" tabindex="0" role="dialog" aria-labelledby="register-modal-title" (click)="closeRegisterModal()" (keydown.escape)="closeRegisterModal()">
+      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeRegisterModal()">
+        <h3 id="register-modal-title">Register Player</h3>
         
+        <label for="player-search-input">Search Players</label>
         <input
+          id="player-search-input"
           type="text"
           class="search-input"
           data-testid="player-search"
@@ -219,7 +243,12 @@
               class="player-option"
               data-testid="player-option"
               [class.selected]="selectedPlayerId === player.id"
-              (click)="selectPlayer(player.id)">
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Select ' + player.firstName + ' ' + player.lastName"
+              (click)="selectPlayer(player.id)"
+              (keydown.enter)="selectPlayer(player.id)"
+              (keydown.space)="selectPlayer(player.id)">
               {{ player.firstName }} {{ player.lastName }}
               @if (player.ranking) {
                 (Ranking: {{ player.ranking }})

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -37,8 +37,7 @@ export interface Player {
 })
 export class TournamentService {
   private apiUrl = `${environment.apiUrl}/api/v1/tournaments`;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getTournaments(): Observable<Tournament[]> {
     // Mock data for now - replace with actual HTTP call
@@ -94,7 +93,7 @@ export class TournamentService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getRegisteredPlayers(tournamentId: number): Observable<Player[]> {
+  getRegisteredPlayers(): Observable<Player[]> {
     // Mock data for now
     return of([
       { id: 1, name: 'Roger Federer', country: 'Switzerland', ranking: 8, seed: 1, age: 42, height: 185, weight: 85, plays: 'Right-handed' },

@@ -35,7 +35,7 @@ describe('Smoke Tests - Verify E2E Setup', () => {
     cy.get('button[type="submit"]').click();
     
     // Check that validation errors appear
-    cy.get('.invalid-feedback').should('exist');
+    cy.get('.error-message').should('exist');
   });
 
   it('should connect to API health endpoint', () => {

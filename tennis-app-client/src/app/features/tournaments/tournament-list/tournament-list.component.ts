@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
 
 interface Tournament {
   id: number;
@@ -36,10 +35,8 @@ export class TournamentListComponent implements OnInit {
   itemsPerPage = 10;
   isAdmin = true; // For testing, we'll assume admin rights
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
   ngOnInit() {
     this.loadTournaments();
