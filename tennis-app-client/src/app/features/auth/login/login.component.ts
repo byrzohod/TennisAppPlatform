@@ -4,11 +4,23 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { finalize } from 'rxjs/operators';
+import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
+import { InputComponent } from '../../../shared/components/ui/input/input.component';
+import { AlertComponent } from '../../../shared/components/ui/alert/alert.component';
+import { CardComponent } from '../../../shared/components/ui/card/card.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    RouterLink,
+    ButtonComponent,
+    InputComponent,
+    AlertComponent,
+    CardComponent
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

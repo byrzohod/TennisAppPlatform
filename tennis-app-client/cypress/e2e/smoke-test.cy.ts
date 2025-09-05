@@ -24,18 +24,19 @@ describe('Smoke Tests - Verify E2E Setup', () => {
     const testEmail = 'test@example.com';
     const testPassword = 'TestPassword123!';
     
-    cy.get('input#email').type(testEmail).should('have.value', testEmail);
-    cy.get('input#password').type(testPassword).should('have.value', testPassword);
+    // Test with new app-input components
+    cy.get('app-input[formControlName="email"] input').type(testEmail).should('have.value', testEmail);
+    cy.get('app-input[formControlName="password"] input').type(testPassword).should('have.value', testPassword);
   });
 
   it('should display validation errors on login', () => {
     cy.visit('/login');
     
     // Submit empty form
-    cy.get('button[type="submit"]').click();
+    cy.get('app-button[type="submit"] button').click();
     
-    // Check that validation errors appear
-    cy.get('.error-message').should('exist');
+    // Check that validation errors appear in the new UI structure
+    cy.get('app-input[formControlName="email"]').should('contain.text', 'Email is required');
   });
 
   it('should connect to API health endpoint', () => {

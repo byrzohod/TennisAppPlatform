@@ -29,9 +29,54 @@ This document defines the criteria that must be met before any feature can be co
 - [ ] Services for API communication implemented
 - [ ] Forms with validation
 - [ ] Error handling and user feedback
-- [ ] Responsive design
+- [ ] Responsive design (mobile-first approach)
 - [ ] Accessibility considerations (ARIA labels, keyboard navigation)
 - [ ] Loading states and error states
+
+#### UI/UX Requirements (MANDATORY for all user-facing features)
+- [ ] **Design System Compliance**:
+  - [ ] Uses established color palette and typography
+  - [ ] Follows 8px grid system for spacing
+  - [ ] Components match design system specifications
+  - [ ] Consistent with existing UI patterns
+- [ ] **Visual Design**:
+  - [ ] Modern, professional appearance
+  - [ ] Proper visual hierarchy
+  - [ ] Appropriate use of whitespace
+  - [ ] Consistent iconography (Lucide/Heroicons)
+  - [ ] Dark mode support (if applicable)
+- [ ] **Interactions & Animations**:
+  - [ ] Micro-interactions on all interactive elements
+  - [ ] Smooth transitions (no jarring changes)
+  - [ ] Hover states for desktop
+  - [ ] Touch feedback for mobile
+  - [ ] Loading animations (skeletons/spinners)
+- [ ] **Responsive Design**:
+  - [ ] Mobile (320px - 768px)
+  - [ ] Tablet (768px - 1024px)
+  - [ ] Desktop (1024px+)
+  - [ ] Tested on actual devices, not just browser tools
+- [ ] **Performance**:
+  - [ ] Images optimized and lazy-loaded
+  - [ ] CSS bundle < 50KB
+  - [ ] No layout shifts (CLS < 0.1)
+  - [ ] First Contentful Paint < 1.5s
+  - [ ] Time to Interactive < 3s
+- [ ] **Accessibility (WCAG 2.1 AA)**:
+  - [ ] Color contrast ratio ≥ 4.5:1 for normal text
+  - [ ] Color contrast ratio ≥ 3:1 for large text
+  - [ ] All interactive elements keyboard accessible
+  - [ ] Focus indicators visible and clear
+  - [ ] Screen reader compatible
+  - [ ] Alt text for all images
+  - [ ] Proper heading hierarchy
+  - [ ] Form labels and error messages associated
+- [ ] **User Feedback**:
+  - [ ] Success messages for actions
+  - [ ] Clear error messages with recovery instructions
+  - [ ] Loading states for all async operations
+  - [ ] Empty states with helpful CTAs
+  - [ ] Confirmation dialogs for destructive actions
 
 ### 3. Testing Requirements
 
