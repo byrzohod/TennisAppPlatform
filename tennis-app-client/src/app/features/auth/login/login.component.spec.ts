@@ -64,7 +64,7 @@ describe('LoginComponent', () => {
       authServiceSpy.isAuthenticated.and.returnValue(true);
       fixture.detectChanges();
       
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
   });
 
@@ -154,7 +154,7 @@ describe('LoginComponent', () => {
       tick();
       
       expect(authServiceSpy.login).toHaveBeenCalledWith(credentials);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
     }));
 
     it('should navigate to returnUrl after successful login', fakeAsync(() => {
@@ -207,7 +207,7 @@ describe('LoginComponent', () => {
       component.onSubmit();
       tick();
       
-      expect(component.error).toBe('Unable to connect to server. Please try again later.');
+      expect(component.error).toBe('Network error. Please try again.');
       expect(component.loading).toBe(false);
     }));
   });
@@ -231,7 +231,7 @@ describe('LoginComponent', () => {
       component.error = 'Test error message';
       fixture.detectChanges();
       
-      const errorAlert = compiled.querySelector('.alert-error');
+      const errorAlert = compiled.querySelector('.alert-danger');
       expect(errorAlert?.textContent).toContain('Test error message');
     });
 
@@ -240,7 +240,7 @@ describe('LoginComponent', () => {
       component.loginForm.get('email')?.setErrors({ required: true });
       fixture.detectChanges();
       
-      const emailError = compiled.querySelector('.invalid-feedback');
+      const emailError = compiled.querySelector('.error-message');
       expect(emailError?.textContent).toContain('Email is required');
     });
 
@@ -256,13 +256,13 @@ describe('LoginComponent', () => {
     it('should show register link', () => {
       const registerLink = compiled.querySelector('a[routerLink="/register"]');
       expect(registerLink).toBeTruthy();
-      expect(registerLink?.textContent).toContain('Sign up');
+      expect(registerLink?.textContent).toContain('Register');
     });
 
     it('should show forgot password link', () => {
       const forgotLink = compiled.querySelector('a[routerLink="/forgot-password"]');
       expect(forgotLink).toBeTruthy();
-      expect(forgotLink?.textContent).toContain('Forgot your password?');
+      expect(forgotLink?.textContent).toContain('Forgot password?');
     });
   });
 });

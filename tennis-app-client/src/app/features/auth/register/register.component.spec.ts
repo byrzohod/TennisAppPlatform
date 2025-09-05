@@ -52,7 +52,7 @@ describe('RegisterComponent', () => {
       authServiceSpy.isAuthenticated.and.returnValue(true);
       fixture.detectChanges();
       
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
   });
 
@@ -214,7 +214,7 @@ describe('RegisterComponent', () => {
       tick();
       
       expect(authServiceSpy.register).toHaveBeenCalledWith(formData);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
     }));
 
     it('should handle 409 conflict error', fakeAsync(() => {
@@ -303,7 +303,7 @@ describe('RegisterComponent', () => {
       component.error = 'Test error message';
       fixture.detectChanges();
       
-      const errorAlert = compiled.querySelector('.alert-error');
+      const errorAlert = compiled.querySelector('.alert-danger');
       expect(errorAlert?.textContent).toContain('Test error message');
     });
 
@@ -313,7 +313,7 @@ describe('RegisterComponent', () => {
       component.registerForm.get('email')?.setErrors({ required: true });
       fixture.detectChanges();
       
-      const allErrors = compiled.querySelectorAll('.invalid-feedback');
+      const allErrors = compiled.querySelectorAll('.error-message');
       const errorTexts = Array.from(allErrors).map(el => el.textContent);
       
       expect(errorTexts.some(text => text?.includes('First name is required'))).toBeTruthy();
@@ -332,7 +332,7 @@ describe('RegisterComponent', () => {
     it('should show login link', () => {
       const loginLink = compiled.querySelector('a[routerLink="/login"]');
       expect(loginLink).toBeTruthy();
-      expect(loginLink?.textContent).toContain('Sign in');
+      expect(loginLink?.textContent).toContain('Login');
     });
   });
 });

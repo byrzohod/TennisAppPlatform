@@ -54,7 +54,7 @@ describe('AuthService', () => {
 
       service.login(loginRequest).subscribe(response => {
         expect(response).toEqual(mockAuthResponse);
-        expect(localStorage.getItem('auth_token')).toBe(mockAuthResponse.token);
+        expect(localStorage.getItem('authToken')).toBe(mockAuthResponse.token);
         expect(service.isAuthenticated()).toBe(true);
         done();
       });
@@ -95,7 +95,7 @@ describe('AuthService', () => {
 
       service.register(registerRequest).subscribe(response => {
         expect(response).toEqual(mockAuthResponse);
-        expect(localStorage.getItem('auth_token')).toBe(mockAuthResponse.token);
+        expect(localStorage.getItem('authToken')).toBe(mockAuthResponse.token);
         expect(service.isAuthenticated()).toBe(true);
         done();
       });
@@ -110,13 +110,13 @@ describe('AuthService', () => {
   describe('logout', () => {
     it('should clear token and redirect to login', () => {
       // Setup: Set token and user
-      localStorage.setItem('auth_token', 'test-token');
-      localStorage.setItem('user_data', JSON.stringify({ id: '123', email: 'test@example.com' }));
+      localStorage.setItem('authToken', 'test-token');
+      localStorage.setItem('user', JSON.stringify({ id: '123', email: 'test@example.com' }));
 
       service.logout();
 
-      expect(localStorage.getItem('auth_token')).toBeNull();
-      expect(localStorage.getItem('user_data')).toBeNull();
+      expect(localStorage.getItem('authToken')).toBeNull();
+      expect(localStorage.getItem('user')).toBeNull();
       expect(service.isAuthenticated()).toBe(false);
       expect(service.getCurrentUser()).toBeNull();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
@@ -126,7 +126,7 @@ describe('AuthService', () => {
   describe('token management', () => {
     it('should get token from localStorage', () => {
       const testToken = 'test-token-123';
-      localStorage.setItem('auth_token', testToken);
+      localStorage.setItem('authToken', testToken);
 
       expect(service.getToken()).toBe(testToken);
     });
@@ -138,7 +138,7 @@ describe('AuthService', () => {
     xit('should validate token expiration', () => {
       // Valid token (expires in future)
       const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiZXhwIjoxOTk5OTk5OTk5fQ.Vg30C57s3l90JNap_VgMhKZjfc-p7SoBXaSAy8c6BS8';
-      localStorage.setItem('auth_token', validToken);
+      localStorage.setItem('authToken', validToken);
       
       expect(service.isAuthenticated()).toBe(true);
     });
@@ -146,7 +146,7 @@ describe('AuthService', () => {
     it('should detect expired token', () => {
       // Expired token
       const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiZXhwIjoxMDAwMDAwMDAwfQ.FPfUBn1DHryJQoRns-ficUZsUUvSb3QTDXPH72ZM_CE';
-      localStorage.setItem('auth_token', expiredToken);
+      localStorage.setItem('authToken', expiredToken);
       
       expect(service.isAuthenticated()).toBe(false);
     });
@@ -161,7 +161,7 @@ describe('AuthService', () => {
         lastName: 'Doe'
       };
       
-      localStorage.setItem('user_data', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify(userData));
       
       expect(service.getCurrentUser()).toEqual(userData);
     });

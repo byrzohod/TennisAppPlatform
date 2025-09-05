@@ -29,7 +29,7 @@ export class RegisterComponent implements OnInit {
     
     // Redirect if already logged in
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -76,7 +76,7 @@ export class RegisterComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: () => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           if (error.status === 409) {
