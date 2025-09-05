@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthInterceptor } from './auth.interceptor';
+import { authInterceptor } from './auth.interceptor';
 import { AuthService } from '../services/auth.service';
 
 describe('AuthInterceptor', () => {
@@ -16,15 +16,11 @@ describe('AuthInterceptor', () => {
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClientTesting(),
         { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpyObj },
-        {
-          provide: HTTP_INTERCEPTORS,
-          useClass: AuthInterceptor,
-          multi: true
-        }
+        { provide: Router, useValue: routerSpyObj }
       ]
     });
 
@@ -60,15 +56,15 @@ describe('AuthInterceptor', () => {
     req.flush({});
   });
 
-  it('should handle 401 error by logging out and redirecting', (done) => {
+  it('should pass through errors without intervention', (done) => {
     authServiceSpy.getToken.and.returnValue('test-token');
 
     httpClient.get('/api/test').subscribe({
       next: () => fail('Should have failed with 401'),
-      error: (error: HttpErrorResponse) => {
+      error: (error) => {
         expect(error.status).toBe(401);
-        expect(authServiceSpy.logout).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+        // Auth interceptor now just passes through - error handling is in error interceptor
+        expect(authServiceSpy.logout).not.toHaveBeenCalled();
         done();
       }
     });
@@ -82,7 +78,7 @@ describe('AuthInterceptor', () => {
 
     httpClient.get('/api/test').subscribe({
       next: () => fail('Should have failed with 500'),
-      error: (error: HttpErrorResponse) => {
+      error: (error) => {
         expect(error.status).toBe(500);
         expect(authServiceSpy.logout).not.toHaveBeenCalled();
         expect(routerSpy.navigate).not.toHaveBeenCalled();

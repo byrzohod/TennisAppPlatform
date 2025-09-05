@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Tournament {
@@ -40,41 +40,7 @@ export class TournamentService {
   private http = inject(HttpClient);
 
   getTournaments(): Observable<Tournament[]> {
-    // Mock data for now - replace with actual HTTP call
-    return of([
-      {
-        id: 1,
-        name: 'Wimbledon',
-        location: 'London, UK',
-        startDate: '2024-07-01',
-        endDate: '2024-07-14',
-        type: 'Grand Slam',
-        surface: 'Grass',
-        drawSize: 128,
-        prizeMoneyUSD: 50000000,
-        entryFee: 0,
-        description: 'The oldest tennis tournament',
-        status: 'Upcoming',
-        playersCount: 45,
-        maxPlayers: 128
-      },
-      {
-        id: 2,
-        name: 'US Open',
-        location: 'New York, USA',
-        startDate: '2024-08-26',
-        endDate: '2024-09-08',
-        type: 'Grand Slam',
-        surface: 'Hard',
-        drawSize: 128,
-        prizeMoneyUSD: 60000000,
-        entryFee: 0,
-        description: 'The final Grand Slam of the year',
-        status: 'Upcoming',
-        playersCount: 89,
-        maxPlayers: 128
-      }
-    ]);
+    return this.http.get<Tournament[]>(this.apiUrl);
   }
 
   getTournament(id: number): Observable<Tournament> {
@@ -93,13 +59,8 @@ export class TournamentService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getRegisteredPlayers(): Observable<Player[]> {
-    // Mock data for now
-    return of([
-      { id: 1, name: 'Roger Federer', country: 'Switzerland', ranking: 8, seed: 1, age: 42, height: 185, weight: 85, plays: 'Right-handed' },
-      { id: 2, name: 'Rafael Nadal', country: 'Spain', ranking: 2, seed: 2, age: 37, height: 185, weight: 85, plays: 'Left-handed' },
-      { id: 3, name: 'Novak Djokovic', country: 'Serbia', ranking: 1, seed: 3, age: 36, height: 188, weight: 77, plays: 'Right-handed' }
-    ]);
+  getRegisteredPlayers(tournamentId: number): Observable<Player[]> {
+    return this.http.get<Player[]>(`${this.apiUrl}/${tournamentId}/players`);
   }
 
   registerPlayer(tournamentId: number, playerId: number): Observable<void> {
