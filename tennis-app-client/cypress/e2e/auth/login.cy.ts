@@ -7,19 +7,19 @@ describe('Login Feature', () => {
 
   describe('UI Elements', () => {
     it('should display all login form elements', () => {
-      cy.get('h2').should('contain', 'Sign In');
-      cy.get('input#email').should('be.visible');
-      cy.get('input#password').should('be.visible');
-      cy.get('button[type="submit"]').should('contain', 'Sign In');
-      cy.get('a').should('contain', "Don't have an account?");
+      cy.get('h2').should('contain', 'Sign in to your account');
+      cy.get('app-input[formControlName="email"]').should('be.visible');
+      cy.get('app-input[formControlName="password"]').should('be.visible');
+      cy.get('app-button[type="submit"]').should('contain', 'Sign in');
+      cy.get('a').should('contain', "create a new account");
     });
 
     it('should have proper input types and placeholders', () => {
-      cy.get('input#email')
+      cy.get('app-input[formControlName="email"] input')
         .should('have.attr', 'type', 'email')
         .should('have.attr', 'placeholder', 'Enter your email');
       
-      cy.get('input#password')
+      cy.get('app-input[formControlName="password"] input')
         .should('have.attr', 'type', 'password')
         .should('have.attr', 'placeholder', 'Enter your password');
     });
@@ -32,27 +32,27 @@ describe('Login Feature', () => {
 
   describe('Form Validation', () => {
     it('should show validation errors for empty form submission', () => {
-      cy.get('button[type="submit"]').click();
+      cy.get('app-button[type="submit"] button').click();
       
-      cy.get('.error-message').should('be.visible');
-      cy.get('input#email').should('have.class', 'is-invalid');
-      cy.get('input#password').should('have.class', 'is-invalid');
+      // Check that validation errors appear in the new UI structure
+      cy.get('app-input[formControlName="email"]').should('contain.text', 'Email is required');
+      cy.get('app-input[formControlName="password"]').should('contain.text', 'Password is required');
     });
 
     it('should show error for invalid email format', () => {
-      cy.get('input#email').type('invalid-email');
-      cy.get('input#password').type('ValidPassword123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('invalid-email');
+      cy.get('app-input[formControlName="password"] input').type('ValidPassword123!');
+      cy.get('app-button[type="submit"] button').click();
       
-      cy.get('.error-message').should('contain', 'Please enter a valid email');
+      cy.get('app-input[formControlName="email"]').should('contain.text', 'Please enter a valid email');
     });
 
     it('should show error for password less than 6 characters', () => {
-      cy.get('input#email').type('test@example.com');
-      cy.get('input#password').type('123');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('test@example.com');
+      cy.get('app-input[formControlName="password"] input').type('123');
+      cy.get('app-button[type="submit"] button').click();
       
-      cy.get('.error-message').should('contain', 'Password must be at least 6 characters');
+      cy.get('app-input[formControlName="password"]').should('contain.text', 'Password must be at least 6 characters');
     });
   });
 
@@ -73,25 +73,25 @@ describe('Login Feature', () => {
       });
 
       // Now login
-      cy.get('input#email').type('testuser@example.com');
-      cy.get('input#password').type('Test123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('testuser@example.com');
+      cy.get('app-input[formControlName="password"] input').type('Test123!');
+      cy.get('app-button[type="submit"] button').click();
       
       // Should either redirect to dashboard or show error (depending on API)
       cy.url().then((url) => {
         if (!url.includes('/dashboard')) {
           // If not redirected, check for error message
-          cy.get('.alert-danger').should('be.visible');
+          cy.get('app-alert').should('be.visible');
         }
       });
     });
 
     it('should show error for invalid credentials', () => {
-      cy.get('input#email').type('nonexistent@example.com');
-      cy.get('input#password').type('WrongPassword123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('nonexistent@example.com');
+      cy.get('app-input[formControlName="password"] input').type('WrongPassword123!');
+      cy.get('app-button[type="submit"] button').click();
       
-      cy.get('.alert-danger').should('contain', 'Invalid');
+      cy.get('app-alert').should('contain', 'Invalid');
       cy.url().should('include', '/login');
     });
 
@@ -99,9 +99,9 @@ describe('Login Feature', () => {
       // Skip - network error simulation causing timeouts
       cy.intercept('POST', '**/auth/login', { forceNetworkError: true }).as('loginError');
       
-      cy.get('input#email').type('test@example.com');
-      cy.get('input#password').type('Test123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('test@example.com');
+      cy.get('app-input[formControlName="password"] input').type('Test123!');
+      cy.get('app-button[type="submit"] button').click();
       
       cy.wait('@loginError');
       // Check for any error message
@@ -115,9 +115,9 @@ describe('Login Feature', () => {
         body: { message: 'Internal server error' }
       }).as('serverError');
       
-      cy.get('input#email').type('test@example.com');
-      cy.get('input#password').type('Test123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type('test@example.com');
+      cy.get('app-input[formControlName="password"] input').type('Test123!');
+      cy.get('app-button[type="submit"] button').click();
       
       cy.wait('@serverError');
       // Check for any error message
@@ -127,7 +127,7 @@ describe('Login Feature', () => {
 
   describe('Navigation', () => {
     it('should navigate to register page', () => {
-      cy.get('a').contains("Don't have an account? Register").click();
+      cy.get('a').contains("create a new account").click();
       cy.url().should('include', '/register');
     });
 
@@ -140,9 +140,9 @@ describe('Login Feature', () => {
 
   describe('Security', () => {
     it('should not expose password in the DOM', () => {
-      cy.get('input#password').type('SecretPassword123!');
-      cy.get('input#password').should('have.attr', 'type', 'password');
-      cy.get('input#password').invoke('val').should('eq', 'SecretPassword123!');
+      cy.get('app-input[formControlName="password"] input').type('SecretPassword123!');
+      cy.get('app-input[formControlName="password"] input').should('have.attr', 'type', 'password');
+      cy.get('app-input[formControlName="password"] input').invoke('val').should('eq', 'SecretPassword123!');
       
       // Check that password is not visible in HTML
       cy.get('body').invoke('html').should('not.contain', 'SecretPassword123!');
@@ -166,9 +166,9 @@ describe('Login Feature', () => {
     it('should prevent XSS attacks in login form', () => {
       const xssPayload = '<script>alert("XSS")</script>';
       
-      cy.get('input#email').type(xssPayload);
-      cy.get('input#password').type('Test123!');
-      cy.get('button[type="submit"]').click();
+      cy.get('app-input[formControlName="email"] input').type(xssPayload);
+      cy.get('app-input[formControlName="password"] input').type('Test123!');
+      cy.get('app-button[type="submit"] button').click();
       
       // Check that script is not executed
       cy.on('window:alert', (txt) => {
@@ -204,9 +204,9 @@ describe('Login Feature', () => {
       it(`should be responsive on ${viewport.device}`, () => {
         cy.viewport(viewport.width, viewport.height);
         
-        cy.get('input#email').should('be.visible');
-        cy.get('input#password').should('be.visible');
-        cy.get('button[type="submit"]').should('be.visible');
+        cy.get('app-input[formControlName="email"]').should('be.visible');
+        cy.get('app-input[formControlName="password"]').should('be.visible');
+        cy.get('app-button[type="submit"]').should('be.visible');
         
         // Check that form is not cut off
         cy.get('form').should('be.visible');

@@ -24,7 +24,7 @@ export class CustomValidators {
       }
       
       // Supports formats like: +1234567890, 123-456-7890, (123) 456-7890
-      const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/;
+      const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
       const valid = phoneRegex.test(control.value);
       
       return valid ? null : { phoneNumber: { value: control.value } };
