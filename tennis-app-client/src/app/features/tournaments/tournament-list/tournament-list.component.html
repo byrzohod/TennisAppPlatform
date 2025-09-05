@@ -49,8 +49,23 @@
     </select>
   </div>
 
-  <div class="tournament-list" data-testid="tournament-list">
-    @for (tournament of paginatedTournaments; track tournament.id) {
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading tournaments...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-state alert alert-danger">
+      <p>{{ error }}</p>
+      <button class="btn btn-secondary" (click)="loadTournaments()">Retry</button>
+    </div>
+  } @else if (filteredTournaments.length === 0) {
+    <div class="empty-state">
+      <p>No tournaments found matching your criteria.</p>
+    </div>
+  } @else {
+    <div class="tournament-list" data-testid="tournament-list">
+      @for (tournament of paginatedTournaments; track tournament.id) {
       <div 
         class="tournament-card"
         data-testid="tournament-card"
@@ -98,7 +113,8 @@
         </div>
       </div>
     }
-  </div>
+    </div>
+  }
 
   @if (totalPages > 1) {
     <div class="pagination" data-testid="pagination">

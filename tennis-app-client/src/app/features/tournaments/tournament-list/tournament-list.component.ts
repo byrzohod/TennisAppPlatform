@@ -2,21 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-
-interface Tournament {
-  id: number;
-  name: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  surface: string;
-  drawSize: number;
-  status: string;
-  prizeMoneyUSD?: number;
-  entryFee?: number;
-}
+import { TournamentService, Tournament } from '../../../core/services/tournament.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-tournament-list',
@@ -34,8 +21,10 @@ export class TournamentListComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 10;
   isAdmin = true; // For testing, we'll assume admin rights
+  loading = false;
+  error = '';
 
-  private http = inject(HttpClient);
+  private tournamentService = inject(TournamentService);
   private router = inject(Router);
 
   ngOnInit() {
@@ -43,47 +32,69 @@ export class TournamentListComponent implements OnInit {
   }
 
   loadTournaments() {
-    // Mock data for now
-    this.tournaments = [
-      {
-        id: 1,
-        name: 'Wimbledon',
-        location: 'London, UK',
-        startDate: '2024-07-01',
-        endDate: '2024-07-14',
-        type: 'Grand Slam',
-        surface: 'Grass',
-        drawSize: 128,
-        status: 'Upcoming',
-        prizeMoneyUSD: 50000000
-      },
-      {
-        id: 2,
-        name: 'US Open',
-        location: 'New York, USA',
-        startDate: '2024-08-26',
-        endDate: '2024-09-08',
-        type: 'Grand Slam',
-        surface: 'HardCourt',
-        drawSize: 128,
-        status: 'Upcoming',
-        prizeMoneyUSD: 60000000
-      },
-      {
-        id: 3,
-        name: 'French Open',
-        location: 'Paris, France',
-        startDate: '2024-05-26',
-        endDate: '2024-06-09',
-        type: 'Grand Slam',
-        surface: 'Clay',
-        drawSize: 128,
-        status: 'In Progress',
-        prizeMoneyUSD: 49000000
-      }
-    ];
+    this.loading = true;
+    this.error = '';
     
-    this.applyFilters();
+    this.tournamentService.getTournaments()
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (tournaments) => {
+          this.tournaments = tournaments;
+          this.applyFilters();
+        },
+        error: (error) => {
+          this.error = error.message || 'Failed to load tournaments';
+          // Use mock data as fallback for development
+          this.tournaments = [
+            {
+              id: 1,
+              name: 'Wimbledon',
+              location: 'London, UK',
+              startDate: '2024-07-01',
+              endDate: '2024-07-14',
+              type: 'Grand Slam',
+              surface: 'Grass',
+              drawSize: 128,
+              status: 'Upcoming',
+              prizeMoneyUSD: 50000000,
+              entryFee: 0,
+              playersCount: 45,
+              maxPlayers: 128
+            },
+            {
+              id: 2,
+              name: 'US Open',
+              location: 'New York, USA',
+              startDate: '2024-08-26',
+              endDate: '2024-09-08',
+              type: 'Grand Slam',
+              surface: 'HardCourt',
+              drawSize: 128,
+              status: 'Upcoming',
+              prizeMoneyUSD: 60000000,
+              entryFee: 0,
+              playersCount: 89,
+              maxPlayers: 128
+            },
+            {
+              id: 3,
+              name: 'French Open',
+              location: 'Paris, France',
+              startDate: '2024-05-26',
+              endDate: '2024-06-09',
+              type: 'Grand Slam',
+              surface: 'Clay',
+              drawSize: 128,
+              status: 'In Progress',
+              prizeMoneyUSD: 49000000,
+              entryFee: 0,
+              playersCount: 128,
+              maxPlayers: 128
+            }
+          ];
+          this.applyFilters();
+        }
+      });
   }
 
   applyFilters() {
