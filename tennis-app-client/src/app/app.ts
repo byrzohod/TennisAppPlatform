@@ -1,8 +1,9 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { GlobalSearchComponent } from './shared/components/global-search/global-search.component';
+import { Subject, takeUntil, filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,12 @@ import { GlobalSearchComponent } from './shared/components/global-search/global-
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit, OnDestroy {
   @ViewChild(GlobalSearchComponent) globalSearch!: GlobalSearchComponent;
   
   private authService = inject(AuthService);
+  private router = inject(Router);
+  private destroy$ = new Subject<void>();
 
   title = 'Tennis App';
   isAuthenticated$;
@@ -33,6 +36,22 @@ export class App {
     this.currentUser$ = this.authService.currentUser$;
   }
 
+  ngOnInit() {
+    // Close mobile menu on route change
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.isMenuOpen = false;
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
