@@ -67,7 +67,7 @@
                   Edit Tournament
                 </app-button>
                 <app-button
-                  variant="error"
+                  variant="destructive"
                   size="lg"
                   data-testid="delete-tournament-btn"
                   (click)="deleteTournament()">
@@ -325,7 +325,7 @@
                               </app-button>
                             </div>
                             <app-button
-                              variant="error"
+                              variant="destructive"
                               size="sm"
                               data-testid="withdraw-player"
                               (click)="withdrawPlayer(player.id)">
@@ -362,7 +362,7 @@
               <p class="text-gray-600 dark:text-gray-400 mb-6">
                 Interactive bracket visualization will be displayed here once the draw is made.
               </p>
-              <app-button variant="primary" disabled>
+              <app-button variant="primary" [disabled]="true">
                 Generate Draw
               </app-button>
             </div>

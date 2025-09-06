@@ -58,7 +58,7 @@ export class TournamentDetailComponent implements OnInit {
   playerSearchTerm = '';
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  protected router = inject(Router);
   private http = inject(HttpClient);
 
   ngOnInit() {
