@@ -27,7 +27,6 @@ export class RegisterComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
-  showPassword = false;
   passwordStrength: 'weak' | 'medium' | 'strong' | '' = '';
 
   ngOnInit(): void {
@@ -80,9 +79,6 @@ export class RegisterComponent implements OnInit {
       });
   }
 
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
 
   updatePasswordStrength(): void {
     const password = this.registerForm.get('password')?.value || '';

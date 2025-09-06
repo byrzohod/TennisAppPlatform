@@ -6,8 +6,9 @@ describe('Registration Tests', () => {
     cy.clearLocalStorage();
     cy.clearCookies();
     
-    // Visit the register page and wait for it to load
-    cy.visit('/register');
+    // Navigate to register page via login page (can't directly access /register)
+    cy.visit('/login');
+    cy.get('a[routerLink="/register"]').first().click();
     
     // Ensure we're on the register page and it's fully loaded
     cy.url().should('include', '/register');
@@ -75,13 +76,13 @@ describe('Registration Tests', () => {
 
   it('should toggle password visibility', () => {
     cy.get('app-input[formControlName="password"] input').type('Password123!');
-    cy.get('[data-testid="toggle-password"]').click();
+    cy.get('app-input[formControlName="password"] button').click();
     
     // Password should be visible (type changed to text)
     cy.get('app-input[formControlName="password"] input').should('have.attr', 'type', 'text');
     
     // Click again to hide
-    cy.get('[data-testid="toggle-password"]').click();
+    cy.get('app-input[formControlName="password"] button').click();
     cy.get('app-input[formControlName="password"] input').should('have.attr', 'type', 'password');
   });
 

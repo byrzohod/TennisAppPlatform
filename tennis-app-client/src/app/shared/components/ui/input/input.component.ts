@@ -18,7 +18,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
       <input
         #inputElement
         [id]="inputId"
-        [type]="type"
+        [type]="actualType"
         [placeholder]="floatingLabel ? ' ' : placeholder"
         [disabled]="disabled"
         [readonly]="readonly"

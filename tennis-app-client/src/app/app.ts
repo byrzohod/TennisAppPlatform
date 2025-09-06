@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
@@ -10,7 +10,7 @@ import { AuthService } from './core/services/auth.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
+export class App {
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -31,10 +31,6 @@ export class App implements OnInit {
     this.currentUser$ = this.authService.currentUser$;
   }
 
-  ngOnInit() {
-    // Initialize the app - let route guards handle authentication redirects
-    // This approach is cleaner than trying to guess redirects at the app level
-  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
