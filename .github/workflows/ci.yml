@@ -179,6 +179,7 @@ jobs:
         # Start the API in background (migrations will be skipped in Test environment)
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
+          --no-launch-profile \
           --urls "http://localhost:5000" &
         
         # Wait for API to be ready
