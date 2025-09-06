@@ -200,21 +200,31 @@ if (!builder.Environment.IsEnvironment("Test"))
     // Log the current environment
     Log.Information($"Application starting in {app.Environment.EnvironmentName} environment");
 
-    // Apply database migrations on startup
-    using (var scope = app.Services.CreateScope())
+    // Apply database migrations on startup (skip in integration test environment)
+    // Integration tests handle their own database setup via TestContainers
+    var skipMigrations = Environment.GetEnvironmentVariable("SKIP_MIGRATIONS") == "true";
+    
+    if (!skipMigrations)
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        try
+        using (var scope = app.Services.CreateScope())
         {
-            Log.Information("Applying database migrations...");
-            dbContext.Database.Migrate();
-            Log.Information("Database migrations applied successfully");
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            try
+            {
+                Log.Information("Applying database migrations...");
+                dbContext.Database.Migrate();
+                Log.Information("Database migrations applied successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "An error occurred while applying database migrations");
+                throw;
+            }
         }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "An error occurred while applying database migrations");
-            throw;
-        }
+    }
+    else
+    {
+        Log.Information("Skipping database migrations (SKIP_MIGRATIONS=true)");
     }
 
     // Configure Swagger UI
