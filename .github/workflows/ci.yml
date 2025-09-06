@@ -148,9 +148,6 @@ jobs:
     - name: Build backend
       run: dotnet build TennisApp/TennisApp.sln --no-restore --configuration Release
       
-    - name: Install EF Core tools
-      run: dotnet tool install --global dotnet-ef
-      
     - name: Create test configuration
       run: |
         cat > TennisApp/TennisApp.API/appsettings.Test.json <<EOF
@@ -177,21 +174,13 @@ jobs:
         }
         EOF
         
-    - name: Run database migrations
-      run: |
-        dotnet ef database update --project TennisApp/TennisApp.Infrastructure/TennisApp.Infrastructure.csproj \
-          --startup-project TennisApp/TennisApp.API/TennisApp.API.csproj \
-          --configuration Release
-      env:
-        ASPNETCORE_ENVIRONMENT: Test
-        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
-      
     - name: Start backend API
       run: |
-        # Start the API in background
+        # Start the API in background (migrations will run automatically at startup)
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
-          --urls "http://localhost:5000" &
+          --urls "http://localhost:5000" \
+          --environment Test &
         
         # Wait for API to be ready
         echo "Waiting for API to start..."
