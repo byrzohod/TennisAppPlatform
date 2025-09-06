@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface SearchResult {
   id: string;
-  type: 'tournament' | 'player' | 'match';
+  type: 'tournament' | 'player' | 'match' | 'quick-action';
   title: string;
   subtitle: string;
   icon: string;
@@ -31,29 +31,99 @@ export class SearchService {
 
   search(query: string): Observable<SearchResult[]> {
     if (!query.trim()) {
-      return of([]);
+      return of(this.getQuickActions());
     }
 
-    this.loadingSubject.next(true);
-
-    return this.http.get<SearchResponse>(`${this.apiUrl}/search`, {
-      params: { q: query.trim(), limit: '10' }
-    }).pipe(
-      tap(() => this.loadingSubject.next(false)),
-      switchMap(response => {
-        const results: SearchResult[] = [
-          ...this.mapTournamentResults(response.tournaments || []),
-          ...this.mapPlayerResults(response.players || []),
-          ...this.mapMatchResults(response.matches || [])
-        ];
-        return of(results);
-      }),
-      catchError(error => {
-        this.loadingSubject.next(false);
-        console.error('Search error:', error);
-        return of([]);
-      })
+    // For now, return mock data combined with quick actions
+    // TODO: Replace with actual API call when backend search endpoint is ready
+    const mockResults = this.getMockSearchResults(query.toLowerCase());
+    const filteredQuickActions = this.getQuickActions().filter(action =>
+      action.title.toLowerCase().includes(query.toLowerCase()) ||
+      action.subtitle.toLowerCase().includes(query.toLowerCase())
     );
+    
+    return of([...mockResults, ...filteredQuickActions]);
+  }
+
+  private getMockSearchResults(query: string): SearchResult[] {
+    const results: SearchResult[] = [];
+    
+    // Mock tournaments
+    const tournaments = [
+      { id: '1', name: 'Summer Championship', location: 'New York', status: 'Upcoming' },
+      { id: '2', name: 'Spring Open', location: 'Miami', status: 'Registration Open' },
+      { id: '3', name: 'Winter Classic', location: 'Boston', status: 'Completed' }
+    ];
+    
+    results.push(...tournaments
+      .filter(t => t.name.toLowerCase().includes(query))
+      .map(t => ({
+        id: t.id,
+        type: 'tournament' as const,
+        title: t.name,
+        subtitle: `${t.location} • ${t.status}`,
+        icon: 'trophy',
+        route: `/tournaments/${t.id}`
+      }))
+    );
+    
+    // Mock players
+    const players = [
+      { id: '1', firstName: 'John', lastName: 'Smith', ranking: 5, country: 'USA' },
+      { id: '2', firstName: 'Sarah', lastName: 'Johnson', ranking: 3, country: 'UK' },
+      { id: '3', firstName: 'Mike', lastName: 'Davis', ranking: 12, country: 'Canada' }
+    ];
+    
+    results.push(...players
+      .filter(p => `${p.firstName} ${p.lastName}`.toLowerCase().includes(query))
+      .map(p => ({
+        id: p.id,
+        type: 'player' as const,
+        title: `${p.firstName} ${p.lastName}`,
+        subtitle: `Ranking: ${p.ranking} • ${p.country}`,
+        icon: 'user',
+        route: `/players/${p.id}`
+      }))
+    );
+    
+    return results.slice(0, 6);
+  }
+  
+  private getQuickActions(): SearchResult[] {
+    return [
+      {
+        id: 'create-tournament',
+        type: 'quick-action',
+        title: 'Create New Tournament',
+        subtitle: 'Start a new tournament',
+        icon: 'plus-circle',
+        route: '/tournaments/new'
+      },
+      {
+        id: 'add-player',
+        type: 'quick-action',
+        title: 'Add New Player',
+        subtitle: 'Register a new player',
+        icon: 'user-plus',
+        route: '/players/new'
+      },
+      {
+        id: 'view-rankings',
+        type: 'quick-action',
+        title: 'View Rankings',
+        subtitle: 'See current player rankings',
+        icon: 'chart-bar',
+        route: '/rankings'
+      },
+      {
+        id: 'recent-matches',
+        type: 'quick-action',
+        title: 'Recent Matches',
+        subtitle: 'View recent match results',
+        icon: 'clock',
+        route: '/matches'
+      }
+    ];
   }
 
   private mapTournamentResults(tournaments: unknown[]): SearchResult[] {
