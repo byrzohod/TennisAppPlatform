@@ -58,7 +58,7 @@ export class TournamentDetailComponent implements OnInit {
   playerSearchTerm = '';
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  protected router = inject(Router);
   private http = inject(HttpClient);
 
   ngOnInit() {
@@ -191,11 +191,9 @@ export class TournamentDetailComponent implements OnInit {
   }
 
   withdrawPlayer(playerId: number) {
-    if (confirm('Confirm withdrawal?')) {
-      const player = this.players.find(p => p.id === playerId);
-      if (player) {
-        player.status = 'Withdrawn';
-      }
+    const player = this.players.find(p => p.id === playerId);
+    if (player && confirm('Confirm withdrawal?')) {
+      player.status = 'Withdrawn';
     }
   }
 

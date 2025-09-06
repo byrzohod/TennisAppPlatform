@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Subject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -123,14 +123,15 @@ describe('TournamentListComponent', () => {
     it('should set loading to false after loading completes', () => {
       mockTournamentService.getTournaments.and.returnValue(of(mockTournaments));
       
+      // Before loading
+      component.loading = false;
+      
       component.loadTournaments();
       
-      // Loading should be true initially
-      expect(component.loading).toBe(true);
-      
-      // After fixture.detectChanges(), the observable should complete and loading should be false
-      fixture.detectChanges();
+      // Since we're using 'of()', which is synchronous, loading is already false due to finalize
+      // This is the expected behavior with synchronous observables
       expect(component.loading).toBe(false);
+      expect(component.tournaments).toEqual(mockTournaments);
     });
   });
 
@@ -307,11 +308,23 @@ describe('TournamentListComponent', () => {
     });
 
     it('should show loading skeletons when loading', () => {
-      component.loading = true;
+      // Mock the service to prevent ngOnInit from completing immediately
+      const subject = new Subject<typeof mockTournaments>();
+      mockTournamentService.getTournaments.and.returnValue(subject.asObservable());
+      
+      // Initialize component - this will call ngOnInit and set loading to true
       fixture.detectChanges();
       
+      // Verify loading state is true (since the observable hasn't completed)
+      expect(component.loading).toBe(true);
+      
+      // Look for skeleton components in the rendered template
       const skeletons = fixture.nativeElement.querySelectorAll('app-skeleton');
       expect(skeletons.length).toBeGreaterThan(0);
+      
+      // Complete the observable to clean up
+      subject.next(mockTournaments);
+      subject.complete();
     });
 
     it('should show error state when error occurs', () => {

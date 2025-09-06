@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { TournamentService, Tournament } from '../../../core/services/tournament.service';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
-import { InputComponent } from '../../../shared/components/ui/input/input.component';
 import { BadgeComponent } from '../../../shared/components/ui/badge/badge.component';
 import { SkeletonComponent } from '../../../shared/components/ui/skeleton/skeleton.component';
 import { finalize } from 'rxjs';
@@ -18,7 +17,6 @@ import { finalize } from 'rxjs';
     FormsModule,
     CardComponent,
     ButtonComponent,
-    InputComponent,
     BadgeComponent,
     SkeletonComponent
   ],

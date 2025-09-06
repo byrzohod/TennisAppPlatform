@@ -109,7 +109,7 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
+    # Remove dependencies to ensure e2e tests run for all PRs
     
     services:
       postgres:
