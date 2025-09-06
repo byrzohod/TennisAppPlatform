@@ -9,6 +9,10 @@ export interface Player {
   profileImageUrl?: string;
   currentRanking: number;
   rankingPoints: number;
+  email?: string;
+  phone?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreatePlayer {

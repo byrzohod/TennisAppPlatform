@@ -13,6 +13,7 @@ export interface Player {
   rankingPoints: number;
   currentRanking?: number;
   profileImageUrl?: string;
+  country?: string;
   createdAt: string;
   updatedAt?: string;
 }
