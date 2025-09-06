@@ -32,12 +32,8 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
-    // Check authentication status on app init
-    if (!this.authService.isAuthenticated() && 
-        !this.router.url.includes('/login') && 
-        !this.router.url.includes('/register')) {
-      this.router.navigate(['/login']);
-    }
+    // Initialize the app - let route guards handle authentication redirects
+    // This approach is cleaner than trying to guess redirects at the app level
   }
 
   toggleMenu() {

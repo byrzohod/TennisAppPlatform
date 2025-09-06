@@ -2,17 +2,16 @@
 
 describe('Registration Tests', () => {
   beforeEach(() => {
-    // First visit the page to initialize the window
-    cy.visit('/register');
-    // Then clear authentication state
+    // Clear authentication state first
     cy.clearLocalStorage();
     cy.clearCookies();
-    cy.window().then((win) => {
-      win.localStorage.removeItem('access_token');
-      win.localStorage.removeItem('refresh_token');
-    });
-    // Visit again to ensure clean state
+    
+    // Visit the register page and wait for it to load
     cy.visit('/register');
+    
+    // Ensure we're on the register page and it's fully loaded
+    cy.url().should('include', '/register');
+    cy.get('app-root').should('exist');
   });
 
   it('should load the register page', () => {
