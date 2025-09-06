@@ -176,22 +176,35 @@ jobs:
         
     - name: Start backend API
       run: |
-        # Start the API in background (migrations will be skipped in Test environment)
+        # Start the API in background (migrations will run with Test configuration)
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
           --no-launch-profile \
           --urls "http://localhost:5000" &
+        
+        # Store the PID
+        API_PID=$!
         
         # Wait for API to be ready
         echo "Waiting for API to start..."
         for i in {1..30}; do
           if curl -f http://localhost:5000/health 2>/dev/null; then
             echo "API is ready!"
-            break
+            exit 0
           fi
+          
+          # Check if the process is still running
+          if ! ps -p $API_PID > /dev/null; then
+            echo "API process died unexpectedly!"
+            exit 1
+          fi
+          
           echo "Waiting for API... ($i/30)"
           sleep 2
         done
+        
+        echo "API failed to start within timeout!"
+        exit 1
       env:
         ASPNETCORE_ENVIRONMENT: Test
         

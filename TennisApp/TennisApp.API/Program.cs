@@ -200,28 +200,21 @@ if (!builder.Environment.IsEnvironment("Test"))
     // Log the current environment
     Log.Information($"Application starting in {app.Environment.EnvironmentName} environment");
 
-    // Apply database migrations on startup (skip in test environment)
-    if (!app.Environment.IsEnvironment("Test") && app.Environment.EnvironmentName != "Test")
+    // Apply database migrations on startup
+    using (var scope = app.Services.CreateScope())
     {
-        using (var scope = app.Services.CreateScope())
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        try
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            try
-            {
-                Log.Information("Applying database migrations...");
-                dbContext.Database.Migrate();
-                Log.Information("Database migrations applied successfully");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "An error occurred while applying database migrations");
-                throw;
-            }
+            Log.Information("Applying database migrations...");
+            dbContext.Database.Migrate();
+            Log.Information("Database migrations applied successfully");
         }
-    }
-    else
-    {
-        Log.Information($"Skipping database migrations in {app.Environment.EnvironmentName} environment");
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while applying database migrations");
+            throw;
+        }
     }
 
     // Configure Swagger UI
