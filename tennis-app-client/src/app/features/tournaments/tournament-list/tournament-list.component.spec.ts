@@ -309,7 +309,7 @@ describe('TournamentListComponent', () => {
 
     it('should show loading skeletons when loading', () => {
       // Mock the service to prevent ngOnInit from completing immediately
-      const subject = new Subject<any[]>();
+      const subject = new Subject<typeof mockTournaments>();
       mockTournamentService.getTournaments.and.returnValue(subject.asObservable());
       
       // Initialize component - this will call ngOnInit and set loading to true
