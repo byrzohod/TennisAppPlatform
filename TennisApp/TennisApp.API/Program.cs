@@ -270,6 +270,11 @@ if (!builder.Environment.IsEnvironment("Test"))
     app.UseAuthorization();
 
     app.MapControllers();
+    
+    // Health check endpoint for monitoring
+    app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+        .WithName("HealthCheck")
+        .WithOpenApi();
 
     app.Run();
 
