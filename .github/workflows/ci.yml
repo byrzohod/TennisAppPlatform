@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, 'feature/**' ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
@@ -148,18 +148,8 @@ jobs:
     - name: Build backend
       run: dotnet build TennisApp/TennisApp.sln --no-restore --configuration Release
       
-    - name: Run database migrations
+    - name: Create test configuration
       run: |
-        dotnet ef database update --project TennisApp/TennisApp.Infrastructure/TennisApp.Infrastructure.csproj \
-          --startup-project TennisApp/TennisApp.API/TennisApp.API.csproj \
-          --configuration Release
-      env:
-        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
-      continue-on-error: true # Database might not have migrations yet
-      
-    - name: Start backend API
-      run: |
-        # Create appsettings.Test.json with proper configuration
         cat > TennisApp/TennisApp.API/appsettings.Test.json <<EOF
         {
           "ConnectionStrings": {
@@ -184,21 +174,37 @@ jobs:
         }
         EOF
         
-        # Start the API in background
+    - name: Start backend API
+      run: |
+        # Start the API in background (migrations will run with Test configuration)
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
-          --urls "http://localhost:5000" &
+          --no-launch-profile \
+          --urls "http://localhost:5221" &
+        
+        # Store the PID
+        API_PID=$!
         
         # Wait for API to be ready
         echo "Waiting for API to start..."
         for i in {1..30}; do
-          if curl -f http://localhost:5000/health 2>/dev/null; then
+          if curl -f http://localhost:5221/health 2>/dev/null; then
             echo "API is ready!"
-            break
+            exit 0
           fi
+          
+          # Check if the process is still running
+          if ! ps -p $API_PID > /dev/null; then
+            echo "API process died unexpectedly!"
+            exit 1
+          fi
+          
           echo "Waiting for API... ($i/30)"
           sleep 2
         done
+        
+        echo "API failed to start within timeout!"
+        exit 1
       env:
         ASPNETCORE_ENVIRONMENT: Test
         
@@ -217,14 +223,16 @@ jobs:
         cat > src/environments/environment.ts <<EOF
         export const environment = {
           production: false,
-          apiUrl: 'http://localhost:5000/api/v1'
+          apiUrl: 'http://localhost:5221',
+          apiVersion: 'v1'
         };
         EOF
         
         cat > src/environments/environment.prod.ts <<EOF
         export const environment = {
           production: true,
-          apiUrl: 'http://localhost:5000/api/v1'
+          apiUrl: 'http://localhost:5221',
+          apiVersion: 'v1'
         };
         EOF
       working-directory: tennis-app-client
@@ -236,7 +244,7 @@ jobs:
     - name: Start frontend and run E2E tests
       run: |
         # Start Angular dev server in background
-        npm start -- --host 0.0.0.0 --disable-host-check &
+        npm start -- --host 0.0.0.0 &
         
         # Wait for frontend to be ready
         echo "Waiting for frontend to start..."
@@ -247,7 +255,7 @@ jobs:
       working-directory: tennis-app-client
       env:
         CYPRESS_baseUrl: http://localhost:4200
-        CYPRESS_apiUrl: http://localhost:5000/api/v1
+        CYPRESS_apiUrl: http://localhost:5221/api/v1
       
     - name: Upload Cypress screenshots
       uses: actions/upload-artifact@v4
@@ -299,7 +307,7 @@ jobs:
         
         # Wait for health checks
         for i in {1..60}; do
-          if docker-compose -f docker-compose.ci.yml exec -T api curl -f http://localhost:5000/health 2>/dev/null && \
+          if docker-compose -f docker-compose.ci.yml exec -T api curl -f http://localhost:5221/health 2>/dev/null && \
              docker-compose -f docker-compose.ci.yml exec -T frontend curl -f http://localhost:4200 2>/dev/null; then
             echo "All services are ready!"
             break
@@ -313,7 +321,7 @@ jobs:
         docker-compose -f docker-compose.ci.yml exec -T frontend npm run e2e:headless
       env:
         CYPRESS_baseUrl: http://localhost:4200
-        CYPRESS_apiUrl: http://localhost:5000/api/v1
+        CYPRESS_apiUrl: http://localhost:5221/api/v1
         
     - name: Stop services
       run: docker-compose -f docker-compose.ci.yml down

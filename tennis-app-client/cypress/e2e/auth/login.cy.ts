@@ -2,6 +2,9 @@
 
 describe('Login Feature', () => {
   beforeEach(() => {
+    // Clear authentication state to ensure clean test environment
+    cy.clearLocalStorage();
+    cy.clearCookies();
     cy.visit('/login');
   });
 
@@ -14,14 +17,19 @@ describe('Login Feature', () => {
       cy.get('a').should('contain', "create a new account");
     });
 
-    it('should have proper input types and placeholders', () => {
+    it('should have proper input types and labels', () => {
+      // With floating labels, placeholder is set to space, so check aria-label instead
       cy.get('app-input[formControlName="email"] input')
         .should('have.attr', 'type', 'email')
-        .should('have.attr', 'placeholder', 'Enter your email');
+        .should('have.attr', 'aria-label', 'Email address');
       
       cy.get('app-input[formControlName="password"] input')
         .should('have.attr', 'type', 'password')
-        .should('have.attr', 'placeholder', 'Enter your password');
+        .should('have.attr', 'aria-label', 'Password');
+      
+      // Check that labels are present
+      cy.get('app-input[formControlName="email"] label').should('contain', 'Email address');
+      cy.get('app-input[formControlName="password"] label').should('contain', 'Password');
     });
 
     it.skip('should be accessible', () => {
@@ -58,31 +66,31 @@ describe('Login Feature', () => {
 
   describe('Login Process', () => {
     it('should login successfully with valid credentials', () => {
-      // Create a test user first
+      // Create a test user first (or verify it exists)
+      const testEmail = `testuser-${Date.now()}@example.com`; // Use unique email for CI
+      
       cy.request({
         method: 'POST',
         url: `${Cypress.env('apiUrl')}/auth/register`,
         body: {
-          email: 'testuser@example.com',
+          email: testEmail,
           password: 'Test123!',
           confirmPassword: 'Test123!',
           firstName: 'Test',
           lastName: 'User'
         },
         failOnStatusCode: false
-      });
-
-      // Now login
-      cy.get('app-input[formControlName="email"] input').type('testuser@example.com');
-      cy.get('app-input[formControlName="password"] input').type('Test123!');
-      cy.get('app-button[type="submit"] button').click();
-      
-      // Should either redirect to dashboard or show error (depending on API)
-      cy.url().then((url) => {
-        if (!url.includes('/dashboard')) {
-          // If not redirected, check for error message
-          cy.get('app-alert').should('be.visible');
-        }
+      }).then((response) => {
+        // Registration should succeed (200/201) or user already exists (409) 
+        expect([200, 201, 409]).to.include(response.status);
+        
+        // Now login with the test user
+        cy.get('app-input[formControlName="email"] input').type(testEmail);
+        cy.get('app-input[formControlName="password"] input').type('Test123!');
+        cy.get('app-button[type="submit"] button').click();
+        
+        // Should redirect to dashboard after successful login
+        cy.url().should('not.include', '/login');
       });
     });
 

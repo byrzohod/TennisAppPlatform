@@ -197,8 +197,14 @@ if (!builder.Environment.IsEnvironment("Test"))
 
     var app = builder.Build();
 
-    // Apply database migrations on startup (skip in test environment)
-    if (!app.Environment.IsEnvironment("Test"))
+    // Log the current environment
+    Log.Information($"Application starting in {app.Environment.EnvironmentName} environment");
+
+    // Apply database migrations on startup (skip in integration test environment)
+    // Integration tests handle their own database setup via TestContainers
+    var skipMigrations = Environment.GetEnvironmentVariable("SKIP_MIGRATIONS") == "true";
+    
+    if (!skipMigrations)
     {
         using (var scope = app.Services.CreateScope())
         {
@@ -215,6 +221,10 @@ if (!builder.Environment.IsEnvironment("Test"))
                 throw;
             }
         }
+    }
+    else
+    {
+        Log.Information("Skipping database migrations (SKIP_MIGRATIONS=true)");
     }
 
     // Configure Swagger UI
@@ -260,6 +270,11 @@ if (!builder.Environment.IsEnvironment("Test"))
     app.UseAuthorization();
 
     app.MapControllers();
+    
+    // Health check endpoint for monitoring
+    app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+        .WithName("HealthCheck")
+        .WithOpenApi();
 
     app.Run();
 

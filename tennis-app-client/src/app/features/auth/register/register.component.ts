@@ -27,16 +27,13 @@ export class RegisterComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
-  showPassword = false;
   passwordStrength: 'weak' | 'medium' | 'strong' | '' = '';
 
   ngOnInit(): void {
     this.initializeForm();
     
-    // Redirect if already logged in
-    if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/dashboard']);
-    }
+    // Note: Redirect logic removed - let route guards handle authentication flow
+    // This keeps the component simpler and more focused on registration logic
   }
 
   private initializeForm(): void {
@@ -82,9 +79,6 @@ export class RegisterComponent implements OnInit {
       });
   }
 
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
-  }
 
   updatePasswordStrength(): void {
     const password = this.registerForm.get('password')?.value || '';

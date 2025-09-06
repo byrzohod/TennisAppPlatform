@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -10,9 +10,8 @@ import { AuthService } from './core/services/auth.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
+export class App {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   title = 'Tennis App';
   isAuthenticated$;
@@ -31,14 +30,6 @@ export class App implements OnInit {
     this.currentUser$ = this.authService.currentUser$;
   }
 
-  ngOnInit() {
-    // Check authentication status on app init
-    if (!this.authService.isAuthenticated() && 
-        !this.router.url.includes('/login') && 
-        !this.router.url.includes('/register')) {
-      this.router.navigate(['/login']);
-    }
-  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;

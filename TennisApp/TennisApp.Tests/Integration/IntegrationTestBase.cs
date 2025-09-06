@@ -30,6 +30,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     {
         // Create and configure the factory with the shared test database
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+        Environment.SetEnvironmentVariable("SKIP_MIGRATIONS", "true");
         
         Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
