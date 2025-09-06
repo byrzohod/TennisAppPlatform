@@ -191,11 +191,9 @@ export class TournamentDetailComponent implements OnInit {
   }
 
   withdrawPlayer(playerId: number) {
-    if (confirm('Confirm withdrawal?')) {
-      const player = this.players.find(p => p.id === playerId);
-      if (player) {
-        player.status = 'Withdrawn';
-      }
+    const player = this.players.find(p => p.id === playerId);
+    if (player && confirm('Confirm withdrawal?')) {
+      player.status = 'Withdrawn';
     }
   }
 

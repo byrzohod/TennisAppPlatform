@@ -219,10 +219,12 @@ describe('TournamentDetailComponent', () => {
 
     it('should not withdraw player when cancelled', () => {
       spyOn(window, 'confirm').and.returnValue(false);
+      const initialStatus = component.players.find(p => p.id === 1)?.status;
+      
       component.withdrawPlayer(1);
       
       const player = component.players.find(p => p.id === 1);
-      expect(player?.status).toBe('Registered');
+      expect(player?.status).toBe(initialStatus);
     });
   });
 
