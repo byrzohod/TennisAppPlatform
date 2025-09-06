@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -12,7 +12,6 @@ import { AuthService } from './core/services/auth.service';
 })
 export class App {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   title = 'Tennis App';
   isAuthenticated$;
