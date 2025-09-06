@@ -2,10 +2,10 @@
 
 ## Quick Status Overview
 - **Total Features**: 126 (Added 34 i18n + 42 theme tasks)
-- **Completed**: 37
-- **In Progress**: 1
-- **Not Started**: 88
-- **Completion**: 29%
+- **Completed**: 39
+- **In Progress**: 0
+- **Not Started**: 87
+- **Completion**: 31%
 - **Last Updated**: 2025-09-06
 
 ## 🚨 PRIORITY: E2E Tests Must Pass for CI/CD
@@ -140,7 +140,7 @@
 | **Tournament List** | Basic table | Card grid with images, filters sidebar, infinite scroll | 🔴 HIGH | ✅ DONE |
 | **Tournament Detail** | Wall of text | Hero header, tabs with icons, interactive bracket | 🔴 HIGH | ✅ DONE |
 | **Player Profiles** | Text only | Avatar, stats graphs, achievement badges | 🟡 MEDIUM | ⬜ TODO |
-| **Bracket View** | Static display | Interactive D3.js bracket, zoom/pan, live updates | 🟡 MEDIUM | ⬜ TODO |
+| **Bracket View** | Static display | Interactive D3.js bracket, zoom/pan, live updates | 🟡 MEDIUM | ✅ DONE |
 | **Match Scoring** | Basic form | Tennis court visualization, real-time score | 🟢 LOW | ⬜ TODO |
 
 ### UX Improvements
@@ -161,7 +161,7 @@
 | **CSS Framework** | Replace basic styles | TailwindCSS + custom config | 🔴 HIGH | ✅ DONE |
 | **Component Library** | Pre-built components | Custom UI components library | 🔴 HIGH | ✅ DONE |
 | **Animation Library** | Smooth animations | TailwindCSS transitions + CSS animations | 🟡 MEDIUM | ✅ DONE |
-| **Charts & Graphs** | Data visualization | Chart.js, D3.js, or ApexCharts | 🟡 MEDIUM | ⬜ TODO |
+| **Charts & Graphs** | Data visualization | Chart.js, D3.js, or ApexCharts | 🟡 MEDIUM | ✅ DONE (D3.js) |
 | **Date Pickers** | Better date selection | Custom validators + input component | 🟡 MEDIUM | ✅ DONE |
 | **Image Handling** | Optimized images | Cloudinary or local optimization | 🟢 LOW | ⬜ TODO |
 | **PWA Features** | Offline support | Service workers, manifest.json | 🟢 LOW | ⬜ TODO |

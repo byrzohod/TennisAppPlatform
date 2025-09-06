@@ -81,6 +81,14 @@ import { SearchService, SearchResult } from '../../../core/services/search.servi
                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     <path *ngIf="result.icon === 'play'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15" />
+                    <path *ngIf="result.icon === 'plus-circle'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path *ngIf="result.icon === 'user-plus'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    <path *ngIf="result.icon === 'chart-bar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <path *ngIf="result.icon === 'clock'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 
@@ -108,8 +116,12 @@ import { SearchService, SearchResult } from '../../../core/services/search.servi
                         [class.bg-purple-100]="result.type === 'match'"
                         [class.text-purple-800]="result.type === 'match'"
                         [class.dark:bg-purple-900]="result.type === 'match'"
-                        [class.dark:text-purple-200]="result.type === 'match'">
-                    {{ result.type }}
+                        [class.dark:text-purple-200]="result.type === 'match'"
+                        [class.bg-amber-100]="result.type === 'quick-action'"
+                        [class.text-amber-800]="result.type === 'quick-action'"
+                        [class.dark:bg-amber-900]="result.type === 'quick-action'"
+                        [class.dark:text-amber-200]="result.type === 'quick-action'">
+                    {{ result.type === 'quick-action' ? 'action' : result.type }}
                   </span>
                 </div>
                 
