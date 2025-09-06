@@ -148,6 +148,60 @@ jobs:
     - name: Build backend
       run: dotnet build TennisApp/TennisApp.sln --no-restore --configuration Release
       
+    - name: Run database migrations
+      run: |
+        dotnet ef database update --project TennisApp/TennisApp.Infrastructure/TennisApp.Infrastructure.csproj \
+          --startup-project TennisApp/TennisApp.API/TennisApp.API.csproj \
+          --configuration Release
+      env:
+        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
+      continue-on-error: true # Database might not have migrations yet
+      
+    - name: Start backend API
+      run: |
+        # Create appsettings.Test.json with proper configuration
+        cat > TennisApp/TennisApp.API/appsettings.Test.json <<EOF
+        {
+          "ConnectionStrings": {
+            "DefaultConnection": "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
+          },
+          "JWT": {
+            "SecretKey": "ThisIsAVerySecureSecretKeyForTestingPurposesOnly12345678",
+            "Issuer": "TennisApp",
+            "Audience": "TennisAppUsers",
+            "ExpirationMinutes": 60
+          },
+          "Logging": {
+            "LogLevel": {
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Warning"
+            }
+          },
+          "AllowedHosts": "*",
+          "Cors": {
+            "AllowedOrigins": ["http://localhost:4200"]
+          }
+        }
+        EOF
+        
+        # Start the API in background
+        dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
+          --configuration Release \
+          --urls "http://localhost:5000" &
+        
+        # Wait for API to be ready
+        echo "Waiting for API to start..."
+        for i in {1..30}; do
+          if curl -f http://localhost:5000/health 2>/dev/null; then
+            echo "API is ready!"
+            break
+          fi
+          echo "Waiting for API... ($i/30)"
+          sleep 2
+        done
+      env:
+        ASPNETCORE_ENVIRONMENT: Test
+        
     - name: Install frontend dependencies
       run: npm ci
       working-directory: tennis-app-client
@@ -155,32 +209,45 @@ jobs:
     - name: Install Cypress
       run: npm install cypress --save-dev
       working-directory: tennis-app-client
+      if: success()
       
-    - name: Build frontend
-      run: npm run build -- --configuration production
+    - name: Update frontend environment for CI
+      run: |
+        # Update the environment file to point to the test API
+        cat > src/environments/environment.ts <<EOF
+        export const environment = {
+          production: false,
+          apiUrl: 'http://localhost:5000/api/v1'
+        };
+        EOF
+        
+        cat > src/environments/environment.prod.ts <<EOF
+        export const environment = {
+          production: true,
+          apiUrl: 'http://localhost:5000/api/v1'
+        };
+        EOF
       working-directory: tennis-app-client
       
-    - name: Start backend
+    - name: Build frontend for testing
+      run: npm run build
+      working-directory: tennis-app-client
+      
+    - name: Start frontend and run E2E tests
       run: |
-        dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj --configuration Release &
-        sleep 10
-      env:
-        ASPNETCORE_ENVIRONMENT: Test
-        ASPNETCORE_URLS: http://localhost:5000
-        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
+        # Start Angular dev server in background
+        npm start -- --host 0.0.0.0 --disable-host-check &
         
-    - name: Run Cypress E2E tests
-      uses: cypress-io/github-action@v6
-      with:
-        working-directory: tennis-app-client
-        start: npm start
-        wait-on: 'http://localhost:4200'
-        wait-on-timeout: 120
-        browser: chrome
-        record: false
+        # Wait for frontend to be ready
+        echo "Waiting for frontend to start..."
+        npx wait-on http://localhost:4200 -t 60000
+        
+        # Run Cypress tests
+        npm run e2e:headless
+      working-directory: tennis-app-client
       env:
         CYPRESS_baseUrl: http://localhost:4200
-      continue-on-error: true  # Don't fail the pipeline until we have frontend ready
+        CYPRESS_apiUrl: http://localhost:5000/api/v1
       
     - name: Upload Cypress screenshots
       uses: actions/upload-artifact@v4
@@ -189,6 +256,7 @@ jobs:
         name: cypress-screenshots
         path: tennis-app-client/cypress/screenshots
         retention-days: 7
+        if-no-files-found: ignore
         
     - name: Upload Cypress videos
       uses: actions/upload-artifact@v4
@@ -197,6 +265,59 @@ jobs:
         name: cypress-videos
         path: tennis-app-client/cypress/videos
         retention-days: 7
+        if-no-files-found: ignore
+        
+    - name: Upload Cypress test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: cypress-results
+        path: tennis-app-client/cypress/results
+        retention-days: 7
+        if-no-files-found: ignore
+
+  e2e-tests-docker:
+    name: E2E Tests (Docker Compose)
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+    if: false # Disabled for now, enable when Docker setup is ready
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Start services with Docker Compose
+      run: |
+        docker-compose -f docker-compose.ci.yml up -d
+        
+        # Wait for services to be healthy
+        echo "Waiting for services to be healthy..."
+        docker-compose -f docker-compose.ci.yml ps
+        
+        # Wait for health checks
+        for i in {1..60}; do
+          if docker-compose -f docker-compose.ci.yml exec -T api curl -f http://localhost:5000/health 2>/dev/null && \
+             docker-compose -f docker-compose.ci.yml exec -T frontend curl -f http://localhost:4200 2>/dev/null; then
+            echo "All services are ready!"
+            break
+          fi
+          echo "Waiting for services... ($i/60)"
+          sleep 2
+        done
+        
+    - name: Run E2E tests against Docker services
+      run: |
+        docker-compose -f docker-compose.ci.yml exec -T frontend npm run e2e:headless
+      env:
+        CYPRESS_baseUrl: http://localhost:4200
+        CYPRESS_apiUrl: http://localhost:5000/api/v1
+        
+    - name: Stop services
+      run: docker-compose -f docker-compose.ci.yml down
+      if: always()
 
   code-quality:
     name: Code Quality

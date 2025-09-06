@@ -1,3 +1,22 @@
+# Development stage (for testing)
+FROM node:20-alpine AS development
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose port for dev server
+EXPOSE 4200
+
+# Start dev server
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--disable-host-check"]
+
 # Build stage
 FROM node:20-alpine AS build
 WORKDIR /app
@@ -15,7 +34,7 @@ COPY . .
 RUN npm run build -- --configuration production
 
 # Runtime stage
-FROM nginx:alpine
+FROM nginx:alpine AS production
 WORKDIR /usr/share/nginx/html
 
 # Remove default nginx static files
