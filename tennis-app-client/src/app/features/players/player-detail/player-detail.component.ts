@@ -94,4 +94,43 @@ export class PlayerDetailComponent implements OnInit {
       day: 'numeric'
     });
   }
+
+  formatMatchDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  getCountryFlag(country: string | undefined): string {
+    if (!country) return '🌍';
+    // Map country names to flag emojis - could be expanded with a proper mapping
+    const countryFlags: Record<string, string> = {
+      'USA': '🇺🇸',
+      'Spain': '🇪🇸',
+      'France': '🇫🇷',
+      'Germany': '🇩🇪',
+      'Italy': '🇮🇹',
+      'United Kingdom': '🇬🇧',
+      'Australia': '🇦🇺',
+      'Argentina': '🇦🇷',
+      'Brazil': '🇧🇷',
+      'Serbia': '🇷🇸',
+      'Switzerland': '🇨🇭',
+      'Russia': '🇷🇺',
+      'Japan': '🇯🇵',
+      'Canada': '🇨🇦',
+      'Netherlands': '🇳🇱'
+    };
+    
+    return countryFlags[country] || '🌍';
+  }
+
+  getYearsActive(): number {
+    if (!this.player?.createdAt) return 0;
+    const memberSince = new Date(this.player.createdAt);
+    const now = new Date();
+    const yearsDiff = now.getFullYear() - memberSince.getFullYear();
+    return Math.max(1, yearsDiff);
+  }
 }
