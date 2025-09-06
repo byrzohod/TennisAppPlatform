@@ -1,11 +1,11 @@
 # Tennis App - Implementation Tracker
 
 ## Quick Status Overview
-- **Total Features**: 84 (Added 34 i18n tasks)
+- **Total Features**: 126 (Added 34 i18n + 42 theme tasks)
 - **Completed**: 37
 - **In Progress**: 1
-- **Not Started**: 46
-- **Completion**: 44%
+- **Not Started**: 88
+- **Completion**: 29%
 - **Last Updated**: 2025-09-06
 
 ## 🚨 PRIORITY: E2E Tests Must Pass for CI/CD
@@ -21,6 +21,10 @@
 ## 🌍 NEXT PRIORITY: Multi-Language Support (i18n)
 **Status**: PLANNING - Critical for global accessibility
 **Target**: Support 5+ languages (BG, ES, FR, DE) for international users - Bulgarian priority
+
+## 🌓 FOLLOWING PRIORITY: Dark/Light Mode Theme System
+**Status**: PLANNING - Essential for user experience and accessibility
+**Target**: Complete theme system with WCAG AAA compliance and perfect visibility
 
 ---
 
@@ -419,6 +423,175 @@ $info: #3B82F6;
   }
 }
 ```
+
+---
+
+## 🌓 PHASE: Dark/Light Mode Theme System 🆕
+**Target Date**: Weeks 2-3
+**Status**: PLANNING
+**Goal**: Implement a comprehensive theme system with dark and light modes that respect user preferences and ensure excellent visibility
+
+### Theme System Overview
+| Aspect | Light Mode | Dark Mode | Priority | Status |
+|--------|------------|-----------|----------|--------|
+| **Default Theme** | Light (follows system) | Auto-detect system preference | 🔴 HIGH | ⬜ TODO |
+| **Manual Toggle** | User can override system | Persisted in localStorage | 🔴 HIGH | ⬜ TODO |
+| **Transition** | Smooth color transitions | No jarring changes | 🔴 HIGH | ⬜ TODO |
+| **Contrast Ratios** | WCAG AAA (7:1) | WCAG AAA (7:1) | 🔴 HIGH | ⬜ TODO |
+| **Tennis Colors** | Vibrant on light backgrounds | Adjusted for dark backgrounds | 🔴 HIGH | ⬜ TODO |
+
+### Color System Requirements
+| Element | Light Mode | Dark Mode | Contrast Requirement | Status |
+|---------|------------|-----------|---------------------|--------|
+| **Primary Text** | Gray-900 (#111827) | Gray-100 (#F3F4F6) | AAA (7:1) | ⬜ TODO |
+| **Secondary Text** | Gray-600 (#4B5563) | Gray-400 (#9CA3AF) | AA (4.5:1) | ⬜ TODO |
+| **Backgrounds** | White/Gray-50 | Gray-900/Black | - | ⬜ TODO |
+| **Cards** | White with shadows | Gray-800 with borders | - | ⬜ TODO |
+| **Inputs** | White with gray border | Gray-800 with gray-600 border | AA (4.5:1) | ⬜ TODO |
+| **Buttons Primary** | Grass-600 | Grass-500 (brightened) | AA (4.5:1) | ⬜ TODO |
+| **Success States** | Green-600 | Green-400 | AA (4.5:1) | ⬜ TODO |
+| **Error States** | Red-600 | Red-400 | AA (4.5:1) | ⬜ TODO |
+| **Warning States** | Yellow-600 | Yellow-400 | AA (4.5:1) | ⬜ TODO |
+| **Info States** | Blue-600 | Blue-400 | AA (4.5:1) | ⬜ TODO |
+
+### Tennis-Themed Color Adjustments
+| Tennis Color | Light Mode Value | Dark Mode Value | Usage | Notes |
+|--------------|------------------|-----------------|-------|-------|
+| **Grass Green** | #0F7938 | #10B981 (brighter) | Primary actions, success | Wimbledon inspired |
+| **Clay Orange** | #D4622A | #FB923C (lighter) | Warnings, highlights | Roland Garros inspired |
+| **Hard Blue** | #0057B7 | #3B82F6 (lighter) | Info, links | US/Australian Open |
+| **Purple Accent** | #9333EA | #A78BFA (lighter) | Special features | Premium features |
+| **Gold Trophy** | #FFD700 | #FCD34D (softer) | Achievements | Winner indicators |
+
+### Component-Specific Theme Implementation
+| Component | Light Mode Specs | Dark Mode Specs | Priority | Status |
+|-----------|------------------|-----------------|----------|--------|
+| **Navigation Bar** | White/transparent bg | Gray-900 with border | 🔴 HIGH | ⬜ TODO |
+| **Dashboard Cards** | White with shadows | Gray-800 with subtle borders | 🔴 HIGH | ⬜ TODO |
+| **Form Inputs** | White bg, gray borders | Gray-800 bg, gray-600 borders | 🔴 HIGH | ⬜ TODO |
+| **Tables** | Alternating gray stripes | Alternating gray-800/900 | 🔴 HIGH | ⬜ TODO |
+| **Modals** | White with overlay | Gray-800 with darker overlay | 🔴 HIGH | ⬜ TODO |
+| **Tooltips** | Gray-900 bg | Gray-100 bg | 🟡 MEDIUM | ⬜ TODO |
+| **Dropdown Menus** | White with shadows | Gray-800 with borders | 🔴 HIGH | ⬜ TODO |
+| **Charts/Graphs** | Dark colors on light | Light colors on dark | 🟡 MEDIUM | ⬜ TODO |
+| **Code Blocks** | Gray-100 bg | Gray-900 bg | 🟢 LOW | ⬜ TODO |
+| **Skeleton Loaders** | Gray-200 shimmer | Gray-700 shimmer | 🟡 MEDIUM | ⬜ TODO |
+
+### Technical Implementation Tasks
+| Task | Description | Priority | Status | Complexity |
+|------|-------------|----------|--------|------------|
+| **Theme Service** | Angular service for theme management | 🔴 HIGH | ⬜ TODO | Medium |
+| **CSS Variables** | Define CSS custom properties for colors | 🔴 HIGH | ⬜ TODO | Easy |
+| **TailwindCSS Dark Mode** | Configure Tailwind dark mode class strategy | 🔴 HIGH | ⬜ TODO | Easy |
+| **Theme Toggle Component** | UI switch for theme selection | 🔴 HIGH | ⬜ TODO | Easy |
+| **System Preference Detection** | Detect OS dark/light preference | 🔴 HIGH | ⬜ TODO | Easy |
+| **LocalStorage Persistence** | Save user theme preference | 🔴 HIGH | ⬜ TODO | Easy |
+| **Transition Animations** | Smooth theme switching | 🟡 MEDIUM | ⬜ TODO | Medium |
+| **Chart Color Schemes** | Dynamic chart colors per theme | 🟡 MEDIUM | ⬜ TODO | Medium |
+| **Image Adjustments** | Invert or adjust images for dark mode | 🟡 MEDIUM | ⬜ TODO | Medium |
+| **Icon Color System** | Theme-aware icon colors | 🔴 HIGH | ⬜ TODO | Easy |
+| **Print Styles** | Always use light theme for printing | 🟢 LOW | ⬜ TODO | Easy |
+| **Email Templates** | Theme-aware email designs | 🟢 LOW | ⬜ TODO | Medium |
+
+### Accessibility & Visibility Requirements
+| Requirement | Standard | Implementation | Priority | Status |
+|-------------|----------|---------------|----------|--------|
+| **Text Contrast** | WCAG AAA (7:1) for body text | Use contrast checker tools | 🔴 HIGH | ⬜ TODO |
+| **Interactive Elements** | WCAG AA (4.5:1) minimum | Test all buttons/links | 🔴 HIGH | ⬜ TODO |
+| **Focus Indicators** | Visible in both themes | Custom focus rings | 🔴 HIGH | ⬜ TODO |
+| **Color Blind Safe** | Don't rely only on color | Add icons/patterns | 🔴 HIGH | ⬜ TODO |
+| **Reduced Motion** | Respect prefers-reduced-motion | Conditional animations | 🟡 MEDIUM | ⬜ TODO |
+| **High Contrast Mode** | Support Windows high contrast | Test with high contrast | 🟡 MEDIUM | ⬜ TODO |
+
+### Form Field Visibility Guidelines
+| Field Type | Light Mode | Dark Mode | Focus State | Error State |
+|------------|------------|-----------|-------------|-------------|
+| **Text Input** | White bg, gray-300 border | Gray-800 bg, gray-600 border | Blue-500 ring | Red-500 border |
+| **Textarea** | White bg, gray-300 border | Gray-800 bg, gray-600 border | Blue-500 ring | Red-500 border |
+| **Select Dropdown** | White bg, gray-300 border | Gray-800 bg, gray-600 border | Blue-500 ring | Red-500 border |
+| **Checkbox** | White bg, gray-300 border | Gray-800 bg, gray-600 border | Blue-500 ring | Red-500 border |
+| **Radio Button** | White bg, gray-300 border | Gray-800 bg, gray-600 border | Blue-500 ring | Red-500 border |
+| **Toggle Switch** | Gray-200 track | Gray-700 track | Blue-500 active | Red-500 error |
+| **File Upload** | Dashed gray-300 | Dashed gray-600 | Blue-500 dashed | Red-500 dashed |
+| **Date Picker** | White bg | Gray-800 bg | Blue highlights | Red error text |
+| **Placeholder Text** | Gray-400 | Gray-500 | - | - |
+| **Label Text** | Gray-700 | Gray-300 | - | Red-500 |
+| **Help Text** | Gray-500 | Gray-400 | - | Red-400 |
+
+### Implementation Plan
+#### Phase 1: Foundation (Week 1)
+- [ ] Set up CSS variables for color system
+- [ ] Configure TailwindCSS dark mode
+- [ ] Create theme service with system detection
+- [ ] Implement localStorage persistence
+- [ ] Create theme toggle component
+- [ ] Add theme toggle to navigation
+- [ ] Test system preference detection
+
+#### Phase 2: Core Components (Week 2)
+- [ ] Update all background colors
+- [ ] Update all text colors
+- [ ] Update all border colors
+- [ ] Update all shadow styles
+- [ ] Update form field styles
+- [ ] Update button variants
+- [ ] Update card components
+- [ ] Test contrast ratios
+
+#### Phase 3: Advanced Features (Week 3)
+- [ ] Update chart color schemes
+- [ ] Adjust image filters for dark mode
+- [ ] Update icon colors dynamically
+- [ ] Implement smooth transitions
+- [ ] Add print style overrides
+- [ ] Update email templates
+- [ ] Complete accessibility testing
+
+### Testing Requirements
+| Test Type | Description | Tools | Priority | Status |
+|-----------|-------------|-------|----------|--------|
+| **Contrast Testing** | Verify all color combinations | WAVE, axe DevTools | 🔴 HIGH | ⬜ TODO |
+| **Theme Switching** | Test smooth transitions | Manual testing | 🔴 HIGH | ⬜ TODO |
+| **Persistence** | Verify preference saving | Browser DevTools | 🔴 HIGH | ⬜ TODO |
+| **System Integration** | Test OS preference sync | Multiple OS testing | 🔴 HIGH | ⬜ TODO |
+| **Component Coverage** | All components themed | Visual regression | 🔴 HIGH | ⬜ TODO |
+| **Accessibility** | Screen reader testing | NVDA, JAWS | 🔴 HIGH | ⬜ TODO |
+| **Performance** | Theme switch performance | Lighthouse | 🟡 MEDIUM | ⬜ TODO |
+| **Cross-browser** | Test all major browsers | BrowserStack | 🔴 HIGH | ⬜ TODO |
+
+### Success Metrics
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| **Contrast Compliance** | 100% WCAG AA, 90% AAA | Automated testing |
+| **Theme Coverage** | 100% of components | Visual inspection |
+| **Switch Performance** | <50ms transition | Performance monitoring |
+| **User Preference** | 40% dark mode adoption | Analytics tracking |
+| **Accessibility Score** | 100% in Lighthouse | Lighthouse audit |
+| **Bug Reports** | <5 theme-related issues | Issue tracking |
+
+### Design Principles
+1. **Consistency**: Same component structure in both themes
+2. **Visibility**: All text clearly readable in both themes
+3. **Hierarchy**: Maintain visual hierarchy in both themes
+4. **Brand Identity**: Tennis colors adapted but recognizable
+5. **Accessibility First**: WCAG compliance over aesthetics
+6. **Performance**: No layout shift during theme switch
+7. **User Control**: Always respect user preference
+8. **Graceful Defaults**: Fallback to system preference
+9. **Print Friendly**: Always print in light theme
+10. **Email Compatible**: Themes work in email clients
+
+### Common Pitfalls to Avoid
+- Don't use pure black (#000000) for dark mode - use gray-900
+- Don't use pure white (#FFFFFF) for dark mode text - use gray-100
+- Avoid low contrast decorative elements
+- Don't forget hover/focus states in both themes
+- Test with actual content, not lorem ipsum
+- Consider images and media in both themes
+- Don't break syntax highlighting in code blocks
+- Maintain brand colors but adjust for visibility
+- Test on real devices, not just simulators
+- Don't forget about loading and error states
 
 ---
 
