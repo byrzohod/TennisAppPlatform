@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, 'feature/**' ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
@@ -148,18 +148,8 @@ jobs:
     - name: Build backend
       run: dotnet build TennisApp/TennisApp.sln --no-restore --configuration Release
       
-    - name: Run database migrations
+    - name: Create test configuration
       run: |
-        dotnet ef database update --project TennisApp/TennisApp.Infrastructure/TennisApp.Infrastructure.csproj \
-          --startup-project TennisApp/TennisApp.API/TennisApp.API.csproj \
-          --configuration Release
-      env:
-        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
-      continue-on-error: true # Database might not have migrations yet
-      
-    - name: Start backend API
-      run: |
-        # Create appsettings.Test.json with proper configuration
         cat > TennisApp/TennisApp.API/appsettings.Test.json <<EOF
         {
           "ConnectionStrings": {
@@ -184,6 +174,17 @@ jobs:
         }
         EOF
         
+    - name: Run database migrations
+      run: |
+        dotnet ef database update --project TennisApp/TennisApp.Infrastructure/TennisApp.Infrastructure.csproj \
+          --startup-project TennisApp/TennisApp.API/TennisApp.API.csproj \
+          --configuration Release
+      env:
+        ASPNETCORE_ENVIRONMENT: Test
+        ConnectionStrings__DefaultConnection: "Host=localhost;Database=tennisapp_test;Username=postgres;Password=postgres"
+      
+    - name: Start backend API
+      run: |
         # Start the API in background
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
