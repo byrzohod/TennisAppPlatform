@@ -2,6 +2,9 @@
 
 describe('Login Feature', () => {
   beforeEach(() => {
+    // Clear authentication state to ensure clean test environment
+    cy.clearLocalStorage();
+    cy.clearCookies();
     cy.visit('/login');
   });
 
@@ -14,14 +17,19 @@ describe('Login Feature', () => {
       cy.get('a').should('contain', "create a new account");
     });
 
-    it('should have proper input types and placeholders', () => {
+    it('should have proper input types and labels', () => {
+      // With floating labels, placeholder is set to space, so check aria-label instead
       cy.get('app-input[formControlName="email"] input')
         .should('have.attr', 'type', 'email')
-        .should('have.attr', 'placeholder', 'Enter your email');
+        .should('have.attr', 'aria-label', 'Email address');
       
       cy.get('app-input[formControlName="password"] input')
         .should('have.attr', 'type', 'password')
-        .should('have.attr', 'placeholder', 'Enter your password');
+        .should('have.attr', 'aria-label', 'Password');
+      
+      // Check that labels are present
+      cy.get('app-input[formControlName="email"] label').should('contain', 'Email address');
+      cy.get('app-input[formControlName="password"] label').should('contain', 'Password');
     });
 
     it.skip('should be accessible', () => {

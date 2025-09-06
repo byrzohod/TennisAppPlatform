@@ -2,6 +2,16 @@
 
 describe('Registration Tests', () => {
   beforeEach(() => {
+    // First visit the page to initialize the window
+    cy.visit('/register');
+    // Then clear authentication state
+    cy.clearLocalStorage();
+    cy.clearCookies();
+    cy.window().then((win) => {
+      win.localStorage.removeItem('access_token');
+      win.localStorage.removeItem('refresh_token');
+    });
+    // Visit again to ensure clean state
     cy.visit('/register');
   });
 
