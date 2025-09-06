@@ -1,148 +1,367 @@
-<div class="tournaments-container">
-  <div class="tournaments-header">
-    <h1>Tournaments</h1>
-    @if (isAdmin) {
-      <button 
-        class="btn btn-primary"
-        data-testid="create-tournament-btn"
-        (click)="createTournament()">
-        Create Tournament
-      </button>
-    }
-  </div>
-
-  <div class="filters-section">
-    <label for="tournament-search">Search Tournaments</label>
-    <input
-      id="tournament-search"
-      type="text"
-      class="search-input"
-      data-testid="search-input"
-      placeholder="Search tournaments..."
-      [(ngModel)]="searchTerm"
-      (input)="onSearchChange()"
-    />
-    
-    <label for="status-filter-select">Filter by Status</label>
-    <select
-      id="status-filter-select"
-      class="filter-select"
-      data-testid="status-filter"
-      [(ngModel)]="statusFilter"
-      (change)="onStatusFilterChange()">
-      <option value="All">All Status</option>
-      <option value="Upcoming">Upcoming</option>
-      <option value="In Progress">In Progress</option>
-      <option value="Completed">Completed</option>
-    </select>
-    
-    <label for="sort-select-input">Sort by</label>
-    <select
-      id="sort-select-input"
-      class="sort-select"
-      data-testid="sort-select"
-      [(ngModel)]="sortBy"
-      (change)="onSortChange()">
-      <option>Date (Newest First)</option>
-      <option>Date (Oldest First)</option>
-      <option>Name</option>
-    </select>
-  </div>
-
-  @if (loading) {
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading tournaments...</p>
-    </div>
-  } @else if (error) {
-    <div class="error-state alert alert-danger">
-      <p>{{ error }}</p>
-      <button class="btn btn-secondary" (click)="loadTournaments()">Retry</button>
-    </div>
-  } @else if (filteredTournaments.length === 0) {
-    <div class="empty-state">
-      <p>No tournaments found matching your criteria.</p>
-    </div>
-  } @else {
-    <div class="tournament-list" data-testid="tournament-list">
-      @for (tournament of paginatedTournaments; track tournament.id) {
-      <div 
-        class="tournament-card"
-        data-testid="tournament-card"
-        tabindex="0"
-        role="button"
-        [attr.aria-label]="'View ' + tournament.name + ' tournament details'"
-        (click)="viewTournament(tournament.id)"
-        (keydown.enter)="viewTournament(tournament.id)"
-        (keydown.space)="viewTournament(tournament.id)">
-        
-        <div class="tournament-header">
-          <h3 class="tournament-name">{{ tournament.name }}</h3>
-          <span class="tournament-status status-{{ tournament.status.toLowerCase().replace(' ', '-') }}">
-            {{ tournament.status }}
-          </span>
+<!-- Modern Tournament List with Tennis-Themed Design -->
+<div class="min-h-screen bg-gradient-to-br from-grass-50 via-white to-hard-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <!-- Header Section -->
+  <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
+    <div class="container-custom py-6">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-display font-bold text-gradient">
+            Tournaments
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Browse and manage tennis tournaments worldwide
+          </p>
         </div>
-        
-        <div class="tournament-info">
-          <div class="info-item">
-            <span class="label">Location:</span>
-            <span class="tournament-location">{{ tournament.location }}</span>
+        @if (isAdmin) {
+          <app-button
+            variant="primary"
+            size="lg"
+            data-testid="create-tournament-btn"
+            (click)="createTournament()">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Tournament
+          </app-button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="container-custom py-8">
+    <!-- Filters Section -->
+    <section class="mb-8">
+      <app-card>
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Search Input -->
+            <div class="md:col-span-1">
+              <label for="tournament-search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search Tournaments
+              </label>
+              <div class="relative">
+                <input
+                  id="tournament-search"
+                  type="text"
+                  class="w-full px-4 py-2 pl-10 pr-4 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-grass-500 focus:border-transparent transition-all"
+                  data-testid="search-input"
+                  placeholder="Search by name or location..."
+                  [(ngModel)]="searchTerm"
+                  (input)="onSearchChange()">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+              <label for="status-filter-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Filter by Status
+              </label>
+              <select
+                id="status-filter-select"
+                class="w-full px-4 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-grass-500 focus:border-transparent transition-all"
+                data-testid="status-filter"
+                [(ngModel)]="statusFilter"
+                (change)="onStatusFilterChange()">
+                <option value="All">All Status</option>
+                <option value="Upcoming">🔵 Upcoming</option>
+                <option value="In Progress">🟡 In Progress</option>
+                <option value="Completed">🟢 Completed</option>
+              </select>
+            </div>
+
+            <!-- Sort Options -->
+            <div>
+              <label for="sort-select-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Sort by
+              </label>
+              <select
+                id="sort-select-input"
+                class="w-full px-4 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-grass-500 focus:border-transparent transition-all"
+                data-testid="sort-select"
+                [(ngModel)]="sortBy"
+                (change)="onSortChange()">
+                <option>Date (Newest First)</option>
+                <option>Date (Oldest First)</option>
+                <option>Name</option>
+              </select>
+            </div>
           </div>
-          
-          <div class="info-item">
-            <span class="label">Dates:</span>
-            <span class="tournament-dates">{{ tournament.startDate }} - {{ tournament.endDate }}</span>
-          </div>
-          
-          <div class="info-item">
-            <span class="label">Surface:</span>
-            <span class="tournament-surface">{{ tournament.surface }}</span>
-          </div>
-          
-          <div class="info-item">
-            <span class="label">Draw Size:</span>
-            <span class="tournament-draw-size">{{ tournament.drawSize }}</span>
-          </div>
-          
-          @if (tournament.prizeMoneyUSD) {
-            <div class="info-item">
-              <span class="label">Prize Money:</span>
-              <span>${{ tournament.prizeMoneyUSD | number }}</span>
+
+          <!-- Active Filters Display -->
+          @if (searchTerm || statusFilter !== 'All') {
+            <div class="flex flex-wrap items-center gap-2 mt-4">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Active filters:</span>
+              @if (searchTerm) {
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-grass-100 text-grass-700 dark:bg-grass-900 dark:text-grass-300">
+                  Search: {{ searchTerm }}
+                  <button (click)="searchTerm = ''; onSearchChange()" class="ml-2 hover:text-grass-900 dark:hover:text-grass-100">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                </span>
+              }
+              @if (statusFilter !== 'All') {
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-hard-100 text-hard-700 dark:bg-hard-900 dark:text-hard-300">
+                  Status: {{ statusFilter }}
+                  <button (click)="statusFilter = 'All'; onStatusFilterChange()" class="ml-2 hover:text-hard-900 dark:hover:text-hard-100">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                </span>
+              }
             </div>
           }
         </div>
+      </app-card>
+    </section>
+
+    <!-- Tournament List Content -->
+    @if (loading) {
+      <!-- Loading State with Skeletons -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (item of [1,2,3,4,5,6]; track item) {
+          <app-card>
+            <div class="p-6">
+              <app-skeleton class="h-8 w-3/4 mb-4"></app-skeleton>
+              <app-skeleton class="h-4 w-full mb-2"></app-skeleton>
+              <app-skeleton class="h-4 w-2/3 mb-4"></app-skeleton>
+              <div class="flex gap-2">
+                <app-skeleton class="h-6 w-20"></app-skeleton>
+                <app-skeleton class="h-6 w-20"></app-skeleton>
+              </div>
+            </div>
+          </app-card>
+        }
+      </div>
+    } @else if (error) {
+      <!-- Error State -->
+      <app-card>
+        <div class="p-12 text-center">
+          <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Error Loading Tournaments</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">{{ error }}</p>
+          <app-button variant="outline" (click)="loadTournaments()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Retry
+          </app-button>
+        </div>
+      </app-card>
+    } @else if (filteredTournaments.length === 0) {
+      <!-- Empty State -->
+      <app-card>
+        <div class="p-12 text-center">
+          <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-4xl">🎾</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Tournaments Found</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            No tournaments match your current filters. Try adjusting your search criteria.
+          </p>
+          @if (isAdmin) {
+            <app-button variant="primary" (click)="createTournament()">
+              Create Your First Tournament
+            </app-button>
+          }
+        </div>
+      </app-card>
+    } @else {
+      <!-- Tournament Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="tournament-list">
+        @for (tournament of paginatedTournaments; track tournament.id) {
+          <app-card 
+            class="group hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+            data-testid="tournament-card"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'View ' + tournament.name + ' tournament details'"
+            (click)="viewTournament(tournament.id)"
+            (keydown.enter)="viewTournament(tournament.id)"
+            (keydown.space)="viewTournament(tournament.id)">
+            <div class="p-6">
+              <!-- Tournament Header -->
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-grass-600 dark:group-hover:text-grass-400 transition-colors tournament-name">
+                    {{ tournament.name }}
+                  </h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="tournament-location">{{ tournament.location }}</span>
+                  </p>
+                </div>
+                <app-badge [variant]="getStatusBadgeVariant(tournament.status)">
+                  {{ tournament.status }}
+                </app-badge>
+              </div>
+
+              <!-- Tournament Info Grid -->
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <!-- Dates -->
+                <div class="flex items-center gap-2 text-sm">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <span class="text-gray-600 dark:text-gray-400 tournament-dates">
+                    {{ tournament.startDate | date:'MMM d' }}
+                  </span>
+                </div>
+
+                <!-- Draw Size -->
+                <div class="flex items-center gap-2 text-sm">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                  </svg>
+                  <span class="text-gray-600 dark:text-gray-400">
+                    <span class="tournament-draw-size">{{ tournament.drawSize }}</span> Draw
+                  </span>
+                </div>
+
+                <!-- Surface -->
+                <div class="flex items-center gap-2 text-sm">
+                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getSurfaceColor(tournament.surface)">
+                    {{ getSurfaceIcon(tournament.surface) }} <span class="ml-1 tournament-surface">{{ tournament.surface }}</span>
+                  </span>
+                </div>
+
+                <!-- Prize Money -->
+                @if (tournament.prizeMoneyUSD) {
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="text-yellow-600 dark:text-yellow-400">💰</span>
+                    <span class="text-gray-600 dark:text-gray-400 font-medium">
+                      {{ formatPrizeMoney(tournament.prizeMoneyUSD) }}
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <!-- Progress Bar for Player Registration -->
+              @if (tournament.maxPlayers > 0) {
+                <div class="mt-4">
+                  <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <span>Players Registered</span>
+                    <span>{{ tournament.playersCount || 0 }}/{{ tournament.maxPlayers }}</span>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                    <div 
+                      class="h-full rounded-full transition-all duration-500"
+                      [class]="tournament.playersCount >= tournament.maxPlayers ? 'bg-red-500' : 'bg-gradient-to-r from-grass-500 to-grass-600'"
+                      [style.width.%]="(tournament.playersCount || 0) / tournament.maxPlayers * 100">
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Hover Action -->
+              <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-grass-600 dark:text-grass-400 font-medium">View Details</span>
+                  <svg class="w-5 h-5 text-grass-600 dark:text-grass-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </app-card>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+        <div class="flex items-center justify-center gap-2 mt-8" data-testid="pagination">
+          <app-button 
+            variant="outline"
+            size="sm"
+            [disabled]="currentPage === 1"
+            aria-label="Go to previous page"
+            (click)="goToPage(currentPage - 1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Previous
+          </app-button>
+          
+          <div class="flex gap-1">
+            @for (page of [].constructor(totalPages); track $index) {
+              @if ($index + 1 === 1 || $index + 1 === totalPages || ($index + 1 >= currentPage - 1 && $index + 1 <= currentPage + 1)) {
+                <button
+                  class="w-10 h-10 rounded-lg font-medium transition-all"
+                  [class]="currentPage === $index + 1 ? 
+                    'bg-grass-600 text-white' : 
+                    'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600'"
+                  [attr.data-testid]="'page-' + ($index + 1)"
+                  [attr.aria-label]="'Go to page ' + ($index + 1)"
+                  (click)="goToPage($index + 1)">
+                  {{ $index + 1 }}
+                </button>
+              } @else if ($index + 1 === currentPage - 2 || $index + 1 === currentPage + 2) {
+                <span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>
+              }
+            }
+          </div>
+          
+          <app-button
+            variant="outline"
+            size="sm"
+            [disabled]="currentPage === totalPages"
+            aria-label="Go to next page"
+            (click)="goToPage(currentPage + 1)">
+            Next
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </app-button>
+        </div>
+      }
+    }
+
+    <!-- Tournament Stats Summary -->
+    @if (!loading && !error && filteredTournaments.length > 0) {
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <app-card>
+          <div class="p-4 text-center">
+            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ filteredTournaments.length }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Total Tournaments</p>
+          </div>
+        </app-card>
+        <app-card>
+          <div class="p-4 text-center">
+            <p class="text-2xl font-bold text-grass-600 dark:text-grass-400">
+              {{ getUpcomingCount() }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Upcoming</p>
+          </div>
+        </app-card>
+        <app-card>
+          <div class="p-4 text-center">
+            <p class="text-2xl font-bold text-clay-600 dark:text-clay-400">
+              {{ getInProgressCount() }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
+          </div>
+        </app-card>
+        <app-card>
+          <div class="p-4 text-center">
+            <p class="text-2xl font-bold text-hard-600 dark:text-hard-400">
+              {{ getCompletedCount() }}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+          </div>
+        </app-card>
       </div>
     }
-    </div>
-  }
-
-  @if (totalPages > 1) {
-    <div class="pagination" data-testid="pagination">
-      <button 
-        class="page-btn"
-        [disabled]="currentPage === 1"
-        aria-label="Go to previous page"
-        (click)="goToPage(currentPage - 1)">
-        Previous
-      </button>
-      
-      @for (page of [].constructor(totalPages); track $index) {
-        <button
-          class="page-btn"
-          [class.active]="currentPage === $index + 1"
-          [attr.data-testid]="'page-' + ($index + 1)"
-          [attr.aria-label]="'Go to page ' + ($index + 1)"
-          (click)="goToPage($index + 1)">
-          {{ $index + 1 }}
-        </button>
-      }
-      
-      <button
-        class="page-btn"
-        [disabled]="currentPage === totalPages"
-        aria-label="Go to next page"
-        (click)="goToPage(currentPage + 1)">
-        Next
-      </button>
-    </div>
-  }
+  </main>
+</div>

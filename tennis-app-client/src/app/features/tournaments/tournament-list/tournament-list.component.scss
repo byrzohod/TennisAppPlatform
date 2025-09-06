@@ -1,158 +1,61 @@
-.tournaments-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+// Modern Tournament List Styles
+// Using TailwindCSS utilities in the template
+// This file contains only custom styles that cannot be achieved with utilities
+
+// Container for custom max-width
+.container-custom {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.tournaments-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-
-  h1 {
-    font-size: 2rem;
-    font-weight: bold;
-  }
+// Text gradient for headers
+.text-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.filters-section {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+// Custom tennis-themed color definitions for surfaces
+.bg-grass-100 { background-color: #d1fae5; }
+.text-grass-700 { color: #047857; }
+.dark\:bg-grass-900 { background-color: #064e3b; }
+.dark\:text-grass-300 { color: #6ee7b7; }
 
-  .search-input {
-    flex: 1;
-    min-width: 200px;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
+.bg-clay-100 { background-color: #fed7aa; }
+.text-clay-700 { color: #c2410c; }
+.dark\:bg-clay-900 { background-color: #7c2d12; }
+.dark\:text-clay-300 { color: #fdba74; }
 
-  .filter-select,
-  .sort-select {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-  }
+.bg-hard-100 { background-color: #dbeafe; }
+.text-hard-700 { color: #1d4ed8; }
+.dark\:bg-hard-900 { background-color: #1e3a8a; }
+.dark\:text-hard-300 { color: #93c5fd; }
+
+// Smooth transitions for interactive elements
+.hover\:scale-105 {
+  transition: transform 0.3s ease;
 }
 
-.tournament-list {
-  display: grid;
-  gap: 1.5rem;
+// Font display for headers
+.font-display {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
 }
 
-.tournament-card {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-  }
+// Custom scrollbar styles for better UX
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.tournament-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-
-  .tournament-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #333;
-  }
-
-  .tournament-status {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-
-    &.status-upcoming {
-      background: #e3f2fd;
-      color: #1976d2;
-    }
-
-    &.status-in-progress {
-      background: #fff3e0;
-      color: #f57c00;
-    }
-
-    &.status-completed {
-      background: #e8f5e9;
-      color: #388e3c;
-    }
-  }
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
 }
 
-.tournament-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem;
-
-  .info-item {
-    display: flex;
-    gap: 0.5rem;
-
-    .label {
-      font-weight: 500;
-      color: #666;
-    }
-  }
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 2rem;
-
-  .page-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover:not(:disabled) {
-      background: #f5f5f5;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    &.active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-  }
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s;
-
-  &.btn-primary {
-    background: #007bff;
-    color: white;
-
-    &:hover {
-      background: #0056b3;
-    }
-  }
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500 dark:bg-gray-500;
 }
