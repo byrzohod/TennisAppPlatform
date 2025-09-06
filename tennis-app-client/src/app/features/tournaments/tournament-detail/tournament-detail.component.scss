@@ -1,274 +1,77 @@
-.tournament-detail-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+// Modern Tournament Detail Styles
+// Using TailwindCSS utilities in the template
+// This file contains only custom styles that cannot be achieved with utilities
 
-  .tournament-header {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-
-      h1 {
-        margin: 0;
-        color: #333;
-      }
-
-      .btn-back {
-        padding: 0.5rem 1rem;
-        background: #f5f5f5;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        color: #666;
-
-        &:hover {
-          background: #e0e0e0;
-        }
-      }
-    }
-
-    .tournament-info {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid #eee;
-
-      .info-item {
-        span:first-child {
-          display: block;
-          font-size: 0.875rem;
-          color: #666;
-          margin-bottom: 0.25rem;
-        }
-
-        span:last-child {
-          font-size: 1.1rem;
-          font-weight: 500;
-          color: #333;
-        }
-      }
-    }
-  }
-
-  .tournament-tabs {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
-    .tabs-nav {
-      display: flex;
-      border-bottom: 2px solid #eee;
-
-      .tab-button {
-        padding: 1rem 2rem;
-        background: none;
-        border: none;
-        border-bottom: 3px solid transparent;
-        cursor: pointer;
-        font-size: 1rem;
-        color: #666;
-        transition: all 0.3s;
-
-        &:hover {
-          background: #f5f5f5;
-        }
-
-        &.active {
-          color: #4CAF50;
-          border-bottom-color: #4CAF50;
-        }
-      }
-    }
-
-    .tab-content {
-      padding: 2rem;
-
-      .description-section {
-        line-height: 1.6;
-        color: #555;
-      }
-
-      .players-section {
-        .players-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
-
-          h3 {
-            margin: 0;
-          }
-
-          .btn {
-            padding: 0.75rem 1.5rem;
-          }
-        }
-
-        .players-table {
-          width: 100%;
-          border-collapse: collapse;
-
-          th {
-            background: #f5f5f5;
-            padding: 0.75rem;
-            text-align: left;
-            font-weight: 500;
-            color: #666;
-            border-bottom: 2px solid #ddd;
-          }
-
-          td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #eee;
-          }
-
-          tr:hover {
-            background: #f9f9f9;
-          }
-
-          input[type="number"] {
-            width: 60px;
-            padding: 0.25rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-          }
-
-          .btn-sm {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.875rem;
-          }
-        }
-      }
-
-      .bracket-section {
-        text-align: center;
-        padding: 3rem;
-
-        p {
-          color: #666;
-          margin-bottom: 1.5rem;
-        }
-      }
-
-      .no-matches,
-      .no-results {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-      }
-    }
-  }
+// Container for custom max-width
+.container-custom {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-
-  .modal-content {
-    background: white;
-    border-radius: 8px;
-    padding: 2rem;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-
-    h2 {
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-      color: #333;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #555;
-      }
-
-      select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-      }
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-      padding-top: 1rem;
-      border-top: 1px solid #eee;
-    }
-  }
+// Font display for headers
+.font-display {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.3s;
+// Custom tennis-themed color definitions for surfaces
+.bg-grass-100 { background-color: #d1fae5; }
+.text-grass-700 { color: #047857; }
+.dark\:bg-grass-900 { background-color: #064e3b; }
+.dark\:text-grass-300 { color: #6ee7b7; }
 
-  &.btn-primary {
-    background: #4CAF50;
-    color: white;
+.bg-clay-100 { background-color: #fed7aa; }
+.text-clay-700 { color: #c2410c; }
+.dark\:bg-clay-900 { background-color: #7c2d12; }
+.dark\:text-clay-300 { color: #fdba74; }
 
-    &:hover:not(:disabled) {
-      background: #45a049;
-    }
-  }
+.bg-hard-100 { background-color: #dbeafe; }
+.text-hard-700 { color: #1d4ed8; }
+.dark\:bg-hard-900 { background-color: #1e3a8a; }
+.dark\:text-hard-300 { color: #93c5fd; }
 
-  &.btn-secondary {
-    background: #f5f5f5;
-    color: #333;
+// Gradient text colors
+.text-grass-600 { color: #059669; }
+.dark\:text-grass-400 { color: #34d399; }
 
-    &:hover {
-      background: #e0e0e0;
-    }
-  }
+// Smooth scrollbar styles
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  &.btn-danger {
-    background: #f44336;
-    color: white;
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded;
+}
 
-    &:hover {
-      background: #d32f2f;
-    }
-  }
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded;
+}
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500 dark:bg-gray-500;
+}
 
-  &.btn-sm {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-  }
+// Tab active indicator animation
+.tab-indicator {
+  transition: transform 0.3s ease-in-out;
+}
+
+// Modal backdrop animation
+.modal-backdrop {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// Card hover effects
+.hover\:shadow-lg {
+  transition: box-shadow 0.3s ease;
+}
+
+// Player avatar gradient
+.player-avatar {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
 }

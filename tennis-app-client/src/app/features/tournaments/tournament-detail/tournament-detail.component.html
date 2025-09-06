@@ -1,277 +1,512 @@
-<div class="tournament-detail-container" *ngIf="tournament">
-  <div class="tournament-header">
-    <div class="tournament-title">
-      <h1 class="tournament-name">{{ tournament.name }}</h1>
-      <span class="tournament-status">{{ tournament.status }}</span>
-    </div>
-    
-    @if (isAdmin && !isInProgress) {
-      <div class="tournament-actions">
-        <button
-          class="btn btn-secondary"
-          data-testid="edit-tournament-btn"
-          (click)="editTournament()">
-          Edit
+<!-- Modern Tournament Detail with Hero Header -->
+<div class="min-h-screen bg-gradient-to-br from-grass-50 via-white to-hard-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  @if (tournament) {
+    <!-- Hero Header Section -->
+    <header class="relative overflow-hidden bg-gradient-to-r from-grass-600 to-hard-600 dark:from-gray-800 dark:to-gray-900">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.4%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"></div>
+      </div>
+      
+      <div class="relative container-custom py-12">
+        <!-- Back Button -->
+        <button 
+          class="mb-6 text-white/80 hover:text-white flex items-center gap-2 transition-colors"
+          (click)="router.navigate(['/tournaments'])">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          <span>Back to Tournaments</span>
         </button>
-        <button
-          class="btn btn-danger"
-          data-testid="delete-tournament-btn"
-          (click)="deleteTournament()">
-          Delete
-        </button>
-      </div>
-    }
-    @if (isAdmin && isInProgress) {
-      <div class="tournament-actions">
-        <button
-          class="btn btn-secondary"
-          data-testid="edit-tournament-btn"
-          disabled>
-          Edit
-        </button>
-        <div class="info-message">Cannot edit tournament in progress</div>
-      </div>
-    }
-  </div>
-
-  <div class="tournament-info">
-    <div class="info-grid">
-      <div class="info-item">
-        <span class="label">Location</span>
-        <span class="value tournament-location">{{ tournament.location }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Dates</span>
-        <span class="value tournament-dates">{{ tournament.startDate }} - {{ tournament.endDate }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Surface</span>
-        <span class="value tournament-surface">{{ tournament.surface }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Draw Size</span>
-        <span class="value tournament-draw-size">{{ tournament.drawSize }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Type</span>
-        <span class="value">{{ tournament.type }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Status</span>
-        <span class="value">{{ tournament.status }}</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="tournament-tabs" role="tablist">
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'overview'"
-      data-testid="tab-overview"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'overview'"
-      (click)="selectTab('overview')"
-      (keydown.enter)="selectTab('overview')"
-      (keydown.space)="selectTab('overview')">
-      Overview
-    </button>
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'players'"
-      data-testid="tab-players"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'players'"
-      (click)="selectTab('players')"
-      (keydown.enter)="selectTab('players')"
-      (keydown.space)="selectTab('players')">
-      Players
-    </button>
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'bracket'"
-      data-testid="tab-bracket"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'bracket'"
-      (click)="selectTab('bracket')"
-      (keydown.enter)="selectTab('bracket')"
-      (keydown.space)="selectTab('bracket')">
-      Bracket
-    </button>
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'matches'"
-      data-testid="tab-matches"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'matches'"
-      (click)="selectTab('matches')"
-      (keydown.enter)="selectTab('matches')"
-      (keydown.space)="selectTab('matches')">
-      Matches
-    </button>
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'results'"
-      data-testid="tab-results"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'results'"
-      (click)="selectTab('results')"
-      (keydown.enter)="selectTab('results')"
-      (keydown.space)="selectTab('results')">
-      Results
-    </button>
-  </div>
-
-  <div class="tab-content">
-    @if (activeTab === 'overview') {
-      <div class="overview-content">
-        <h2>Tournament Overview</h2>
-        <p>{{ tournament.description || 'No description available.' }}</p>
         
-        @if (tournament.prizeMoneyUSD) {
-          <div class="prize-info">
-            <h3>Prize Money</h3>
-            <p>${{ tournament.prizeMoneyUSD | number }}</p>
-          </div>
-        }
-      </div>
-    }
-
-    @if (activeTab === 'players') {
-      <div class="players-content">
-        <div class="players-header">
-          <h2>Registered Players</h2>
-          @if (isAdmin) {
-            <button
-              class="btn btn-primary"
-              data-testid="register-player-btn"
-              (click)="openRegisterModal()">
-              Register Player
-            </button>
-          }
-        </div>
-        
-        <div class="player-list">
-          @for (player of players; track player.id) {
-            <div class="player-row" data-testid="player-row">
-              <div class="player-info">
-                <span class="player-name">{{ player.firstName }} {{ player.lastName }}</span>
-                <span class="player-country">{{ player.country }}</span>
-                @if (player.ranking) {
-                  <span class="player-ranking">Ranking: {{ player.ranking }}</span>
-                }
-                @if (player.seed) {
-                  <span class="player-seed">Seed: {{ player.seed }}</span>
-                }
-                @if (player.status === 'Withdrawn') {
-                  <span class="status-withdrawn">Withdrawn</span>
-                }
+        <!-- Tournament Title and Actions -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div class="flex-1">
+            <div class="flex items-center gap-4 mb-4">
+              <h1 class="text-4xl md:text-5xl font-display font-bold text-white tournament-name">
+                {{ tournament.name }}
+              </h1>
+              <app-badge 
+                [variant]="getStatusBadgeVariant(tournament.status)"
+                class="scale-125">
+                {{ tournament.status }}
+              </app-badge>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 text-white/90">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="tournament-location">{{ tournament.location }}</span>
               </div>
               
-              @if (isAdmin && player.status !== 'Withdrawn') {
-                <div class="player-actions">
-                  <label for="seed-input-{{player.id}}" class="visually-hidden">Seed for {{player.firstName}} {{player.lastName}}</label>
-                  <input
-                    id="seed-input-{{player.id}}"
-                    type="number"
-                    class="seed-input"
-                    data-testid="seed-input"
-                    placeholder="Seed"
-                    [value]="player.seed"
-                    (input)="updateSeed(player.id, $any($event.target).value)"
-                  />
-                  <button
-                    class="btn btn-sm"
-                    data-testid="save-seed"
-                    (click)="saveSeed(player.id)">
-                    Save
-                  </button>
-                  <button
-                    class="btn btn-sm btn-danger"
-                    data-testid="withdraw-player"
-                    (click)="withdrawPlayer(player.id)">
-                    Withdraw
-                  </button>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span class="tournament-dates">
+                  {{ tournament.startDate | date:'MMM d' }} - {{ tournament.endDate | date:'MMM d, y' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          @if (isAdmin) {
+            <div class="flex gap-3">
+              @if (!isInProgress) {
+                <app-button
+                  variant="secondary"
+                  size="lg"
+                  data-testid="edit-tournament-btn"
+                  (click)="editTournament()">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  Edit Tournament
+                </app-button>
+                <app-button
+                  variant="error"
+                  size="lg"
+                  data-testid="delete-tournament-btn"
+                  (click)="deleteTournament()">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  Delete
+                </app-button>
+              } @else {
+                <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white/90">
+                  <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Cannot edit tournament in progress
+                  </span>
                 </div>
               }
             </div>
           }
         </div>
-      </div>
-    }
-
-    @if (activeTab === 'bracket') {
-      <div class="bracket-container">
-        <h2>Tournament Bracket</h2>
-        <p>Bracket visualization will appear here</p>
-      </div>
-    }
-
-    @if (activeTab === 'matches') {
-      <div class="matches-list">
-        <h2>Matches Schedule</h2>
-        <p>Matches will appear here</p>
-      </div>
-    }
-
-    @if (activeTab === 'results') {
-      <div class="results-content">
-        <h2>Tournament Results</h2>
-        <p>Results will appear here</p>
-      </div>
-    }
-  </div>
-
-  <!-- Register Player Modal -->
-  @if (showRegisterModal) {
-    <div class="modal" tabindex="0" role="dialog" aria-labelledby="register-modal-title" (click)="closeRegisterModal()" (keydown.escape)="closeRegisterModal()">
-      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeRegisterModal()">
-        <h3 id="register-modal-title">Register Player</h3>
         
-        <label for="player-search-input">Search Players</label>
-        <input
-          id="player-search-input"
-          type="text"
-          class="search-input"
-          data-testid="player-search"
-          placeholder="Search players..."
-          [(ngModel)]="playerSearchTerm"
-        />
-        
-        <div class="player-options">
-          @for (player of filteredAvailablePlayers; track player.id) {
-            <div
-              class="player-option"
-              data-testid="player-option"
-              [class.selected]="selectedPlayerId === player.id"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="'Select ' + player.firstName + ' ' + player.lastName"
-              (click)="selectPlayer(player.id)"
-              (keydown.enter)="selectPlayer(player.id)"
-              (keydown.space)="selectPlayer(player.id)">
-              {{ player.firstName }} {{ player.lastName }}
-              @if (player.ranking) {
-                (Ranking: {{ player.ranking }})
+        <!-- Tournament Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div class="text-white/70 text-sm mb-1">Type</div>
+            <div class="text-white font-semibold">{{ tournament.type }}</div>
+          </div>
+          
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div class="text-white/70 text-sm mb-1">Surface</div>
+            <div class="text-white font-semibold flex items-center gap-2">
+              <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs ' + getSurfaceColor(tournament.surface)">
+                {{ getSurfaceIcon(tournament.surface) }} {{ tournament.surface }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div class="text-white/70 text-sm mb-1">Draw Size</div>
+            <div class="text-white font-semibold tournament-draw-size">{{ tournament.drawSize }} Players</div>
+          </div>
+          
+          @if (tournament.prizeMoneyUSD) {
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div class="text-white/70 text-sm mb-1">Prize Money</div>
+              <div class="text-white font-semibold">{{ formatPrizeMoney(tournament.prizeMoneyUSD) }}</div>
+            </div>
+          }
+          
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+            <div class="text-white/70 text-sm mb-1">Players Registered</div>
+            <div class="text-white font-semibold">{{ players.length }} / {{ tournament.drawSize }}</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="container-custom py-8">
+      <!-- Tabs Navigation -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden">
+        <div class="flex flex-wrap border-b border-gray-200 dark:border-gray-700" role="tablist">
+          @for (tab of ['overview', 'players', 'bracket', 'matches', 'results']; track tab) {
+            <button
+              class="flex-1 min-w-[120px] px-6 py-4 flex items-center justify-center gap-2 font-medium transition-all relative"
+              [class]="activeTab === tab ? 
+                'text-grass-600 dark:text-grass-400 bg-grass-50 dark:bg-grass-900/20' : 
+                'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+              [attr.data-testid]="'tab-' + tab"
+              role="tab"
+              [attr.aria-selected]="activeTab === tab"
+              (click)="selectTab(tab)">
+              <span class="text-xl">{{ getTabIcon(tab) }}</span>
+              <span class="capitalize">{{ tab }}</span>
+              @if (activeTab === tab) {
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-grass-600 dark:bg-grass-400"></div>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        @switch (activeTab) {
+          @case ('overview') {
+            <div class="space-y-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tournament Overview</h2>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {{ tournament.description || 'Welcome to ' + tournament.name + ', one of the most prestigious tennis tournaments. This event brings together top players from around the world to compete on ' + tournament.surface?.toLowerCase() + ' courts.' }}
+                </p>
+              </div>
+              
+              @if (tournament.prizeMoneyUSD) {
+                <app-card>
+                  <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Prize Distribution</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Winner</div>
+                        <div class="text-xl font-bold text-grass-600 dark:text-grass-400">
+                          {{ formatPrizeMoney(tournament.prizeMoneyUSD * 0.35) }}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Runner-up</div>
+                        <div class="text-xl font-bold text-gray-900 dark:text-white">
+                          {{ formatPrizeMoney(tournament.prizeMoneyUSD * 0.18) }}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Semi-finalists</div>
+                        <div class="text-xl font-bold text-gray-900 dark:text-white">
+                          {{ formatPrizeMoney(tournament.prizeMoneyUSD * 0.09) }}
+                        </div>
+                      </div>
+                      <div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Total Prize Pool</div>
+                        <div class="text-xl font-bold text-gray-900 dark:text-white">
+                          {{ formatPrizeMoney(tournament.prizeMoneyUSD) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </app-card>
+              }
+              
+              <app-card>
+                <div class="p-6">
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tournament Information</h3>
+                  <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Tournament Type</dt>
+                      <dd class="text-base font-medium text-gray-900 dark:text-white">{{ tournament.type }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Playing Surface</dt>
+                      <dd class="text-base font-medium text-gray-900 dark:text-white">{{ tournament.surface }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Start Date</dt>
+                      <dd class="text-base font-medium text-gray-900 dark:text-white">{{ tournament.startDate | date:'fullDate' }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">End Date</dt>
+                      <dd class="text-base font-medium text-gray-900 dark:text-white">{{ tournament.endDate | date:'fullDate' }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Location</dt>
+                      <dd class="text-base font-medium text-gray-900 dark:text-white">{{ tournament.location }}</dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Current Status</dt>
+                      <dd class="text-base font-medium">
+                        <app-badge [variant]="getStatusBadgeVariant(tournament.status)">
+                          {{ tournament.status }}
+                        </app-badge>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </app-card>
+            </div>
+          }
+          
+          @case ('players') {
+            <div class="space-y-6">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Registered Players</h2>
+                  <p class="text-gray-600 dark:text-gray-400 mt-1">
+                    {{ players.length }} of {{ tournament.drawSize }} players registered
+                  </p>
+                </div>
+                @if (isAdmin) {
+                  <app-button
+                    variant="primary"
+                    data-testid="register-player-btn"
+                    (click)="openRegisterModal()">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                    Register Player
+                  </app-button>
+                }
+              </div>
+              
+              <div class="grid gap-4">
+                @for (player of players; track player.id) {
+                  <app-card class="hover:shadow-lg transition-shadow">
+                    <div class="p-6" data-testid="player-row">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                          <!-- Player Avatar -->
+                          <div class="w-12 h-12 bg-gradient-to-br from-grass-500 to-hard-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {{ player.firstName[0] }}{{ player.lastName[0] }}
+                          </div>
+                          
+                          <div>
+                            <div class="flex items-center gap-3">
+                              <h3 class="text-lg font-semibold text-gray-900 dark:text-white player-name">
+                                {{ player.firstName }} {{ player.lastName }}
+                              </h3>
+                              @if (player.seed) {
+                                <span class="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-xs font-medium player-seed">
+                                  Seed #{{ player.seed }}
+                                </span>
+                              }
+                              @if (player.status === 'Withdrawn') {
+                                <app-badge variant="error">Withdrawn</app-badge>
+                              }
+                            </div>
+                            <div class="flex items-center gap-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
+                              <span class="flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                                </svg>
+                                <span class="player-country">{{ player.country }}</span>
+                              </span>
+                              @if (player.ranking) {
+                                <span class="flex items-center gap-1">
+                                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                  </svg>
+                                  <span class="player-ranking">World Ranking: #{{ player.ranking }}</span>
+                                </span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                        
+                        @if (isAdmin && player.status !== 'Withdrawn') {
+                          <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2">
+                              <label for="seed-input-{{player.id}}" class="text-sm text-gray-600 dark:text-gray-400">Seed:</label>
+                              <input
+                                id="seed-input-{{player.id}}"
+                                type="number"
+                                class="w-16 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
+                                data-testid="seed-input"
+                                placeholder="#"
+                                min="1"
+                                [max]="tournament.drawSize"
+                                [value]="player.seed"
+                                (input)="updateSeed(player.id, $any($event.target).value)"
+                              />
+                              <app-button
+                                variant="outline"
+                                size="sm"
+                                data-testid="save-seed"
+                                (click)="saveSeed(player.id)">
+                                Save
+                              </app-button>
+                            </div>
+                            <app-button
+                              variant="error"
+                              size="sm"
+                              data-testid="withdraw-player"
+                              (click)="withdrawPlayer(player.id)">
+                              Withdraw
+                            </app-button>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </app-card>
+                }
+              </div>
+              
+              @if (players.length === 0) {
+                <div class="text-center py-12">
+                  <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Players Registered</h3>
+                  <p class="text-gray-600 dark:text-gray-400">Start by registering players for this tournament.</p>
+                </div>
               }
             </div>
           }
-        </div>
-        
-        <div class="modal-actions">
-          <button
-            class="btn btn-secondary"
-            data-testid="cancel-registration"
-            (click)="closeRegisterModal()">
-            Cancel
-          </button>
-          <button
-            class="btn btn-primary"
-            data-testid="confirm-registration"
-            [disabled]="!selectedPlayerId"
-            (click)="confirmRegistration()">
-            Register
-          </button>
+          
+          @case ('bracket') {
+            <div class="text-center py-12">
+              <div class="w-20 h-20 bg-gradient-to-br from-grass-100 to-hard-100 dark:from-grass-900/30 dark:to-hard-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-4xl">🏆</span>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tournament Bracket</h2>
+              <p class="text-gray-600 dark:text-gray-400 mb-6">
+                Interactive bracket visualization will be displayed here once the draw is made.
+              </p>
+              <app-button variant="primary" disabled>
+                Generate Draw
+              </app-button>
+            </div>
+          }
+          
+          @case ('matches') {
+            <div class="text-center py-12">
+              <div class="w-20 h-20 bg-gradient-to-br from-grass-100 to-hard-100 dark:from-grass-900/30 dark:to-hard-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-4xl">🎾</span>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Match Schedule</h2>
+              <p class="text-gray-600 dark:text-gray-400">
+                Matches will appear here once the tournament begins.
+              </p>
+            </div>
+          }
+          
+          @case ('results') {
+            <div class="text-center py-12">
+              <div class="w-20 h-20 bg-gradient-to-br from-grass-100 to-hard-100 dark:from-grass-900/30 dark:to-hard-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-4xl">📊</span>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tournament Results</h2>
+              <p class="text-gray-600 dark:text-gray-400">
+                Results and statistics will be displayed here as matches are completed.
+              </p>
+            </div>
+          }
+        }
+      </div>
+    </main>
+
+    <!-- Register Player Modal -->
+    @if (showRegisterModal) {
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" 
+           tabindex="0"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="modal-title"
+           (click)="closeRegisterModal()"
+           (keydown.escape)="closeRegisterModal()">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+             tabindex="-1"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 dark:text-white">Register Player</h3>
+          </div>
+          
+          <div class="p-6">
+            <div class="mb-4">
+              <label for="player-search-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search Available Players
+              </label>
+              <input
+                id="player-search-input"
+                type="text"
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-grass-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                data-testid="player-search"
+                placeholder="Search by name..."
+                [(ngModel)]="playerSearchTerm"
+              />
+            </div>
+            
+            <div class="space-y-2 max-h-96 overflow-y-auto">
+              @for (player of filteredAvailablePlayers; track player.id) {
+                <div
+                  class="p-4 rounded-lg border-2 cursor-pointer transition-all"
+                  [class]="selectedPlayerId === player.id ? 
+                    'border-grass-500 bg-grass-50 dark:bg-grass-900/20' : 
+                    'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                  data-testid="player-option"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-pressed]="selectedPlayerId === player.id"
+                  (click)="selectPlayer(player.id)"
+                  (keydown.enter)="selectPlayer(player.id)"
+                  (keydown.space)="selectPlayer(player.id); $event.preventDefault()">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {{ player.firstName[0] }}{{ player.lastName[0] }}
+                      </div>
+                      <div>
+                        <div class="font-semibold text-gray-900 dark:text-white">
+                          {{ player.firstName }} {{ player.lastName }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                          {{ player.country }}
+                          @if (player.ranking) {
+                            • Ranking: #{{ player.ranking }}
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    @if (selectedPlayerId === player.id) {
+                      <svg class="w-6 h-6 text-grass-600 dark:text-grass-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                      </svg>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+            
+            @if (filteredAvailablePlayers.length === 0) {
+              <div class="text-center py-8 text-gray-600 dark:text-gray-400">
+                No players found matching your search.
+              </div>
+            }
+          </div>
+          
+          <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <app-button
+              variant="outline"
+              data-testid="cancel-registration"
+              (click)="closeRegisterModal()">
+              Cancel
+            </app-button>
+            <app-button
+              variant="primary"
+              data-testid="confirm-registration"
+              [disabled]="!selectedPlayerId"
+              (click)="confirmRegistration()">
+              Register Player
+            </app-button>
+          </div>
         </div>
       </div>
+    }
+  } @else {
+    <!-- Loading State -->
+    <div class="container-custom py-12">
+      <app-card>
+        <div class="p-8">
+          <app-skeleton class="h-12 w-1/3 mb-4"></app-skeleton>
+          <app-skeleton class="h-6 w-1/2 mb-8"></app-skeleton>
+          <div class="grid grid-cols-3 gap-4">
+            <app-skeleton class="h-20"></app-skeleton>
+            <app-skeleton class="h-20"></app-skeleton>
+            <app-skeleton class="h-20"></app-skeleton>
+          </div>
+        </div>
+      </app-card>
     </div>
   }
+</div>
