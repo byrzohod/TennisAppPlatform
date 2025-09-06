@@ -148,6 +148,9 @@ jobs:
     - name: Build backend
       run: dotnet build TennisApp/TennisApp.sln --no-restore --configuration Release
       
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
+      
     - name: Create test configuration
       run: |
         cat > TennisApp/TennisApp.API/appsettings.Test.json <<EOF
