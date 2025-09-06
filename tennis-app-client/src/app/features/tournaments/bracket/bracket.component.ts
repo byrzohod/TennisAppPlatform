@@ -100,6 +100,7 @@ export class BracketComponent implements OnInit, AfterViewInit {
         this.g.attr('transform', event.transform);
       });
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.svg.call(this.zoom as any);
     
     // Create main group for all bracket elements
@@ -282,6 +283,7 @@ export class BracketComponent implements OnInit, AfterViewInit {
   
   private onMatchHover(match: BracketNode, isHovering: boolean) {
     const matchGroup = this.g.selectAll('.match-group')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((d: any) => (d as BracketNode).matchId === match.matchId);
     
     matchGroup.select('.match-bg')
@@ -298,6 +300,7 @@ export class BracketComponent implements OnInit, AfterViewInit {
     if (this.svg && this.zoom) {
       this.svg.transition()
         .duration(750)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .call(this.zoom.transform as any, d3.zoomIdentity);
     }
   }
@@ -306,6 +309,7 @@ export class BracketComponent implements OnInit, AfterViewInit {
     if (this.svg && this.zoom) {
       this.svg.transition()
         .duration(300)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .call(this.zoom.scaleBy as any, 1.3);
     }
   }
@@ -314,6 +318,7 @@ export class BracketComponent implements OnInit, AfterViewInit {
     if (this.svg && this.zoom) {
       this.svg.transition()
         .duration(300)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .call(this.zoom.scaleBy as any, 0.7);
     }
   }
