@@ -176,11 +176,10 @@ jobs:
         
     - name: Start backend API
       run: |
-        # Start the API in background (migrations will run automatically at startup)
+        # Start the API in background (migrations will be skipped in Test environment)
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
-          --urls "http://localhost:5000" \
-          --environment Test &
+          --urls "http://localhost:5000" &
         
         # Wait for API to be ready
         echo "Waiting for API to start..."

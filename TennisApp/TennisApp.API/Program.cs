@@ -197,8 +197,11 @@ if (!builder.Environment.IsEnvironment("Test"))
 
     var app = builder.Build();
 
+    // Log the current environment
+    Log.Information($"Application starting in {app.Environment.EnvironmentName} environment");
+
     // Apply database migrations on startup (skip in test environment)
-    if (!app.Environment.IsEnvironment("Test"))
+    if (!app.Environment.IsEnvironment("Test") && app.Environment.EnvironmentName != "Test")
     {
         using (var scope = app.Services.CreateScope())
         {
@@ -215,6 +218,10 @@ if (!builder.Environment.IsEnvironment("Test"))
                 throw;
             }
         }
+    }
+    else
+    {
+        Log.Information($"Skipping database migrations in {app.Environment.EnvironmentName} environment");
     }
 
     // Configure Swagger UI
