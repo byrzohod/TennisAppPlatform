@@ -2,11 +2,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { CardComponent } from '../../shared/components/ui/card/card.component';
+import { ButtonComponent } from '../../shared/components/ui/button/button.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CardComponent, ButtonComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -23,10 +25,10 @@ export class DashboardComponent implements OnInit {
   };
 
   quickActions = [
-    { title: 'View Players', icon: '👥', route: '/players', color: 'bg-blue-500' },
-    { title: 'Tournaments', icon: '🏆', route: '/tournaments', color: 'bg-green-500' },
-    { title: 'My Profile', icon: '👤', route: '/profile', color: 'bg-purple-500' },
-    { title: 'Schedule', icon: '📅', route: '/schedule', color: 'bg-yellow-500' }
+    { title: 'View Players', icon: '👥', route: '/players', color: 'from-grass-500 to-grass-600', bgColor: 'bg-grass-50', iconColor: 'text-grass-600' },
+    { title: 'Tournaments', icon: '🏆', route: '/tournaments', color: 'from-clay-500 to-clay-600', bgColor: 'bg-clay-50', iconColor: 'text-clay-600' },
+    { title: 'My Profile', icon: '👤', route: '/profile', color: 'from-hard-500 to-hard-600', bgColor: 'bg-hard-50', iconColor: 'text-hard-600' },
+    { title: 'Schedule', icon: '📅', route: '/schedule', color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-50', iconColor: 'text-purple-600' }
   ];
 
   recentActivities = [

@@ -1,86 +1,207 @@
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1 class="dashboard-title">Dashboard</h1>
-    <p class="dashboard-subtitle welcome-message">Welcome back, {{ (user$ | async)?.email || 'User' }}!</p>
-    <button 
-      class="btn btn-secondary logout-btn" 
-      data-testid="logout-button" 
-      (click)="logout()">
-      Logout
-    </button>
-  </div>
-
-  <!-- Stats Section -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon players">👥</div>
-      <div class="stat-content">
-        <h3 class="stat-value">{{ stats.totalPlayers }}</h3>
-        <p class="stat-label">Total Players</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon tournaments">🏆</div>
-      <div class="stat-content">
-        <h3 class="stat-value">{{ stats.activeTournaments }}</h3>
-        <p class="stat-label">Active Tournaments</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon matches">🎾</div>
-      <div class="stat-content">
-        <h3 class="stat-value">{{ stats.upcomingMatches }}</h3>
-        <p class="stat-label">Upcoming Matches</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon results">📊</div>
-      <div class="stat-content">
-        <h3 class="stat-value">{{ stats.recentResults }}</h3>
-        <p class="stat-label">Recent Results</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="section">
-    <h2 class="section-title">Quick Actions</h2>
-    <div class="actions-grid">
-      @for (action of quickActions; track action.title) {
-        <a [routerLink]="action.route" class="action-card">
-          <div class="action-icon" [class]="action.color">
-            {{ action.icon }}
+<!-- Modern Tennis App Dashboard with Hero Section -->
+<div class="min-h-screen bg-gradient-to-br from-grass-50 via-white to-hard-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <!-- Header -->
+  <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
+    <div class="container-custom py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-grass-500 to-hard-500 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="M8 12h8M12 8v8"/>
+            </svg>
           </div>
-          <span class="action-title">{{ action.title }}</span>
-        </a>
-      }
-    </div>
-  </div>
-
-  <!-- Recent Activity -->
-  <div class="section">
-    <h2 class="section-title">Recent Activity</h2>
-    <div class="activity-list">
-      @for (activity of recentActivities; track activity.message) {
-        <div class="activity-item">
-          <div class="activity-icon" [class.tournament]="activity.type === 'tournament'"
-               [class.player]="activity.type === 'player'"
-               [class.match]="activity.type === 'match'">
-            @switch (activity.type) {
-              @case ('tournament') { 🏆 }
-              @case ('player') { 👤 }
-              @case ('match') { 🎾 }
-            }
-          </div>
-          <div class="activity-content">
-            <p class="activity-message">{{ activity.message }}</p>
-            <span class="activity-time">{{ activity.time }}</span>
+          <div>
+            <h1 class="text-2xl font-display font-bold text-gradient">TennisApp</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Tournament Management System</p>
           </div>
         </div>
-      }
+        
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:block text-right">
+            <p class="text-sm font-medium text-gray-900 dark:text-white">
+              Welcome back, {{ (user$ | async)?.email || 'User' }}!
+            </p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">Ready to serve up some matches?</p>
+          </div>
+          <app-button
+            variant="outline"
+            size="sm"
+            (click)="logout()"
+            data-testid="logout-button">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Logout
+          </app-button>
+        </div>
+      </div>
     </div>
-  </div>
+  </header>
+
+  <main class="container-custom py-8 space-y-8">
+    <!-- Hero Stats Section -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-grass-600/5 via-clay-600/5 to-hard-600/5 rounded-2xl"></div>
+      <div class="relative p-8">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-3">
+            Dashboard Overview
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400">
+            Your tennis tournament management hub
+          </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <!-- Total Players -->
+          <app-card class="group hover:scale-105 transition-all duration-300">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-gradient-to-br from-grass-500 to-grass-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <span class="text-2xl">👥</span>
+              </div>
+              <div class="space-y-1">
+                <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                  {{ stats.totalPlayers }}
+                </p>
+                <p class="text-sm font-medium text-grass-600 dark:text-grass-400">Total Players</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Active members</p>
+              </div>
+            </div>
+          </app-card>
+
+          <!-- Active Tournaments -->
+          <app-card class="group hover:scale-105 transition-all duration-300">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-gradient-to-br from-clay-500 to-clay-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <span class="text-2xl">🏆</span>
+              </div>
+              <div class="space-y-1">
+                <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                  {{ stats.activeTournaments }}
+                </p>
+                <p class="text-sm font-medium text-clay-600 dark:text-clay-400">Active Tournaments</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">In progress</p>
+              </div>
+            </div>
+          </app-card>
+
+          <!-- Upcoming Matches -->
+          <app-card class="group hover:scale-105 transition-all duration-300">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-gradient-to-br from-hard-500 to-hard-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <span class="text-2xl">🎾</span>
+              </div>
+              <div class="space-y-1">
+                <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                  {{ stats.upcomingMatches }}
+                </p>
+                <p class="text-sm font-medium text-hard-600 dark:text-hard-400">Upcoming Matches</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">This week</p>
+              </div>
+            </div>
+          </app-card>
+
+          <!-- Recent Results -->
+          <app-card class="group hover:scale-105 transition-all duration-300">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <span class="text-2xl">📊</span>
+              </div>
+              <div class="space-y-1">
+                <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                  {{ stats.recentResults }}
+                </p>
+                <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Recent Results</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Last 7 days</p>
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions Section -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-2xl font-display font-bold text-gray-900 dark:text-white">Quick Actions</h3>
+          <p class="text-gray-600 dark:text-gray-400">Jump to your most-used features</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (action of quickActions; track action.title) {
+          <a [routerLink]="action.route" class="block group">
+            <app-card class="h-full hover:scale-105 transition-all duration-300">
+              <div class="p-6 text-center space-y-4">
+                <div [class]="'w-16 h-16 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 ' + action.bgColor">
+                  <span class="text-2xl">{{ action.icon }}</span>
+                </div>
+                <div>
+                  <p [class]="'font-semibold ' + action.iconColor">{{ action.title }}</p>
+                </div>
+              </div>
+            </app-card>
+          </a>
+        }
+      </div>
+    </section>
+
+    <!-- Recent Activity Section -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-2xl font-display font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+          <p class="text-gray-600 dark:text-gray-400">Latest updates from your tennis community</p>
+        </div>
+        <app-button variant="outline" size="sm">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+          View All
+        </app-button>
+      </div>
+
+      <app-card>
+        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+          @for (activity of recentActivities; track activity.message) {
+            <div class="flex items-start space-x-4 p-6">
+              <div [class]="'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ' + 
+                (activity.type === 'tournament' ? 'bg-clay-100 dark:bg-clay-900/50' : 
+                 activity.type === 'player' ? 'bg-grass-100 dark:bg-grass-900/50' : 
+                 'bg-hard-100 dark:bg-hard-900/50')">
+                @switch (activity.type) {
+                  @case ('tournament') {
+                    <span class="text-clay-600 dark:text-clay-400 text-xl">🏆</span>
+                  }
+                  @case ('player') {
+                    <span class="text-grass-600 dark:text-grass-400 text-xl">👤</span>
+                  }
+                  @case ('match') {
+                    <span class="text-hard-600 dark:text-hard-400 text-xl">🎾</span>
+                  }
+                }
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ activity.message }}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {{ activity.time }}
+                </p>
+              </div>
+              <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      </app-card>
+    </section>
+  </main>
 </div>
