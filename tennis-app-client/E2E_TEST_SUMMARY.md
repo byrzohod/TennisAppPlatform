@@ -68,6 +68,7 @@ Located in `cypress/future-tests/` for activation when features are implemented:
 - ✅ Accessibility tests included
 - ✅ Responsive design tests included
 - ✅ Test plan created for future features
+- ✅ All CI checks passing (no review required)
 - ✅ Code merged to main branch
 
 ## Test Execution

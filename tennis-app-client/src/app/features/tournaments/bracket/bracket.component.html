@@ -1,316 +1,401 @@
-<div class="bracket-page">
-  <!-- No bracket generated state -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <!-- Header Section -->
+  <div class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div class="p-2 bg-gradient-to-br from-grass-500 to-grass-600 rounded-xl">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            Tournament Bracket
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Visualize and manage tournament progression
+          </p>
+        </div>
+        
+        @if (bracketGenerated) {
+          <div class="flex items-center gap-2">
+            <button
+              class="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 rounded-lg transition-all flex items-center gap-2"
+              data-testid="regenerate-bracket-btn"
+              (click)="regenerateBracket()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Regenerate
+            </button>
+            <button
+              class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg transition-all flex items-center gap-2"
+              data-testid="edit-bracket-btn"
+              [disabled]="matchesStarted"
+              (click)="enableEditMode()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit
+            </button>
+            <div class="h-8 w-px bg-gray-300 dark:bg-gray-600"></div>
+            <button
+              class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-all"
+              data-testid="export-bracket"
+              (click)="exportBracket()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </button>
+            <button
+              class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-all"
+              data-testid="print-bracket"
+              (click)="printBracket()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+            </button>
+            <button
+              class="px-4 py-2 bg-grass-600 text-white hover:bg-grass-700 rounded-lg transition-all flex items-center gap-2 shadow-lg hover:shadow-xl"
+              data-testid="share-bracket"
+              (click)="shareBracket()">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-4.732 2.684 3 3 0 003.726 2.684m-9.032-4.026A3 3 0 105.042 8.174a3 3 0 00-3.726 2.684m9.032 4.026a3 3 0 10-4.732-2.684" />
+              </svg>
+              Share
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- No bracket state -->
   @if (!bracketGenerated) {
-    <div class="no-bracket">
-      <p data-testid="bracket-status">No bracket generated</p>
-      <button
-        class="btn btn-primary"
-        data-testid="generate-bracket-btn"
-        (click)="openGenerateModal()">
-        Generate Bracket
-      </button>
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12">
+          <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3" data-testid="bracket-status">
+            No Bracket Generated Yet
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-8">
+            Create a tournament bracket to visualize match progression and track winners
+          </p>
+          <button
+            class="px-8 py-3 bg-gradient-to-r from-grass-600 to-grass-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform transition-all hover:scale-105 active:scale-95"
+            data-testid="generate-bracket-btn"
+            (click)="openGenerateModal()">
+            Generate Tournament Bracket
+          </button>
+        </div>
+      </div>
     </div>
   }
 
-  <!-- Bracket generated state -->
+  <!-- Bracket display -->
   @if (bracketGenerated) {
-    <div class="bracket-header">
-      <h2>Tournament Bracket</h2>
-      <div class="bracket-actions">
-        <button
-          class="btn btn-secondary"
-          data-testid="regenerate-bracket-btn"
-          (click)="regenerateBracket()">
-          Regenerate
-        </button>
-        <button
-          class="btn btn-secondary"
-          data-testid="edit-bracket-btn"
-          [disabled]="matchesStarted"
-          (click)="enableEditMode()">
-          Edit
-        </button>
-        <button
-          class="btn btn-secondary"
-          data-testid="export-bracket"
-          (click)="exportBracket()">
-          Export PDF
-        </button>
-        <button
-          class="btn btn-secondary"
-          data-testid="print-bracket"
-          (click)="printBracket()">
-          Print
-        </button>
-        <button
-          class="btn btn-secondary"
-          data-testid="share-bracket"
-          (click)="shareBracket()">
-          Share
-        </button>
-      </div>
-    </div>
-
     <!-- Zoom controls -->
-    <div class="zoom-controls">
+    <div class="fixed bottom-8 right-8 z-30 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex flex-col gap-2">
       <button 
+        class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         data-testid="zoom-in" 
         (click)="zoomIn()" 
-        (keydown.enter)="zoomIn()" 
-        (keydown.space)="zoomIn()"
-        aria-label="Zoom in on bracket">
-        Zoom In
+        aria-label="Zoom in on bracket"
+        title="Zoom In">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+        </svg>
       </button>
       <button 
+        class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         data-testid="zoom-out" 
         (click)="zoomOut()" 
-        (keydown.enter)="zoomOut()" 
-        (keydown.space)="zoomOut()"
-        aria-label="Zoom out on bracket">
-        Zoom Out
+        aria-label="Zoom out on bracket"
+        title="Zoom Out">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+        </svg>
       </button>
       <button 
+        class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         data-testid="zoom-reset" 
         (click)="resetZoom()" 
-        (keydown.enter)="resetZoom()" 
-        (keydown.space)="resetZoom()"
-        aria-label="Reset bracket zoom to default">
-        Reset
+        aria-label="Reset bracket zoom to default"
+        title="Reset Zoom">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+        </svg>
       </button>
     </div>
 
-    <!-- Bracket display -->
-    <div class="bracket-scroll-container" data-testid="bracket-scroll-container">
-      <div
-        class="bracket-container"
-        data-testid="bracket-container"
-        [style.transform]="'scale(' + zoomLevel + ')'">
+    <!-- D3 SVG Container -->
+    <div class="container-fluid px-4 py-6">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bracket-scroll-container" data-testid="bracket-scroll-container">
+          <svg 
+            #bracketSvg
+            class="bracket-svg"
+            data-testid="bracket-container">
+          </svg>
+        </div>
         
-        <div class="bracket-tree" data-testid="bracket-tree">
-          @for (round of rounds; track $index) {
-            <div class="bracket-round" data-testid="bracket-round">
-              <div class="round-header" data-testid="round-header">
-                {{ getRoundName($index + 1) }}
+        <!-- Match Details Panel -->
+        @if (selectedMatch) {
+          <div class="border-t dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-900">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Match Details
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Match ID</p>
+                <p class="font-medium text-gray-900 dark:text-white">{{ selectedMatch.matchId }}</p>
               </div>
-              
-              @for (match of round; track match.matchId) {
-                <div
-                  class="bracket-match"
-                  data-testid="bracket-match"
-                  [attr.data-match-id]="match.matchId"
-                  [class.highlighted]="selectedMatch === match"
-                  tabindex="0"
-                  role="button"
-                  [attr.aria-label]="'Select match ' + match.matchId"
-                  (click)="selectMatch(match)"
-                  (keydown.enter)="selectMatch(match)"
-                  (keydown.space)="selectMatch(match)"
-                  (mouseenter)="selectedMatch = match"
-                  (mouseleave)="selectedMatch = null">
-                  
-                  <!-- First round matches -->
-                  @if (match.round === 1) {
-                    <div
-                      class="bracket-node"
-                      [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 1)"
-                      draggable="true"
-                      tabindex="0"
-                      role="button"
-                      [attr.aria-label]="'Player slot for ' + (match.player1 || 'TBD')"
-                      (dragstart)="drag($event, match.player1 || '')"
-                      (dragover)="allowDrop($event)"
-                      (drop)="drop($event, match, 1)"
-                      (keydown.enter)="selectMatch(match)"
-                      (keydown.space)="selectMatch(match)">
-                      @if (match.seed1) {
-                        <span>[{{ match.seed1 }}]</span>
-                      }
-                      {{ match.player1 || 'TBD' }}
-                    </div>
-                    
-                    <div
-                      class="bracket-node"
-                      [attr.data-testid]="'bracket-node-' + ((match.position - 1) * 2 + 2)"
-                      draggable="true"
-                      tabindex="0"
-                      role="button"
-                      [attr.aria-label]="'Player slot for ' + (match.player2 || 'TBD')"
-                      (dragstart)="drag($event, match.player2 || '')"
-                      (dragover)="allowDrop($event)"
-                      (drop)="drop($event, match, 2)"
-                      (keydown.enter)="selectMatch(match)"
-                      (keydown.space)="selectMatch(match)">
-                      @if (match.seed2) {
-                        <span>[{{ match.seed2 }}]</span>
-                      }
-                      {{ match.player2 || 'TBD' }}
-                    </div>
-                  } @else {
-                    <!-- Later round matches -->
-                    <div class="bracket-node" data-testid="bracket-node">
-                      {{ match.winner || 'TBD' }}
-                    </div>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Round</p>
+                <p class="font-medium text-gray-900 dark:text-white">{{ getRoundName(selectedMatch.round) }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': selectedMatch.status === 'completed',
+                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': selectedMatch.status === 'in-progress',
+                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300': selectedMatch.status === 'upcoming'
+                      }">
+                  {{ selectedMatch.status || 'Upcoming' }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    @if (selectedMatch.seed1) {
+                      <span class="text-xs text-gray-500 dark:text-gray-400">[{{ selectedMatch.seed1 }}]</span>
+                    }
+                    <p class="font-medium text-gray-900 dark:text-white">
+                      {{ selectedMatch.player1 || 'TBD' }}
+                    </p>
+                  </div>
+                  @if (selectedMatch.score1) {
+                    <span class="text-lg font-semibold text-gray-900 dark:text-white">
+                      {{ selectedMatch.score1 }}
+                    </span>
                   }
                 </div>
-              }
+              </div>
+              
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    @if (selectedMatch.seed2) {
+                      <span class="text-xs text-gray-500 dark:text-gray-400">[{{ selectedMatch.seed2 }}]</span>
+                    }
+                    <p class="font-medium text-gray-900 dark:text-white">
+                      {{ selectedMatch.player2 || 'TBD' }}
+                    </p>
+                  </div>
+                  @if (selectedMatch.score2) {
+                    <span class="text-lg font-semibold text-gray-900 dark:text-white">
+                      {{ selectedMatch.score2 }}
+                    </span>
+                  }
+                </div>
+              </div>
             </div>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Match tooltip -->
-    @if (selectedMatch) {
-      <div class="match-tooltip" data-testid="match-tooltip">
-        <div class="match-number">Match {{ selectedMatch.matchId }}</div>
-        <div class="player-names">
-          {{ selectedMatch.player1 || 'TBD' }} vs {{ selectedMatch.player2 || 'TBD' }}
-        </div>
-        <div class="match-time">Scheduled: TBD</div>
-        <div class="court-assignment">Court: TBD</div>
-        @if (!matchesStarted) {
-          <button
-            class="btn btn-sm"
-            data-testid="start-match"
-            (click)="startMatch()">
-            Start Match
-          </button>
+            
+            @if (!matchesStarted && selectedMatch.player1 && selectedMatch.player2 && selectedMatch.player1 !== 'BYE' && selectedMatch.player2 !== 'BYE') {
+              <button 
+                class="mt-4 px-6 py-2 bg-grass-600 text-white rounded-lg hover:bg-grass-700 transition-colors"
+                (click)="startMatch()">
+                Start Match
+              </button>
+            }
+          </div>
         }
       </div>
-    }
-
-    @if (matchesStarted && editMode) {
-      <div class="info-message">
-        Cannot edit bracket after matches have started
-      </div>
-    }
+    </div>
   }
 
   <!-- Generate Bracket Modal -->
   @if (showGenerateModal) {
-    <div class="modal" tabindex="0" role="dialog" aria-labelledby="modal-title" (click)="closeGenerateModal()" (keydown.escape)="closeGenerateModal()">
-      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeGenerateModal()">
-        <h2 id="modal-title" class="modal-title">Generate Bracket</h2>
+    <div class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+             (click)="closeGenerateModal()"
+             (keydown.escape)="closeGenerateModal()"
+             role="button"
+             tabindex="0"
+             aria-label="Close modal"></div>
         
-        <div class="form-group">
-          <label for="bracket-type-select">Bracket Type</label>
-          <select
-            id="bracket-type-select"
-            data-testid="bracket-type"
-            [(ngModel)]="bracketType">
-            <option value="Main">Main</option>
-            <option value="Qualifying">Qualifying</option>
-            <option value="Consolation">Consolation</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="draw-size-select">Draw Size</label>
-          <select
-            id="draw-size-select"
-            data-testid="draw-size"
-            [(ngModel)]="drawSize">
-            <option [value]="16">16</option>
-            <option [value]="32">32</option>
-            <option [value]="64">64</option>
-            <option [value]="128">128</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="auto-seed-checkbox">
-            <input
-              id="auto-seed-checkbox"
-              type="checkbox"
-              data-testid="auto-seed-toggle"
-              [(ngModel)]="autoSeed">
-            Automatic Seeding
-          </label>
-        </div>
-        
-        <div class="form-group">
-          <button
-            class="btn btn-secondary"
-            data-testid="manual-seed-option"
-            (click)="openSeedingModal()">
-            Manual Seed Assignment
-          </button>
-        </div>
-        
-        @if (validateDrawSize()) {
-          <div class="error-message">{{ validateDrawSize() }}</div>
-        }
-        
-        <div class="modal-actions">
-          <button
-            class="btn btn-secondary"
-            (click)="closeGenerateModal()">
-            Cancel
-          </button>
-          <button
-            class="btn btn-primary"
-            data-testid="confirm-generate"
-            (click)="generateBracket()">
-            Generate
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Seed Assignment Modal -->
-  @if (showSeedingModal) {
-    <div class="modal" data-testid="seed-assignment-modal" tabindex="0" role="dialog" aria-labelledby="seeding-modal-title" (click)="closeSeedingModal()" (keydown.escape)="closeSeedingModal()">
-      <div class="modal-content" tabindex="0" role="document" (click)="$event.stopPropagation()" (keydown.escape)="closeSeedingModal()">
-        <h2 id="seeding-modal-title">Manual Seed Assignment</h2>
-        
-        <div class="player-list" data-testid="player-list">
-          @for (player of players; track player.id) {
-            <div class="player-row" data-testid="player-row">
-              <span>{{ player.name }}</span>
-              <input
-                type="number"
-                min="1"
-                [max]="drawSize"
-                data-testid="seed-input"
-                placeholder="Seed"
-                (input)="updateManualSeed(player.id, $any($event.target).value)">
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-up">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Generate Tournament Bracket
+          </h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="bracketType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Bracket Type
+              </label>
+              <select 
+                id="bracketType"
+                [(ngModel)]="bracketType"
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-grass-500 focus:border-transparent">
+                <option value="Main">Main Draw</option>
+                <option value="Qualifying">Qualifying</option>
+                <option value="Consolation">Consolation</option>
+              </select>
             </div>
-          }
-        </div>
-        
-        <div class="modal-actions">
-          <button
-            class="btn btn-secondary"
-            (click)="closeSeedingModal()">
-            Cancel
-          </button>
-          <button
-            class="btn btn-primary"
-            data-testid="apply-seeds"
-            (click)="applySeeds()">
-            Apply Seeds
-          </button>
+            
+            <div>
+              <label for="drawSize" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Draw Size
+              </label>
+              <select 
+                id="drawSize"
+                [(ngModel)]="drawSize"
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-grass-500 focus:border-transparent">
+                <option [value]="16">16 Players</option>
+                <option [value]="32">32 Players</option>
+                <option [value]="64">64 Players</option>
+                <option [value]="128">128 Players</option>
+              </select>
+              @if (validateDrawSize()) {
+                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {{ validateDrawSize() }}
+                </p>
+              }
+            </div>
+            
+            <div>
+              <label class="flex items-center gap-3">
+                <input 
+                  type="checkbox"
+                  [(ngModel)]="autoSeed"
+                  class="w-4 h-4 text-grass-600 bg-gray-100 border-gray-300 rounded focus:ring-grass-500">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Automatic Seeding (Top 8 players)
+                </span>
+              </label>
+            </div>
+            
+            @if (!autoSeed) {
+              <button 
+                class="w-full px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                (click)="openSeedingModal()">
+                Configure Manual Seeding
+              </button>
+            }
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+              (click)="closeGenerateModal()">
+              Cancel
+            </button>
+            <button 
+              class="flex-1 px-4 py-2 bg-grass-600 text-white hover:bg-grass-700 rounded-lg transition-colors"
+              (click)="generateBracket()"
+              [disabled]="!!validateDrawSize()">
+              Generate Bracket
+            </button>
+          </div>
         </div>
       </div>
     </div>
   }
 
-  <!-- Share Modal -->
-  @if (false) {
-    <div class="modal" data-testid="share-modal">
-      <div class="modal-content">
-        <h3>Share Bracket</h3>
-        <input
-          type="text"
-          data-testid="share-link"
-          [value]="'/public/bracket/' + tournamentId"
-          readonly>
-        <button
-          class="btn btn-primary"
-          data-testid="copy-link">
-          Copy Link
-        </button>
+  <!-- Manual Seeding Modal -->
+  @if (showSeedingModal) {
+    <div class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+             (click)="closeSeedingModal()"
+             (keydown.escape)="closeSeedingModal()"
+             role="button"
+             tabindex="0"
+             aria-label="Close modal"></div>
+        
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full p-6 animate-scale-up">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Configure Manual Seeding
+          </h3>
+          
+          <div class="max-h-96 overflow-y-auto">
+            <div class="space-y-2">
+              @for (player of players; track player.id) {
+                <div class="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div class="flex-1">
+                    <p class="font-medium text-gray-900 dark:text-white">
+                      {{ player.name }}
+                    </p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      Ranking: #{{ player.ranking }}
+                    </p>
+                  </div>
+                  <input 
+                    type="number"
+                    min="1"
+                    [max]="drawSize"
+                    placeholder="Seed"
+                    (input)="updateManualSeed(player.id, $any($event.target).value)"
+                    class="w-20 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                </div>
+              }
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+              (click)="closeSeedingModal()">
+              Cancel
+            </button>
+            <button 
+              class="flex-1 px-4 py-2 bg-grass-600 text-white hover:bg-grass-700 rounded-lg transition-colors"
+              (click)="applySeeds()">
+              Apply Seeds
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   }
+</div>
+
+<style>
+  .bracket-scroll-container {
+    width: 100%;
+    height: 75vh;
+    overflow: auto;
+    position: relative;
+  }
+  
+  .bracket-svg {
+    min-width: 1400px;
+    min-height: 900px;
+  }
+  
+  .animate-scale-up {
+    animation: scaleUp 0.3s ease-out;
+  }
+  
+  @keyframes scaleUp {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>

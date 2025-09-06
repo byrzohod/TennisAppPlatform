@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import * as d3 from 'd3';
 
 interface BracketNode {
   round: number;
@@ -12,6 +13,11 @@ interface BracketNode {
   seed2?: number;
   matchId?: string;
   winner?: string;
+  score1?: string;
+  score2?: string;
+  x?: number;
+  y?: number;
+  status?: 'upcoming' | 'in-progress' | 'completed';
 }
 
 @Component({
@@ -21,7 +27,9 @@ interface BracketNode {
   templateUrl: './bracket.component.html',
   styleUrl: './bracket.component.scss'
 })
-export class BracketComponent implements OnInit {
+export class BracketComponent implements OnInit, AfterViewInit {
+  @ViewChild('bracketSvg', { static: false }) bracketSvg!: ElementRef;
+  
   tournamentId!: number;
   bracketGenerated = false;
   showGenerateModal = false;
@@ -44,12 +52,270 @@ export class BracketComponent implements OnInit {
   editMode = false;
   matchesStarted = false;
   
+  // D3.js properties
+  private svg!: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+  private g!: d3.Selection<SVGGElement, unknown, null, undefined>;
+  private zoom!: d3.ZoomBehavior<Element, unknown>;
+  private width = 1400;
+  private height = 900;
+  private matchWidth = 200;
+  private matchHeight = 60;
+  private roundSpacing = 280;
+  private verticalSpacing = 80;
+  
   private route = inject(ActivatedRoute);
   
   ngOnInit() {
     this.tournamentId = +this.route.snapshot.params['id'];
     this.loadBracketStatus();
     this.loadPlayers();
+  }
+  
+  ngAfterViewInit() {
+    if (this.bracketGenerated) {
+      this.initializeD3Bracket();
+    }
+  }
+  
+  private initializeD3Bracket() {
+    if (!this.bracketSvg) return;
+    
+    const element = this.bracketSvg.nativeElement;
+    
+    // Clear any existing SVG
+    d3.select(element).selectAll('*').remove();
+    
+    // Create SVG
+    this.svg = d3.select(element)
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', `0 0 ${this.width} ${this.height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .classed('bracket-svg', true);
+    
+    // Add zoom behavior
+    this.zoom = d3.zoom()
+      .scaleExtent([0.5, 3])
+      .on('zoom', (event) => {
+        this.g.attr('transform', event.transform);
+      });
+    
+    this.svg.call(this.zoom as any);
+    
+    // Create main group for all bracket elements
+    this.g = this.svg.append('g')
+      .attr('class', 'bracket-group');
+    
+    // Add background pattern
+    const defs = this.svg.append('defs');
+    const pattern = defs.append('pattern')
+      .attr('id', 'grid')
+      .attr('width', 40)
+      .attr('height', 40)
+      .attr('patternUnits', 'userSpaceOnUse');
+    
+    pattern.append('rect')
+      .attr('width', 40)
+      .attr('height', 40)
+      .attr('fill', 'none')
+      .attr('stroke', '#e5e7eb')
+      .attr('stroke-width', 0.5);
+    
+    // Add background
+    this.g.append('rect')
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .attr('fill', 'url(#grid)')
+      .attr('opacity', 0.3);
+    
+    // Render the bracket
+    this.renderD3Bracket();
+  }
+  
+  private renderD3Bracket() {
+    if (!this.g || this.rounds.length === 0) return;
+    
+    // Calculate positions for each match
+    this.calculateMatchPositions();
+    
+    // Draw connections between rounds
+    this.drawConnections();
+    
+    // Draw matches
+    this.drawMatches();
+  }
+  
+  private calculateMatchPositions() {
+    this.rounds.forEach((round, roundIndex) => {
+      const matchesInRound = round.length;
+      const startY = (this.height - (matchesInRound * this.verticalSpacing)) / 2;
+      
+      round.forEach((match, matchIndex) => {
+        match.x = 50 + (roundIndex * this.roundSpacing);
+        match.y = startY + (matchIndex * this.verticalSpacing * Math.pow(2, roundIndex));
+      });
+    });
+  }
+  
+  private drawConnections() {
+    for (let roundIndex = 1; roundIndex < this.rounds.length; roundIndex++) {
+      const prevRound = this.rounds[roundIndex - 1];
+      const currentRound = this.rounds[roundIndex];
+      
+      currentRound.forEach((match, matchIndex) => {
+        const sourceMatch1 = prevRound[matchIndex * 2];
+        const sourceMatch2 = prevRound[matchIndex * 2 + 1];
+        
+        if (sourceMatch1 && sourceMatch1.x && sourceMatch1.y && match.x && match.y) {
+          this.drawConnection(sourceMatch1, match, 'top');
+        }
+        
+        if (sourceMatch2 && sourceMatch2.x && sourceMatch2.y && match.x && match.y) {
+          this.drawConnection(sourceMatch2, match, 'bottom');
+        }
+      });
+    }
+  }
+  
+  private drawConnection(sourceMatch: BracketNode, targetMatch: BracketNode, position: 'top' | 'bottom') {
+    const path = d3.path();
+    const sourceX = (sourceMatch.x || 0) + this.matchWidth;
+    const sourceY = (sourceMatch.y || 0) + this.matchHeight / 2;
+    const targetX = targetMatch.x || 0;
+    const targetY = (targetMatch.y || 0) + (position === 'top' ? 15 : this.matchHeight - 15);
+    
+    const midX = (sourceX + targetX) / 2;
+    
+    path.moveTo(sourceX, sourceY);
+    path.lineTo(midX, sourceY);
+    path.lineTo(midX, targetY);
+    path.lineTo(targetX, targetY);
+    
+    this.g.append('path')
+      .attr('d', path.toString())
+      .attr('class', 'bracket-connection')
+      .attr('stroke', '#d1d5db')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none');
+  }
+  
+  private drawMatches() {
+    const matchGroups = this.g.selectAll('.match-group')
+      .data(this.rounds.flat())
+      .enter()
+      .append('g')
+      .attr('class', 'match-group')
+      .attr('transform', (d: BracketNode) => `translate(${d.x}, ${d.y})`)
+      .style('cursor', 'pointer')
+      .on('click', (event: MouseEvent, d: BracketNode) => this.selectMatch(d))
+      .on('mouseover', (event: MouseEvent, d: BracketNode) => this.onMatchHover(d, true))
+      .on('mouseout', (event: MouseEvent, d: BracketNode) => this.onMatchHover(d, false));
+    
+    // Match background with gradient
+    matchGroups.append('rect')
+      .attr('width', this.matchWidth)
+      .attr('height', this.matchHeight)
+      .attr('rx', 8)
+      .attr('class', 'match-bg')
+      .attr('fill', (d: BracketNode) => this.getMatchColor(d))
+      .attr('stroke', '#e5e7eb')
+      .attr('stroke-width', 2)
+      .style('filter', 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))');
+    
+    // Player 1
+    matchGroups.append('text')
+      .attr('x', 10)
+      .attr('y', 22)
+      .attr('class', 'player-name')
+      .attr('font-size', '14px')
+      .attr('font-weight', (d: BracketNode) => d.winner === d.player1 ? 'bold' : 'normal')
+      .attr('fill', (d: BracketNode) => d.winner === d.player1 ? '#059669' : '#374151')
+      .text((d: BracketNode) => {
+        const seed = d.seed1 ? `[${d.seed1}] ` : '';
+        return seed + (d.player1 || 'TBD');
+      });
+    
+    // Player 2
+    matchGroups.append('text')
+      .attr('x', 10)
+      .attr('y', 45)
+      .attr('class', 'player-name')
+      .attr('font-size', '14px')
+      .attr('font-weight', (d: BracketNode) => d.winner === d.player2 ? 'bold' : 'normal')
+      .attr('fill', (d: BracketNode) => d.winner === d.player2 ? '#059669' : '#374151')
+      .text((d: BracketNode) => {
+        const seed = d.seed2 ? `[${d.seed2}] ` : '';
+        return seed + (d.player2 || 'TBD');
+      });
+    
+    // Score display (if available)
+    matchGroups.append('text')
+      .attr('x', this.matchWidth - 10)
+      .attr('y', 22)
+      .attr('text-anchor', 'end')
+      .attr('font-size', '12px')
+      .attr('fill', '#6b7280')
+      .text((d: BracketNode) => d.score1 || '');
+    
+    matchGroups.append('text')
+      .attr('x', this.matchWidth - 10)
+      .attr('y', 45)
+      .attr('text-anchor', 'end')
+      .attr('font-size', '12px')
+      .attr('fill', '#6b7280')
+      .text((d: BracketNode) => d.score2 || '');
+    
+    // Add animation on entrance
+    matchGroups
+      .style('opacity', 0)
+      .transition()
+      .duration(500)
+      .delay((d: BracketNode, i: number) => i * 30)
+      .style('opacity', 1);
+  }
+  
+  private getMatchColor(match: BracketNode): string {
+    if (match.status === 'completed') return '#f0fdf4';
+    if (match.status === 'in-progress') return '#fef3c7';
+    return '#ffffff';
+  }
+  
+  private onMatchHover(match: BracketNode, isHovering: boolean) {
+    const matchGroup = this.g.selectAll('.match-group')
+      .filter((d: any) => (d as BracketNode).matchId === match.matchId);
+    
+    matchGroup.select('.match-bg')
+      .transition()
+      .duration(200)
+      .attr('stroke', isHovering ? '#059669' : '#e5e7eb')
+      .attr('stroke-width', isHovering ? 3 : 2)
+      .style('filter', isHovering ? 
+        'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15))' : 
+        'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))');
+  }
+  
+  resetD3Zoom() {
+    if (this.svg && this.zoom) {
+      this.svg.transition()
+        .duration(750)
+        .call(this.zoom.transform as any, d3.zoomIdentity);
+    }
+  }
+  
+  zoomInD3() {
+    if (this.svg && this.zoom) {
+      this.svg.transition()
+        .duration(300)
+        .call(this.zoom.scaleBy as any, 1.3);
+    }
+  }
+  
+  zoomOutD3() {
+    if (this.svg && this.zoom) {
+      this.svg.transition()
+        .duration(300)
+        .call(this.zoom.scaleBy as any, 0.7);
+    }
   }
   
   loadBracketStatus() {
@@ -135,7 +401,8 @@ export class BracketComponent implements OnInit {
         const node: BracketNode = {
           round,
           position,
-          matchId: `R${round}-M${position}`
+          matchId: `R${round}-M${position}`,
+          status: 'upcoming'
         };
         
         // For first round, assign players
@@ -173,6 +440,11 @@ export class BracketComponent implements OnInit {
     
     this.bracketGenerated = true;
     this.closeGenerateModal();
+    
+    // Initialize D3 visualization after generating bracket
+    setTimeout(() => {
+      this.initializeD3Bracket();
+    }, 100);
   }
   
   regenerateBracket() {
@@ -239,15 +511,15 @@ export class BracketComponent implements OnInit {
   }
   
   zoomIn() {
-    this.zoomLevel = Math.min(this.zoomLevel + 0.2, 2);
+    this.zoomInD3();
   }
   
   zoomOut() {
-    this.zoomLevel = Math.max(this.zoomLevel - 0.2, 0.5);
+    this.zoomOutD3();
   }
   
   resetZoom() {
-    this.zoomLevel = 1;
+    this.resetD3Zoom();
   }
   
   allowDrop(event: DragEvent) {
