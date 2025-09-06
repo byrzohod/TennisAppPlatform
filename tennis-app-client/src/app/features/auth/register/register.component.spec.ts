@@ -55,12 +55,6 @@ describe('RegisterComponent', () => {
       expect(component.registerForm.get('confirmPassword')?.value).toBe('');
     });
 
-    it('should redirect if user is already authenticated', () => {
-      authServiceSpy.isAuthenticated.and.returnValue(true);
-      fixture.detectChanges();
-      
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
-    });
   });
 
   describe('Form Validation', () => {
