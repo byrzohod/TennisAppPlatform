@@ -180,7 +180,7 @@ jobs:
         dotnet run --project TennisApp/TennisApp.API/TennisApp.API.csproj \
           --configuration Release \
           --no-launch-profile \
-          --urls "http://localhost:5000" &
+          --urls "http://localhost:5221" &
         
         # Store the PID
         API_PID=$!
@@ -188,7 +188,7 @@ jobs:
         # Wait for API to be ready
         echo "Waiting for API to start..."
         for i in {1..30}; do
-          if curl -f http://localhost:5000/health 2>/dev/null; then
+          if curl -f http://localhost:5221/health 2>/dev/null; then
             echo "API is ready!"
             exit 0
           fi
@@ -223,7 +223,7 @@ jobs:
         cat > src/environments/environment.ts <<EOF
         export const environment = {
           production: false,
-          apiUrl: 'http://localhost:5000',
+          apiUrl: 'http://localhost:5221',
           apiVersion: 'v1'
         };
         EOF
@@ -231,7 +231,7 @@ jobs:
         cat > src/environments/environment.prod.ts <<EOF
         export const environment = {
           production: true,
-          apiUrl: 'http://localhost:5000',
+          apiUrl: 'http://localhost:5221',
           apiVersion: 'v1'
         };
         EOF
@@ -255,7 +255,7 @@ jobs:
       working-directory: tennis-app-client
       env:
         CYPRESS_baseUrl: http://localhost:4200
-        CYPRESS_apiUrl: http://localhost:5000/api/v1
+        CYPRESS_apiUrl: http://localhost:5221/api/v1
       
     - name: Upload Cypress screenshots
       uses: actions/upload-artifact@v4
@@ -307,7 +307,7 @@ jobs:
         
         # Wait for health checks
         for i in {1..60}; do
-          if docker-compose -f docker-compose.ci.yml exec -T api curl -f http://localhost:5000/health 2>/dev/null && \
+          if docker-compose -f docker-compose.ci.yml exec -T api curl -f http://localhost:5221/health 2>/dev/null && \
              docker-compose -f docker-compose.ci.yml exec -T frontend curl -f http://localhost:4200 2>/dev/null; then
             echo "All services are ready!"
             break
@@ -321,7 +321,7 @@ jobs:
         docker-compose -f docker-compose.ci.yml exec -T frontend npm run e2e:headless
       env:
         CYPRESS_baseUrl: http://localhost:4200
-        CYPRESS_apiUrl: http://localhost:5000/api/v1
+        CYPRESS_apiUrl: http://localhost:5221/api/v1
         
     - name: Stop services
       run: docker-compose -f docker-compose.ci.yml down
