@@ -160,20 +160,23 @@
     } @else if (filteredTournaments.length === 0) {
       <!-- Empty State -->
       <app-card>
-        <div class="p-12 text-center">
-          <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-4xl">🎾</span>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Tournaments Found</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            No tournaments match your current filters. Try adjusting your search criteria.
-          </p>
-          @if (isAdmin) {
+        <app-empty-state
+          [title]="searchTerm || statusFilter !== 'All' ? 'No tournaments found' : 'No tournaments yet'"
+          [description]="searchTerm || statusFilter !== 'All' ? 'No tournaments match your current filters. Try adjusting your search criteria.' : 'Start creating exciting tennis tournaments for your players.'"
+          [icon]="'🏆'"
+          [iconBackgroundClass]="'bg-yellow-100 dark:bg-yellow-900/20'"
+          [actionLabel]="isAdmin && !searchTerm && statusFilter === 'All' ? 'Create Your First Tournament' : undefined"
+          [actionIcon]="isAdmin && !searchTerm && statusFilter === 'All' ? '➕' : undefined"
+          [showCustomAction]="isAdmin && !searchTerm && statusFilter === 'All'">
+          <div customAction *ngIf="isAdmin && !searchTerm && statusFilter === 'All'">
             <app-button variant="primary" (click)="createTournament()">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
               Create Your First Tournament
             </app-button>
-          }
-        </div>
+          </div>
+        </app-empty-state>
       </app-card>
     } @else {
       <!-- Tournament Grid -->

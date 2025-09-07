@@ -7,6 +7,7 @@ import { CardComponent } from '../../../shared/components/ui/card/card.component
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../shared/components/ui/badge/badge.component';
 import { SkeletonComponent } from '../../../shared/components/ui/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -18,7 +19,8 @@ import { finalize } from 'rxjs';
     CardComponent,
     ButtonComponent,
     BadgeComponent,
-    SkeletonComponent
+    SkeletonComponent,
+    EmptyStateComponent
   ],
   templateUrl: './tournament-list.component.html',
   styleUrl: './tournament-list.component.scss'
