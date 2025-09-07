@@ -345,7 +345,7 @@ describe('TournamentListComponent', () => {
       fixture.detectChanges();
       
       const emptyText = fixture.nativeElement.textContent;
-      expect(emptyText).toContain('No Tournaments Found');
+      expect(emptyText).toContain('No tournaments yet');
     });
 
     it('should show create button for admin users', () => {
