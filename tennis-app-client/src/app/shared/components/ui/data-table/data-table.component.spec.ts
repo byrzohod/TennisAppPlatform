@@ -203,7 +203,7 @@ describe('DataTableComponent', () => {
       component.applyFilters();
 
       expect(component.filteredData.length).toBe(2);
-      expect(component.filteredData.every(item => (item as Record<string, unknown>).status === 'active')).toBe(true);
+      expect(component.filteredData.every(item => (item as Record<string, unknown>)['status'] === 'active')).toBe(true);
     });
 
     it('should sort filtered data', () => {
@@ -211,8 +211,8 @@ describe('DataTableComponent', () => {
       component.sortDirection = 'asc';
       component.applyFilters();
 
-      expect((component.filteredData[0] as Record<string, unknown>).age).toBe(25);
-      expect((component.filteredData[2] as Record<string, unknown>).age).toBe(35);
+      expect((component.filteredData[0] as Record<string, unknown>)['age']).toBe(25);
+      expect((component.filteredData[2] as Record<string, unknown>)['age']).toBe(35);
     });
 
     it('should sort in descending order', () => {
@@ -220,8 +220,8 @@ describe('DataTableComponent', () => {
       component.sortDirection = 'desc';
       component.applyFilters();
 
-      expect((component.filteredData[0] as Record<string, unknown>).age).toBe(35);
-      expect((component.filteredData[2] as Record<string, unknown>).age).toBe(25);
+      expect((component.filteredData[0] as Record<string, unknown>)['age']).toBe(35);
+      expect((component.filteredData[2] as Record<string, unknown>)['age']).toBe(25);
     });
   });
 
@@ -246,13 +246,13 @@ describe('DataTableComponent', () => {
 
     it('should show correct paginated data', () => {
       expect(component.paginatedData.length).toBe(10);
-      expect((component.paginatedData[0] as Record<string, unknown>).id).toBe(1);
+      expect((component.paginatedData[0] as Record<string, unknown>)['id']).toBe(1);
     });
 
     it('should change page correctly', () => {
       component.onPageChange(2);
       expect(component.currentPage).toBe(2);
-      expect((component.paginatedData[0] as Record<string, unknown>).id).toBe(11);
+      expect((component.paginatedData[0] as Record<string, unknown>)['id']).toBe(11);
     });
 
     it('should emit page change event', () => {
