@@ -2,11 +2,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlayerService, Player } from '../../../core/services/player.service';
+import { PerformanceChartComponent } from '../components/performance-chart/performance-chart.component';
+import { StatsRadarComponent } from '../components/stats-radar/stats-radar.component';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PerformanceChartComponent, StatsRadarComponent],
   templateUrl: './player-detail.component.html',
   styleUrl: './player-detail.component.scss'
 })
