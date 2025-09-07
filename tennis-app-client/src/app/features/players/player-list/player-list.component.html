@@ -158,23 +158,17 @@
         </div>
       </div>
     } @else {
-      <div class="empty-state">
-        <span class="empty-icon">🎾</span>
-        <h3>No players found</h3>
-        <p>
-          @if (searchTerm) {
-            No players match your search criteria.
-          } @else {
-            Get started by adding your first player.
-          }
-        </p>
-        @if (!searchTerm) {
-          <a routerLink="/players/new" class="btn btn-primary">
-            <span class="icon">➕</span>
-            Add First Player
-          </a>
-        }
-      </div>
+      <app-empty-state
+        [title]="searchTerm ? 'No players found' : 'No players yet'"
+        [description]="searchTerm ? 'No players match your search criteria. Try adjusting your search terms.' : 'Get started by adding your first player to the system.'"
+        [icon]="'🎾'"
+        [iconBackgroundClass]="'bg-grass-100 dark:bg-grass-900'"
+        [actionLabel]="!searchTerm ? 'Add First Player' : undefined"
+        [actionRoute]="!searchTerm ? '/players/new' : undefined"
+        [actionIcon]="!searchTerm ? '➕' : undefined"
+        [secondaryActionLabel]="searchTerm ? 'Clear Search' : undefined"
+        [secondaryActionRoute]="searchTerm ? '.' : undefined">
+      </app-empty-state>
     }
   }
 </div>
