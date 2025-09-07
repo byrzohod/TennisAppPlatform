@@ -1,0 +1,259 @@
+<div class="data-table-container">
+  <!-- Table Header with Search and Actions -->
+  <div class="table-header mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <!-- Search -->
+      @if (config.searchable) {
+        <div class="w-full sm:w-auto">
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (input)="onGlobalSearch(searchTerm)"
+              placeholder="Search..."
+              class="w-full sm:w-64 px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg
+                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                     focus:outline-none focus:ring-2 focus:ring-grass-500 dark:focus:ring-grass-400"
+            />
+            <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+      }
+
+      <!-- Export Actions -->
+      @if (config.exportable) {
+        <div class="flex gap-2">
+          <app-button (click)="onExport('csv')" [variant]="'outline'" size="sm">
+            <span class="flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              CSV
+            </span>
+          </app-button>
+          <app-button (click)="onExport('excel')" [variant]="'outline'" size="sm">
+            <span class="flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-1m4 0h12m-12 0a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2"></path>
+              </svg>
+              Excel
+            </span>
+          </app-button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div [class.overflow-x-auto]="config.responsive" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+    @if (config.loading) {
+      <!-- Loading State -->
+      <div class="p-8 text-center">
+        <div class="inline-flex items-center gap-2">
+          <svg class="animate-spin h-6 w-6 text-grass-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-gray-600 dark:text-gray-400">Loading data...</span>
+        </div>
+      </div>
+    } @else if (paginatedData.length === 0) {
+      <!-- Empty State -->
+      <div class="p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+        </svg>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">{{ config.emptyMessage }}</p>
+      </div>
+    } @else {
+      <!-- Table -->
+      <table [class]="getTableClasses()">
+        <thead class="bg-gray-50 dark:bg-gray-900">
+          <tr>
+            <!-- Selection Checkbox -->
+            @if (config.selectable) {
+              <th class="px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  [checked]="isAllSelected()"
+                  (change)="toggleAllSelection()"
+                  class="w-4 h-4 text-grass-600 bg-gray-100 border-gray-300 rounded focus:ring-grass-500"
+                />
+              </th>
+            }
+
+            <!-- Column Headers -->
+            @for (column of columns; track column.key) {
+              <th [class]="'px-4 py-3 text-' + (column.align || 'left')" [style.width]="column.width">
+                <div class="flex items-center gap-2">
+                  @if (column.sortable) {
+                    <button
+                      (click)="onSort(column)"
+                      class="flex items-center gap-1 font-medium text-gray-700 dark:text-gray-300 hover:text-grass-600 dark:hover:text-grass-400"
+                    >
+                      {{ column.label }}
+                      <span class="text-sm">{{ getSortIcon(column) }}</span>
+                    </button>
+                  } @else {
+                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ column.label }}</span>
+                  }
+                </div>
+                
+                <!-- Column Filter -->
+                @if (column.filterable) {
+                  <div class="mt-2">
+                    <input
+                      type="text"
+                      [value]="columnFilters.get(column.key) || ''"
+                      (input)="onFilter(column, $any($event.target).value)"
+                      placeholder="Filter..."
+                      class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded
+                             bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      (click)="$event.stopPropagation()"
+                    />
+                  </div>
+                }
+              </th>
+            }
+
+            <!-- Actions Column -->
+            @if (customActionsTemplate) {
+              <th class="px-4 py-3 text-right">Actions</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          @for (row of paginatedData; track $index) {
+            <tr
+              (click)="onRowClick(row)"
+              [class.bg-gray-50]="config.striped && $index % 2 === 0"
+              [class.dark:bg-gray-900]="config.striped && $index % 2 === 0"
+              [class.hover:bg-gray-100]="config.hoverable"
+              [class.dark:hover:bg-gray-700]="config.hoverable"
+              [class.cursor-pointer]="config.hoverable"
+              class="transition-colors"
+            >
+              <!-- Selection Checkbox -->
+              @if (config.selectable) {
+                <td class="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    [checked]="isRowSelected(row)"
+                    (change)="toggleRowSelection(row)"
+                    (click)="$event.stopPropagation()"
+                    class="w-4 h-4 text-grass-600 bg-gray-100 border-gray-300 rounded focus:ring-grass-500"
+                  />
+                </td>
+              }
+
+              <!-- Data Cells -->
+              @for (column of columns; track column.key) {
+                <td [class]="'px-4 py-3 ' + getCellClass(column)">
+                  @switch (column.type) {
+                    @case ('badge') {
+                      <app-badge [variant]="column.badgeVariant ? column.badgeVariant(getCellValue(row, column)) : 'default'">
+                        {{ getCellValue(row, column) }}
+                      </app-badge>
+                    }
+                    @case ('custom') {
+                      @if (column.customTemplate) {
+                        <ng-container *ngTemplateOutlet="column.customTemplate; context: { $implicit: row, value: getCellValue(row, column) }"></ng-container>
+                      }
+                    }
+                    @default {
+                      <span class="text-gray-900 dark:text-gray-100">
+                        {{ getCellValue(row, column) }}
+                      </span>
+                    }
+                  }
+                </td>
+              }
+
+              <!-- Actions Column -->
+              @if (customActionsTemplate) {
+                <td class="px-4 py-3 text-right">
+                  <ng-container *ngTemplateOutlet="customActionsTemplate; context: { $implicit: row }"></ng-container>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+  <!-- Pagination -->
+  @if (totalPages > 1) {
+    <div class="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <!-- Page Info -->
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} of {{ totalItems }} results
+      </div>
+
+      <!-- Page Controls -->
+      <div class="flex items-center gap-2">
+        <!-- Page Size Selector -->
+        <select
+          [(ngModel)]="pageSize"
+          (change)="onPageSizeChange(+pageSize)"
+          class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg
+                 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+        >
+          @for (size of config.pageSizes; track size) {
+            <option [value]="size">{{ size }} per page</option>
+          }
+        </select>
+
+        <!-- Page Navigation -->
+        <div class="flex gap-1">
+          <!-- Previous Button -->
+          <button
+            (click)="onPageChange(currentPage - 1)"
+            [disabled]="currentPage === 1"
+            class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg
+                   bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                   hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ← Previous
+          </button>
+
+          <!-- Page Numbers -->
+          @for (page of getPageNumbers(); track page) {
+            <button
+              (click)="onPageChange(page)"
+              [class.bg-grass-600]="page === currentPage"
+              [class.text-white]="page === currentPage"
+              [class.bg-white]="page !== currentPage"
+              [class.dark:bg-gray-800]="page !== currentPage"
+              [class.text-gray-900]="page !== currentPage"
+              [class.dark:text-white]="page !== currentPage"
+              class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg
+                     hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <!-- Next Button -->
+          <button
+            (click)="onPageChange(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+            class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg
+                   bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                   hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Custom Templates -->
+<ng-content select="[customCell]"></ng-content>
+<ng-content select="[customHeader]"></ng-content>
+<ng-content select="[customActions]"></ng-content>
