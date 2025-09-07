@@ -193,7 +193,16 @@ export class DataTableComponent implements OnInit, OnChanges {
       filtered = filtered.filter(row => {
         const rowData = row as Record<string, unknown>;
         const cellValue = rowData[key];
-        return cellValue?.toString().toLowerCase().includes(value.toLowerCase());
+        // For exact matching (e.g., status), use === comparison
+        // For partial matching (e.g., names), use includes
+        const column = this.columns.find(col => col.key === key);
+        if (column?.type === 'badge' || key === 'status') {
+          // Exact match for status/badge fields
+          return cellValue?.toString().toLowerCase() === value.toLowerCase();
+        } else {
+          // Partial match for other fields
+          return cellValue?.toString().toLowerCase().includes(value.toLowerCase());
+        }
       });
     });
 
