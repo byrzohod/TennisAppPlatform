@@ -1,0 +1,254 @@
+:host {
+  display: block;
+}
+
+.data-table-container {
+  @apply w-full;
+}
+
+// Table styles
+table {
+  @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+  
+  &.table-striped {
+    tbody tr:nth-child(even) {
+      @apply bg-gray-50 dark:bg-gray-900/50;
+    }
+  }
+  
+  &.table-hover {
+    tbody tr {
+      @apply transition-colors duration-150;
+      
+      &:hover {
+        @apply bg-gray-50 dark:bg-gray-800/50;
+      }
+    }
+  }
+  
+  &.table-bordered {
+    @apply border border-gray-200 dark:border-gray-700;
+    
+    th, td {
+      @apply border border-gray-200 dark:border-gray-700;
+    }
+  }
+  
+  &.table-compact {
+    th, td {
+      @apply py-2 text-sm;
+    }
+  }
+}
+
+// Header styles
+thead {
+  @apply bg-gray-50 dark:bg-gray-900;
+  
+  th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider;
+    
+    &.sortable {
+      @apply cursor-pointer select-none;
+      
+      &:hover {
+        @apply text-gray-700 dark:text-gray-200;
+      }
+    }
+  }
+}
+
+// Body styles
+tbody {
+  @apply bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700;
+  
+  td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100;
+  }
+}
+
+// Sort indicators
+.sort-indicator {
+  @apply inline-block ml-1 text-xs;
+  
+  &.asc::after {
+    content: '↑';
+  }
+  
+  &.desc::after {
+    content: '↓';
+  }
+  
+  &.unsorted::after {
+    content: '↕';
+    @apply opacity-30;
+  }
+}
+
+// Filter inputs
+.column-filter {
+  @apply mt-1;
+  
+  input {
+    @apply w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded
+           bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+           focus:outline-none focus:ring-1 focus:ring-grass-500 dark:focus:ring-grass-400;
+  }
+}
+
+// Pagination
+.pagination {
+  @apply flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 
+         border-t border-gray-200 dark:border-gray-700 sm:px-6;
+  
+  .page-info {
+    @apply text-sm text-gray-700 dark:text-gray-300;
+  }
+  
+  .page-controls {
+    @apply flex items-center gap-2;
+    
+    button {
+      @apply px-3 py-1 text-sm font-medium rounded-md transition-colors;
+      
+      &:not(:disabled):hover {
+        @apply bg-gray-100 dark:bg-gray-700;
+      }
+      
+      &:disabled {
+        @apply opacity-50 cursor-not-allowed;
+      }
+      
+      &.active {
+        @apply bg-grass-600 text-white;
+      }
+    }
+  }
+}
+
+// Loading state
+.loading-state {
+  @apply flex items-center justify-center py-12;
+  
+  .spinner {
+    @apply animate-spin h-8 w-8 text-grass-600;
+  }
+}
+
+// Empty state
+.empty-state {
+  @apply text-center py-12;
+  
+  .empty-icon {
+    @apply mx-auto h-12 w-12 text-gray-400;
+  }
+  
+  .empty-text {
+    @apply mt-2 text-sm text-gray-600 dark:text-gray-400;
+  }
+}
+
+// Selection
+.selection-checkbox {
+  @apply w-4 h-4 text-grass-600 bg-gray-100 border-gray-300 rounded 
+         focus:ring-grass-500 dark:focus:ring-grass-400 
+         dark:bg-gray-700 dark:border-gray-600;
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .table-header {
+    @apply flex-col gap-3;
+    
+    .search-box {
+      @apply w-full;
+    }
+    
+    .export-buttons {
+      @apply flex-wrap;
+    }
+  }
+  
+  .pagination {
+    @apply flex-col gap-3;
+    
+    .page-info {
+      @apply text-center;
+    }
+    
+    .page-controls {
+      @apply flex-wrap justify-center;
+    }
+  }
+  
+  // Make table scrollable on mobile
+  .table-wrapper {
+    @apply overflow-x-auto;
+    
+    table {
+      @apply min-w-full;
+    }
+  }
+}
+
+// Cell type styles
+.cell-number {
+  @apply text-right tabular-nums;
+}
+
+.cell-date {
+  @apply whitespace-nowrap;
+}
+
+.cell-badge {
+  @apply inline-flex;
+}
+
+.cell-actions {
+  @apply flex items-center justify-end gap-2;
+}
+
+// Export menu
+.export-menu {
+  @apply absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 
+         ring-1 ring-black ring-opacity-5 z-10;
+  
+  .export-option {
+    @apply block px-4 py-2 text-sm text-gray-700 dark:text-gray-300
+           hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer;
+  }
+}
+
+// Column resize handle
+.resize-handle {
+  @apply absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-transparent
+         hover:bg-grass-500 transition-colors;
+  
+  &.resizing {
+    @apply bg-grass-500;
+  }
+}
+
+// Row highlight
+.row-highlight {
+  @apply bg-grass-50 dark:bg-grass-900/20;
+}
+
+// Custom scrollbar
+.table-scroll {
+  &::-webkit-scrollbar {
+    @apply h-2;
+  }
+  
+  &::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-900;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded;
+    
+    &:hover {
+      @apply bg-gray-500 dark:bg-gray-500;
+    }
+  }
+}
