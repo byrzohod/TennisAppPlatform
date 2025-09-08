@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { finalize } from 'rxjs/operators';
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
 import { InputComponent } from '../../../shared/components/ui/input/input.component';
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   loginForm!: FormGroup;
   loading = false;
@@ -71,17 +73,22 @@ export class LoginComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: () => {
+          this.toastService.success('Welcome back!', 'Login successful');
           this.router.navigate([this.returnUrl]);
         },
         error: (error) => {
           if (error.status === 401) {
             this.error = 'Invalid email or password';
+            this.toastService.error('Invalid email or password', 'Authentication failed');
           } else if (error.status === 0 || error.name === 'HttpErrorResponse') {
             this.error = 'Network error. Please try again.';
+            this.toastService.error('Network error. Please check your connection.', 'Connection error');
           } else if (error.status >= 500) {
             this.error = 'Something went wrong. Please try again later.';
+            this.toastService.error('Server error. Please try again later.', 'Server error');
           } else {
             this.error = error.error?.message || 'An error occurred during login';
+            this.toastService.error(this.error, 'Login failed');
           }
         }
       });

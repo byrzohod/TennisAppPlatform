@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { PlayerService, Player, PagedResult } from '../../../core/services/player.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { DataTableComponent, TableColumn, TableConfig } from '../../../shared/components/ui/data-table/data-table.component';
 
@@ -17,6 +18,7 @@ import { DataTableComponent, TableColumn, TableConfig } from '../../../shared/co
 export class PlayerListComponent implements OnInit, OnDestroy {
   private playerService = inject(PlayerService);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   players: Player[] = [];
   loading = false;
@@ -128,10 +130,12 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this player?')) {
       this.playerService.deletePlayer(id).subscribe({
         next: () => {
+          this.toastService.success('Player deleted successfully', 'Success');
           this.loadPlayers();
         },
         error: (err) => {
           this.error = 'Failed to delete player. Please try again.';
+          this.toastService.error('Failed to delete player. Please try again.', 'Deletion failed');
           console.error('Error deleting player:', err);
         }
       });
