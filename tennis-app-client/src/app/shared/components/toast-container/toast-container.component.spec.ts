@@ -7,7 +7,6 @@ import { Subject } from 'rxjs';
 describe('ToastContainerComponent', () => {
   let component: ToastContainerComponent;
   let fixture: ComponentFixture<ToastContainerComponent>;
-  let toastService: jasmine.SpyObj<ToastService>;
   let toastSubject: Subject<Toast>;
 
   beforeEach(async () => {
@@ -23,7 +22,6 @@ describe('ToastContainerComponent', () => {
       ]
     }).compileComponents();
 
-    toastService = TestBed.inject(ToastService) as jasmine.SpyObj<ToastService>;
     fixture = TestBed.createComponent(ToastContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -249,7 +247,7 @@ describe('ToastContainerComponent', () => {
         duration: 0,
         action: {
           label: 'Undo',
-          handler: undefined as any
+          handler: (() => { /* noop */ }) as (() => void)
         }
       };
 
