@@ -1,35 +1,10 @@
 <div class="player-list-container">
   <div class="page-header">
     <h1>Players</h1>
-    <a routerLink="/players/new" class="btn btn-primary">
+    <button (click)="onAddPlayer()" class="btn btn-primary">
       <span class="icon">➕</span>
       Add New Player
-    </a>
-  </div>
-
-  <!-- Search and Filter Bar -->
-  <div class="controls-bar">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input 
-        type="text" 
-        class="search-input"
-        placeholder="Search players by name or email..."
-        [(ngModel)]="searchTerm"
-        (input)="onSearch($any($event.target).value)"
-      />
-    </div>
-    
-    <div class="page-size-selector">
-      <label for="page-size-select">Show:</label>
-      <select id="page-size-select" [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
-        <option [value]="10">10</option>
-        <option [value]="25">25</option>
-        <option [value]="50">50</option>
-        <option [value]="100">100</option>
-      </select>
-      <span>per page</span>
-    </div>
+    </button>
   </div>
 
   <!-- Loading State -->
@@ -48,126 +23,46 @@
     </div>
   }
 
-  <!-- Players Table -->
+  <!-- Players Data Table -->
   @if (!loading && !error) {
     @if (players.length > 0) {
-      <div class="table-container">
-        <table class="players-table">
-          <thead>
-            <tr>
-              <th class="sortable" (click)="onSort('lastName')">
-                Name {{ getSortIcon('lastName') }}
-              </th>
-              <th class="sortable" (click)="onSort('email')">
-                Email {{ getSortIcon('email') }}
-              </th>
-              <th>Phone</th>
-              <th>Age</th>
-              <th class="sortable" (click)="onSort('rankingPoints')">
-                Points {{ getSortIcon('rankingPoints') }}
-              </th>
-              <th class="sortable" (click)="onSort('currentRanking')">
-                Ranking {{ getSortIcon('currentRanking') }}
-              </th>
-              <th class="actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (player of players; track player.id) {
-              <tr>
-                <td class="player-name">
-                  <a [routerLink]="['/players', player.id]">
-                    {{ player.firstName }} {{ player.lastName }}
-                  </a>
-                </td>
-                <td>{{ player.email }}</td>
-                <td>{{ player.phone || 'N/A' }}</td>
-                <td>{{ getAge(player.dateOfBirth) }}</td>
-                <td class="points">{{ player.rankingPoints }}</td>
-                <td class="ranking">
-                  @if (player.currentRanking) {
-                    <span class="ranking-badge">#{{ player.currentRanking }}</span>
-                  } @else {
-                    <span class="unranked">Unranked</span>
-                  }
-                </td>
-                <td class="actions">
-                  <a [routerLink]="['/players', player.id]" class="btn-action" title="View">
-                    <span class="icon">👁️</span>
-                  </a>
-                  <a [routerLink]="['/players', player.id, 'edit']" class="btn-action" title="Edit">
-                    <span class="icon">✏️</span>
-                  </a>
-                  <button (click)="deletePlayer(player.id)" class="btn-action delete" title="Delete">
-                    <span class="icon">🗑️</span>
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <div class="pagination-info">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} - 
-          {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }} players
-        </div>
+      <app-data-table
+        [data]="players"
+        [columns]="columns"
+        [config]="tableConfig">
         
-        <div class="pagination-controls">
-          <button 
-            class="pagination-btn"
-            [disabled]="currentPage === 1"
-            (click)="onPageChange(1)"
-          >
-            First
-          </button>
-          <button 
-            class="pagination-btn"
-            [disabled]="currentPage === 1"
-            (click)="onPageChange(currentPage - 1)"
-          >
-            Previous
-          </button>
-          
-          @for (page of pageNumbers; track page) {
+        <ng-template customActions let-player>
+          <div class="flex gap-2 justify-end">
             <button 
-              class="pagination-btn"
-              [class.active]="page === currentPage"
-              (click)="onPageChange(page)"
-            >
-              {{ page }}
+              (click)="onRowAction({ action: 'view', item: player })" 
+              class="btn-action" 
+              title="View">
+              <span class="icon">👁️</span>
             </button>
-          }
-          
-          <button 
-            class="pagination-btn"
-            [disabled]="currentPage === totalPages"
-            (click)="onPageChange(currentPage + 1)"
-          >
-            Next
-          </button>
-          <button 
-            class="pagination-btn"
-            [disabled]="currentPage === totalPages"
-            (click)="onPageChange(totalPages)"
-          >
-            Last
-          </button>
-        </div>
-      </div>
+            <button 
+              (click)="onRowAction({ action: 'edit', item: player })" 
+              class="btn-action" 
+              title="Edit">
+              <span class="icon">✏️</span>
+            </button>
+            <button 
+              (click)="onRowAction({ action: 'delete', item: player })" 
+              class="btn-action delete" 
+              title="Delete">
+              <span class="icon">🗑️</span>
+            </button>
+          </div>
+        </ng-template>
+      </app-data-table>
     } @else {
       <app-empty-state
-        [title]="searchTerm ? 'No players found' : 'No players yet'"
-        [description]="searchTerm ? 'No players match your search criteria. Try adjusting your search terms.' : 'Get started by adding your first player to the system.'"
+        [title]="'No players yet'"
+        [description]="'Get started by adding your first player to the system.'"
         [icon]="'🎾'"
         [iconBackgroundClass]="'bg-grass-100 dark:bg-grass-900'"
-        [actionLabel]="!searchTerm ? 'Add First Player' : undefined"
-        [actionRoute]="!searchTerm ? '/players/new' : undefined"
-        [actionIcon]="!searchTerm ? '➕' : undefined"
-        [secondaryActionLabel]="searchTerm ? 'Clear Search' : undefined"
-        [secondaryActionRoute]="searchTerm ? '.' : undefined">
+        [actionLabel]="'Add First Player'"
+        (actionClick)="onAddPlayer()"
+        [actionIcon]="'➕'">
       </app-empty-state>
     }
   }

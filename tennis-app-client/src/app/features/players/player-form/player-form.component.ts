@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PlayerService, PlayerCreateDto, PlayerUpdateDto } from '../../../core/services/player.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { CustomValidators } from '../../../shared/validators/custom-validators';
 
 @Component({
@@ -17,6 +18,7 @@ export class PlayerFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private playerService = inject(PlayerService);
+  private toastService = inject(ToastService);
 
   playerForm: FormGroup;
   isEditMode = false;
@@ -114,10 +116,12 @@ export class PlayerFormComponent implements OnInit {
 
       this.playerService.updatePlayer(this.playerId, updateDto).subscribe({
         next: (player) => {
+          this.toastService.success('Player updated successfully', 'Success');
           this.router.navigate(['/players', player.id]);
         },
         error: (err) => {
           this.error = 'Failed to update player. Please try again.';
+          this.toastService.error('Failed to update player. Please try again.', 'Update failed');
           this.submitting = false;
           console.error('Error updating player:', err);
         }
@@ -133,10 +137,12 @@ export class PlayerFormComponent implements OnInit {
 
       this.playerService.createPlayer(createDto).subscribe({
         next: (player) => {
+          this.toastService.success('Player created successfully', 'Success');
           this.router.navigate(['/players', player.id]);
         },
         error: (err) => {
           this.error = 'Failed to create player. Please try again.';
+          this.toastService.error('Failed to create player. Please try again.', 'Creation failed');
           this.submitting = false;
           console.error('Error creating player:', err);
         }

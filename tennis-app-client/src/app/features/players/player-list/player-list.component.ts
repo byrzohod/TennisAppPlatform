@@ -1,56 +1,89 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { PlayerService, Player, PagedResult } from '../../../core/services/player.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { DataTableComponent, TableColumn, TableConfig } from '../../../shared/components/ui/data-table/data-table.component';
 
 @Component({
   selector: 'app-player-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, EmptyStateComponent],
+  imports: [CommonModule, FormsModule, EmptyStateComponent, DataTableComponent],
   templateUrl: './player-list.component.html',
   styleUrl: './player-list.component.scss'
 })
 export class PlayerListComponent implements OnInit, OnDestroy {
   private playerService = inject(PlayerService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
 
-  Math = Math; // Expose Math to template
   players: Player[] = [];
   loading = false;
   error: string | null = null;
   
-  // Pagination
-  currentPage = 1;
-  pageSize = 10;
-  totalPages = 0;
-  totalCount = 0;
+  // Data table configuration
+  columns: TableColumn[] = [
+    { 
+      key: 'firstName', 
+      label: 'First Name', 
+      sortable: true
+    },
+    { 
+      key: 'lastName', 
+      label: 'Last Name', 
+      sortable: true
+    },
+    { key: 'email', label: 'Email', sortable: true },
+    { 
+      key: 'phone', 
+      label: 'Phone', 
+      sortable: false,
+      format: (value: unknown) => (value as string) || 'N/A'
+    },
+    { 
+      key: 'dateOfBirth', 
+      label: 'Age', 
+      sortable: true,
+      format: (value: unknown) => {
+        if (!value) return 'N/A';
+        return String(this.getAge(value as string));
+      }
+    },
+    { 
+      key: 'rankingPoints', 
+      label: 'Points', 
+      sortable: true,
+      type: 'number'
+    },
+    { 
+      key: 'currentRanking', 
+      label: 'Ranking', 
+      sortable: true,
+      type: 'badge',
+      format: (value: unknown) => value ? `#${value}` : 'Unranked'
+    }
+  ];
+
+  tableConfig: TableConfig = {
+    searchable: true,
+    exportable: true,
+    selectable: false,
+    striped: true,
+    hoverable: true,
+    bordered: false,
+    compact: false,
+    responsive: true,
+    pageSize: 10,
+    pageSizes: [10, 25, 50, 100]
+  };
   
-  // Search and sorting
-  searchTerm = '';
-  sortBy = 'lastName';
-  sortDescending = false;
-  
-  // Search subject for debouncing
-  private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.loadPlayers();
-    
-    // Set up search debouncing
-    this.searchSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(searchTerm => {
-        this.searchTerm = searchTerm;
-        this.currentPage = 1;
-        this.loadPlayers();
-      });
   }
 
   ngOnDestroy() {
@@ -62,19 +95,13 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
+    // For now, load all players - the data table will handle client-side pagination/filtering
+    // In a real app, you'd implement server-side pagination through the data table
     this.playerService
-      .getPlayers(
-        this.currentPage,
-        this.pageSize,
-        this.searchTerm,
-        this.sortBy,
-        this.sortDescending
-      )
+      .getPlayers(1, 1000, '', 'lastName', false) // Get all players
       .subscribe({
         next: (result: PagedResult<Player>) => {
           this.players = result.items;
-          this.totalCount = result.totalCount;
-          this.totalPages = result.totalPages;
           this.loading = false;
         },
         error: (err) => {
@@ -85,41 +112,30 @@ export class PlayerListComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSearch(searchTerm: string) {
-    this.searchSubject.next(searchTerm);
-  }
-
-  onSort(column: string) {
-    if (this.sortBy === column) {
-      this.sortDescending = !this.sortDescending;
-    } else {
-      this.sortBy = column;
-      this.sortDescending = false;
+  onRowAction(event: { action: string; item: Player }) {
+    switch (event.action) {
+      case 'view':
+        this.router.navigate(['/players', event.item.id]);
+        break;
+      case 'edit':
+        this.router.navigate(['/players', event.item.id, 'edit']);
+        break;
+      case 'delete':
+        this.deletePlayer(event.item.id);
+        break;
     }
-    this.loadPlayers();
-  }
-
-  onPageChange(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.loadPlayers();
-    }
-  }
-
-  onPageSizeChange(size: number) {
-    this.pageSize = size;
-    this.currentPage = 1;
-    this.loadPlayers();
   }
 
   deletePlayer(id: string) {
     if (confirm('Are you sure you want to delete this player?')) {
       this.playerService.deletePlayer(id).subscribe({
         next: () => {
+          this.toastService.success('Player deleted successfully', 'Success');
           this.loadPlayers();
         },
         error: (err) => {
           this.error = 'Failed to delete player. Please try again.';
+          this.toastService.error('Failed to delete player. Please try again.', 'Deletion failed');
           console.error('Error deleting player:', err);
         }
       });
@@ -138,25 +154,7 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     return age;
   }
 
-  getSortIcon(column: string): string {
-    if (this.sortBy !== column) return '↕️';
-    return this.sortDescending ? '↓' : '↑';
-  }
-
-  get pageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxPagesToShow = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
-    const endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
-    
-    if (endPage - startPage < maxPagesToShow - 1) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-    
-    return pages;
+  onAddPlayer() {
+    this.router.navigate(['/players/new']);
   }
 }
