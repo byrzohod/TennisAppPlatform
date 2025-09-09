@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { TournamentType } from '../../shared/enums/tournament-type.enum';
+import { Surface } from '../../shared/enums/surface.enum';
 
 export interface Tournament {
   id: number;
@@ -9,8 +11,8 @@ export interface Tournament {
   location: string;
   startDate: string;
   endDate: string;
-  type: string;
-  surface: string;
+  type: TournamentType;
+  surface: Surface;
   drawSize: number;
   prizeMoneyUSD: number;
   entryFee: number;
