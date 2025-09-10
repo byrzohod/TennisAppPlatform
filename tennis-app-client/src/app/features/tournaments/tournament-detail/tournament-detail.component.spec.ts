@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Surface } from '../../../shared/enums/surface.enum';
+import { TournamentType } from '../../../shared/enums/tournament-type.enum';
 
 import { TournamentDetailComponent } from './tournament-detail.component';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
@@ -23,12 +25,15 @@ describe('TournamentDetailComponent', () => {
     location: 'London, UK',
     startDate: '2024-07-01',
     endDate: '2024-07-14',
-    type: 'Grand Slam',
-    surface: 'Grass',
+    type: TournamentType.GrandSlam,
+    surface: Surface.Grass,
     drawSize: 128,
     status: 'Upcoming',
     prizeMoneyUSD: 50000000,
-    description: 'The oldest tennis tournament in the world'
+    description: 'The oldest tennis tournament in the world',
+    entryFee: 1000,
+    playersCount: 0,
+    maxPlayers: 128
   };
 
   const mockPlayers = [
@@ -155,7 +160,7 @@ describe('TournamentDetailComponent', () => {
 
     it('should close registration modal and reset state', () => {
       component.showRegisterModal = true;
-      component.selectedPlayerId = 1;
+      component.selectedPlayerId = '1';
       component.playerSearchTerm = 'test';
       
       component.closeRegisterModal();
@@ -166,15 +171,15 @@ describe('TournamentDetailComponent', () => {
     });
 
     it('should select a player', () => {
-      component.selectPlayer(3);
-      expect(component.selectedPlayerId).toBe(3);
+      component.selectPlayer('3');
+      expect(component.selectedPlayerId).toBe('3');
     });
 
     it('should confirm registration and add player', () => {
       component.availablePlayers = [
-        { id: 3, firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', ranking: 3 }
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 3000, email: 'rafael@example.com', createdAt: '2024-01-01' }
       ];
-      component.selectedPlayerId = 3;
+      component.selectedPlayerId = '3';
       
       component.confirmRegistration();
       
@@ -188,7 +193,20 @@ describe('TournamentDetailComponent', () => {
 
   describe('Player Management', () => {
     beforeEach(() => {
-      component.players = [...mockPlayers];
+      component.players = mockPlayers.map(p => ({
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        country: p.country,
+        ranking: p.ranking,
+        seed: p.seed,
+        age: 30,
+        height: 180,
+        weight: 75,
+        plays: 'Right-handed',
+        firstName: p.firstName,
+        lastName: p.lastName,
+        status: p.status
+      }));
     });
 
     it('should update player seed', () => {
@@ -231,8 +249,8 @@ describe('TournamentDetailComponent', () => {
   describe('Player Search', () => {
     beforeEach(() => {
       component.availablePlayers = [
-        { id: 3, firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', ranking: 3 },
-        { id: 4, firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', ranking: 4 }
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 3000, email: 'rafael@example.com', createdAt: '2024-01-01' },
+        { id: '4', firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', rankingPoints: 2500, email: 'daniil@example.com', createdAt: '2024-01-01' }
       ];
     });
 
@@ -259,16 +277,16 @@ describe('TournamentDetailComponent', () => {
 
   describe('Utility Methods', () => {
     it('should return correct surface icon', () => {
-      expect(component.getSurfaceIcon('grass')).toBe('🌱');
-      expect(component.getSurfaceIcon('clay')).toBe('🧱');
-      expect(component.getSurfaceIcon('hardcourt')).toBe('🏟️');
-      expect(component.getSurfaceIcon('unknown')).toBe('🎾');
+      expect(component.getSurfaceIcon(Surface.Grass)).toBe('🌱');
+      expect(component.getSurfaceIcon(Surface.Clay)).toBe('🧱');
+      expect(component.getSurfaceIcon(Surface.HardCourt)).toBe('🏟️');
+      expect(component.getSurfaceIcon(999 as Surface)).toBe('🎾');
     });
 
     it('should return correct surface color classes', () => {
-      expect(component.getSurfaceColor('grass')).toContain('grass');
-      expect(component.getSurfaceColor('clay')).toContain('clay');
-      expect(component.getSurfaceColor('hardcourt')).toContain('hard');
+      expect(component.getSurfaceColor(Surface.Grass)).toContain('grass');
+      expect(component.getSurfaceColor(Surface.Clay)).toContain('clay');
+      expect(component.getSurfaceColor(Surface.HardCourt)).toContain('hard');
     });
 
     it('should return correct status badge variant', () => {

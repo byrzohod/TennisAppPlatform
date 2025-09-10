@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TournamentType } from '../../../shared/enums/tournament-type.enum';
+import { Surface } from '../../../shared/enums/surface.enum';
 
 import { TournamentListComponent } from './tournament-list.component';
 import { TournamentService } from '../../../core/services/tournament.service';
@@ -25,8 +27,8 @@ describe('TournamentListComponent', () => {
       location: 'London, UK',
       startDate: '2024-07-01',
       endDate: '2024-07-14',
-      type: 'Grand Slam',
-      surface: 'Grass',
+      type: TournamentType.GrandSlam,
+      surface: Surface.Grass,
       drawSize: 128,
       status: 'Upcoming',
       prizeMoneyUSD: 50000000,
@@ -40,8 +42,8 @@ describe('TournamentListComponent', () => {
       location: 'New York, USA',
       startDate: '2024-08-26',
       endDate: '2024-09-08',
-      type: 'Grand Slam',
-      surface: 'HardCourt',
+      type: TournamentType.GrandSlam,
+      surface: Surface.HardCourt,
       drawSize: 128,
       status: 'Upcoming',
       prizeMoneyUSD: 60000000,
@@ -55,8 +57,8 @@ describe('TournamentListComponent', () => {
       location: 'Paris, France',
       startDate: '2024-05-26',
       endDate: '2024-06-09',
-      type: 'Grand Slam',
-      surface: 'Clay',
+      type: TournamentType.GrandSlam,
+      surface: Surface.Clay,
       drawSize: 128,
       status: 'In Progress',
       prizeMoneyUSD: 49000000,
@@ -263,18 +265,17 @@ describe('TournamentListComponent', () => {
 
   describe('Utility Methods', () => {
     it('should return correct surface icon', () => {
-      expect(component.getSurfaceIcon('grass')).toBe('🌱');
-      expect(component.getSurfaceIcon('clay')).toBe('🧱');
-      expect(component.getSurfaceIcon('hardcourt')).toBe('🏟️');
-      expect(component.getSurfaceIcon('hard')).toBe('🏟️');
-      expect(component.getSurfaceIcon('unknown')).toBe('🎾');
+      expect(component.getSurfaceIcon(Surface.Grass)).toBe('🌱');
+      expect(component.getSurfaceIcon(Surface.Clay)).toBe('🧱');
+      expect(component.getSurfaceIcon(Surface.HardCourt)).toBe('🏟️');
+      expect(component.getSurfaceIcon(999 as Surface)).toBe('🎾');
     });
 
     it('should return correct surface color classes', () => {
-      expect(component.getSurfaceColor('grass')).toContain('grass');
-      expect(component.getSurfaceColor('clay')).toContain('clay');
-      expect(component.getSurfaceColor('hardcourt')).toContain('hard');
-      expect(component.getSurfaceColor('unknown')).toContain('gray');
+      expect(component.getSurfaceColor(Surface.Grass)).toContain('grass');
+      expect(component.getSurfaceColor(Surface.Clay)).toContain('clay');
+      expect(component.getSurfaceColor(Surface.HardCourt)).toContain('hard');
+      expect(component.getSurfaceColor(999 as Surface)).toContain('gray');
     });
 
     it('should return correct status badge variant', () => {
