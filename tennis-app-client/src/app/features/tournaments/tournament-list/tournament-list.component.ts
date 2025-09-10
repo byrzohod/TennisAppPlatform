@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TournamentService, Tournament } from '../../../core/services/tournament.service';
-import { TournamentType } from '../../../shared/enums/tournament-type.enum';
 import { Surface } from '../../../shared/enums/surface.enum';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
