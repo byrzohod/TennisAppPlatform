@@ -107,16 +107,18 @@ Cypress.Commands.add('login', (email = 'test@example.com', password = 'Test123!'
   cy.url().should('include', '/dashboard');
 });
 
-// Create test user via API
-Cypress.Commands.add('createTestUser', () => {
+// Create or get test user via API
+Cypress.Commands.add('createOrGetTestUser', () => {
   const uniqueId = Date.now();
   const testUser = {
-    email: `test${uniqueId}@example.com`,
-    password: 'Test123!',
-    firstName: 'Test',
-    lastName: `User${uniqueId}`
+    email: `cypress-${uniqueId}@test.com`,
+    password: 'CypressTest123',
+    confirmPassword: 'CypressTest123',
+    firstName: 'Cypress',
+    lastName: `Test${uniqueId}`
   };
 
+  // Try to register the user
   cy.request({
     method: 'POST',
     url: `${Cypress.env('apiUrl')}/auth/register`,
@@ -124,10 +126,91 @@ Cypress.Commands.add('createTestUser', () => {
     failOnStatusCode: false
   }).then((response) => {
     if (response.status === 200 || response.status === 201) {
-      return testUser;
+      // Successfully registered
+      return {
+        email: testUser.email,
+        password: testUser.password,
+        token: response.body.token
+      };
     } else {
-      // User might already exist, try to login
-      return testUser;
+      // Registration failed, might already exist
+      // Try to login
+      cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}/auth/login`,
+        body: {
+          email: testUser.email,
+          password: testUser.password
+        },
+        failOnStatusCode: false
+      }).then((loginResponse) => {
+        if (loginResponse.status === 200) {
+          return {
+            email: testUser.email,
+            password: testUser.password,
+            token: loginResponse.body.token
+          };
+        } else {
+          // Both failed, return test user anyway
+          return {
+            email: testUser.email,
+            password: testUser.password,
+            token: null
+          };
+        }
+      });
+    }
+  });
+});
+
+// Ensure test user exists - creates one if it doesn't
+Cypress.Commands.add('ensureTestUser', () => {
+  const testUser = {
+    email: 'cypress-e2e@test.com',
+    password: 'CypressTest123',
+    confirmPassword: 'CypressTest123',
+    firstName: 'Cypress',
+    lastName: 'E2E'
+  };
+
+  // First try to login
+  cy.request({
+    method: 'POST',
+    url: `${Cypress.env('apiUrl')}/auth/login`,
+    body: {
+      email: testUser.email,
+      password: testUser.password
+    },
+    failOnStatusCode: false
+  }).then((loginResponse) => {
+    if (loginResponse.status === 200) {
+      // User exists, return credentials
+      return {
+        email: testUser.email,
+        password: testUser.password,
+        token: loginResponse.body.token,
+        exists: true
+      };
+    } else {
+      // User doesn't exist, create it
+      cy.request({
+        method: 'POST',
+        url: `${Cypress.env('apiUrl')}/auth/register`,
+        body: testUser,
+        failOnStatusCode: false
+      }).then((registerResponse) => {
+        if (registerResponse.status === 200 || registerResponse.status === 201) {
+          return {
+            email: testUser.email,
+            password: testUser.password,
+            token: registerResponse.body.token,
+            exists: false,
+            created: true
+          };
+        } else {
+          throw new Error(`Failed to create test user: ${registerResponse.body.message || 'Unknown error'}`);
+        }
+      });
     }
   });
 });
@@ -165,7 +248,8 @@ declare global {
     interface Chainable {
       login(email?: string, password?: string): Chainable<void>;
       loginViaAPI(email?: string, password?: string): Chainable<void>;
-      createTestUser(): Chainable<any>;
+      createOrGetTestUser(): Chainable<{email: string, password: string, token: string | null}>;
+      ensureTestUser(): Chainable<{email: string, password: string, token: string, exists?: boolean, created?: boolean}>;
       ensureLoggedIn(): Chainable<void>;
       seedDatabase(): Chainable<void>;
       cleanupTestData(): Chainable<void>;
