@@ -70,22 +70,50 @@ describe('TournamentDetailComponent', () => {
       'getRegisteredPlayers',
       'registerPlayer',
       'unregisterPlayer',
-      'deleteTournament'
+      'deleteTournament',
+      'updateSeed'
     ]);
     mockPlayerService = jasmine.createSpyObj('PlayerService', ['getPlayers']);
     
     // Setup default return values
     mockTournamentService.getTournament.and.returnValue(of(mockTournament));
-    mockTournamentService.getRegisteredPlayers.and.returnValue(of([]));
+    mockTournamentService.getRegisteredPlayers.and.returnValue(of([
+      {
+        id: 1,
+        name: 'Novak Djokovic',
+        country: 'Serbia',
+        ranking: 1,
+        seed: 1,
+        age: 36,
+        height: 188,
+        weight: 77,
+        plays: 'Right-handed'
+      },
+      {
+        id: 2,
+        name: 'Carlos Alcaraz',
+        country: 'Spain',
+        ranking: 2,
+        seed: 2,
+        age: 20,
+        height: 183,
+        weight: 74,
+        plays: 'Right-handed'
+      }
+    ]));
     mockTournamentService.registerPlayer.and.returnValue(of(void 0));
     mockTournamentService.unregisterPlayer.and.returnValue(of(void 0));
     mockTournamentService.deleteTournament.and.returnValue(of(void 0));
+    mockTournamentService.updateSeed.and.returnValue(of(void 0));
     mockPlayerService.getPlayers.and.returnValue(of({
-      items: [],
-      totalCount: 0,
+      items: [
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 5000, email: 'rafael@example.com', createdAt: '2024-01-01' },
+        { id: '4', firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', rankingPoints: 4000, email: 'daniil@example.com', createdAt: '2024-01-01' }
+      ],
+      totalCount: 2,
       pageNumber: 1,
       pageSize: 10,
-      totalPages: 0
+      totalPages: 1
     }));
     
     mockActivatedRoute = {
@@ -250,8 +278,22 @@ describe('TournamentDetailComponent', () => {
 
     it('should save seed', () => {
       component.tournament = mockTournament;
+      component.players = mockPlayers.map(p => ({
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        country: p.country,
+        ranking: p.ranking,
+        seed: p.seed,
+        age: 30,
+        height: 180,
+        weight: 75,
+        plays: 'Right-handed',
+        firstName: p.firstName,
+        lastName: p.lastName,
+        status: p.status
+      }));
       component.saveSeed(1);
-      expect(mockTournamentService.registerPlayer).toHaveBeenCalled();
+      expect(mockTournamentService.updateSeed).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('should withdraw player when confirmed', () => {
