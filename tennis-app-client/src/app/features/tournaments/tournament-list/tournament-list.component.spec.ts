@@ -119,7 +119,7 @@ describe('TournamentListComponent', () => {
       fixture.detectChanges();
       
       expect(component.error).toBe('Failed to load');
-      expect(component.tournaments.length).toBeGreaterThan(0); // Falls back to mock data
+      expect(component.tournaments.length).toBe(0); // Sets to empty array on error
     });
 
     it('should set loading to false after loading completes', () => {

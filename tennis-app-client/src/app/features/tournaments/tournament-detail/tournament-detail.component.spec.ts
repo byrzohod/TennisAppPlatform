@@ -3,8 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { of } from 'rxjs';
 import { Surface } from '../../../shared/enums/surface.enum';
 import { TournamentType } from '../../../shared/enums/tournament-type.enum';
+import { TournamentService } from '../../../core/services/tournament.service';
+import { PlayerService } from '../../../core/services/player.service';
 
 import { TournamentDetailComponent } from './tournament-detail.component';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
@@ -18,6 +21,8 @@ describe('TournamentDetailComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockActivatedRoute: { snapshot: { params: { id: string } } };
   let mockHttpClient: jasmine.SpyObj<HttpClient>;
+  let mockTournamentService: jasmine.SpyObj<TournamentService>;
+  let mockPlayerService: jasmine.SpyObj<PlayerService>;
 
   const mockTournament = {
     id: 1,
@@ -60,6 +65,29 @@ describe('TournamentDetailComponent', () => {
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockHttpClient = jasmine.createSpyObj('HttpClient', ['get', 'post', 'put', 'delete']);
+    mockTournamentService = jasmine.createSpyObj('TournamentService', [
+      'getTournament', 
+      'getRegisteredPlayers',
+      'registerPlayer',
+      'unregisterPlayer',
+      'deleteTournament'
+    ]);
+    mockPlayerService = jasmine.createSpyObj('PlayerService', ['getPlayers']);
+    
+    // Setup default return values
+    mockTournamentService.getTournament.and.returnValue(of(mockTournament));
+    mockTournamentService.getRegisteredPlayers.and.returnValue(of([]));
+    mockTournamentService.registerPlayer.and.returnValue(of(void 0));
+    mockTournamentService.unregisterPlayer.and.returnValue(of(void 0));
+    mockTournamentService.deleteTournament.and.returnValue(of(void 0));
+    mockPlayerService.getPlayers.and.returnValue(of({
+      items: [],
+      totalCount: 0,
+      pageNumber: 1,
+      pageSize: 10,
+      totalPages: 0
+    }));
+    
     mockActivatedRoute = {
       snapshot: {
         params: { id: '1' }
@@ -79,7 +107,9 @@ describe('TournamentDetailComponent', () => {
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: HttpClient, useValue: mockHttpClient }
+        { provide: HttpClient, useValue: mockHttpClient },
+        { provide: TournamentService, useValue: mockTournamentService },
+        { provide: PlayerService, useValue: mockPlayerService }
       ]
     }).compileComponents();
 
@@ -176,6 +206,7 @@ describe('TournamentDetailComponent', () => {
     });
 
     it('should confirm registration and add player', () => {
+      component.tournament = mockTournament;
       component.availablePlayers = [
         { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 3000, email: 'rafael@example.com', createdAt: '2024-01-01' }
       ];
@@ -183,11 +214,7 @@ describe('TournamentDetailComponent', () => {
       
       component.confirmRegistration();
       
-      expect(component.players.length).toBe(1);
-      expect(component.players[0].firstName).toBe('Rafael');
-      expect(component.players[0].status).toBe('Registered');
-      expect(component.availablePlayers.length).toBe(0);
-      expect(component.showRegisterModal).toBe(false);
+      expect(mockTournamentService.registerPlayer).toHaveBeenCalledWith(1, 3);
     });
   });
 
@@ -222,17 +249,17 @@ describe('TournamentDetailComponent', () => {
     });
 
     it('should save seed', () => {
-      spyOn(console, 'log');
+      component.tournament = mockTournament;
       component.saveSeed(1);
-      expect(console.log).toHaveBeenCalled();
+      expect(mockTournamentService.registerPlayer).toHaveBeenCalled();
     });
 
     it('should withdraw player when confirmed', () => {
+      component.tournament = mockTournament;
       spyOn(window, 'confirm').and.returnValue(true);
       component.withdrawPlayer(1);
       
-      const player = component.players.find(p => p.id === 1);
-      expect(player?.status).toBe('Withdrawn');
+      expect(mockTournamentService.unregisterPlayer).toHaveBeenCalledWith(1, 1);
     });
 
     it('should not withdraw player when cancelled', () => {
