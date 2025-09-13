@@ -3,6 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { of } from 'rxjs';
+import { Surface } from '../../../shared/enums/surface.enum';
+import { TournamentType } from '../../../shared/enums/tournament-type.enum';
+import { TournamentService } from '../../../core/services/tournament.service';
+import { PlayerService } from '../../../core/services/player.service';
 
 import { TournamentDetailComponent } from './tournament-detail.component';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
@@ -16,6 +21,8 @@ describe('TournamentDetailComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockActivatedRoute: { snapshot: { params: { id: string } } };
   let mockHttpClient: jasmine.SpyObj<HttpClient>;
+  let mockTournamentService: jasmine.SpyObj<TournamentService>;
+  let mockPlayerService: jasmine.SpyObj<PlayerService>;
 
   const mockTournament = {
     id: 1,
@@ -23,12 +30,15 @@ describe('TournamentDetailComponent', () => {
     location: 'London, UK',
     startDate: '2024-07-01',
     endDate: '2024-07-14',
-    type: 'Grand Slam',
-    surface: 'Grass',
+    type: TournamentType.GrandSlam,
+    surface: Surface.Grass,
     drawSize: 128,
     status: 'Upcoming',
     prizeMoneyUSD: 50000000,
-    description: 'The oldest tennis tournament in the world'
+    description: 'The oldest tennis tournament in the world',
+    entryFee: 1000,
+    playersCount: 0,
+    maxPlayers: 128
   };
 
   const mockPlayers = [
@@ -55,6 +65,57 @@ describe('TournamentDetailComponent', () => {
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockHttpClient = jasmine.createSpyObj('HttpClient', ['get', 'post', 'put', 'delete']);
+    mockTournamentService = jasmine.createSpyObj('TournamentService', [
+      'getTournament', 
+      'getRegisteredPlayers',
+      'registerPlayer',
+      'unregisterPlayer',
+      'deleteTournament',
+      'updateSeed'
+    ]);
+    mockPlayerService = jasmine.createSpyObj('PlayerService', ['getPlayers']);
+    
+    // Setup default return values
+    mockTournamentService.getTournament.and.returnValue(of(mockTournament));
+    mockTournamentService.getRegisteredPlayers.and.returnValue(of([
+      {
+        id: 1,
+        name: 'Novak Djokovic',
+        country: 'Serbia',
+        ranking: 1,
+        seed: 1,
+        age: 36,
+        height: 188,
+        weight: 77,
+        plays: 'Right-handed'
+      },
+      {
+        id: 2,
+        name: 'Carlos Alcaraz',
+        country: 'Spain',
+        ranking: 2,
+        seed: 2,
+        age: 20,
+        height: 183,
+        weight: 74,
+        plays: 'Right-handed'
+      }
+    ]));
+    mockTournamentService.registerPlayer.and.returnValue(of(void 0));
+    mockTournamentService.unregisterPlayer.and.returnValue(of(void 0));
+    mockTournamentService.deleteTournament.and.returnValue(of(void 0));
+    mockTournamentService.updateSeed.and.returnValue(of(void 0));
+    mockPlayerService.getPlayers.and.returnValue(of({
+      items: [
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 5000, email: 'rafael@example.com', createdAt: '2024-01-01' },
+        { id: '4', firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', rankingPoints: 4000, email: 'daniil@example.com', createdAt: '2024-01-01' }
+      ],
+      totalCount: 2,
+      pageNumber: 1,
+      pageSize: 10,
+      totalPages: 1
+    }));
+    
     mockActivatedRoute = {
       snapshot: {
         params: { id: '1' }
@@ -74,7 +135,9 @@ describe('TournamentDetailComponent', () => {
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: HttpClient, useValue: mockHttpClient }
+        { provide: HttpClient, useValue: mockHttpClient },
+        { provide: TournamentService, useValue: mockTournamentService },
+        { provide: PlayerService, useValue: mockPlayerService }
       ]
     }).compileComponents();
 
@@ -155,7 +218,7 @@ describe('TournamentDetailComponent', () => {
 
     it('should close registration modal and reset state', () => {
       component.showRegisterModal = true;
-      component.selectedPlayerId = 1;
+      component.selectedPlayerId = '1';
       component.playerSearchTerm = 'test';
       
       component.closeRegisterModal();
@@ -166,29 +229,39 @@ describe('TournamentDetailComponent', () => {
     });
 
     it('should select a player', () => {
-      component.selectPlayer(3);
-      expect(component.selectedPlayerId).toBe(3);
+      component.selectPlayer('3');
+      expect(component.selectedPlayerId).toBe('3');
     });
 
     it('should confirm registration and add player', () => {
+      component.tournament = mockTournament;
       component.availablePlayers = [
-        { id: 3, firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', ranking: 3 }
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 3000, email: 'rafael@example.com', createdAt: '2024-01-01' }
       ];
-      component.selectedPlayerId = 3;
+      component.selectedPlayerId = '3';
       
       component.confirmRegistration();
       
-      expect(component.players.length).toBe(1);
-      expect(component.players[0].firstName).toBe('Rafael');
-      expect(component.players[0].status).toBe('Registered');
-      expect(component.availablePlayers.length).toBe(0);
-      expect(component.showRegisterModal).toBe(false);
+      expect(mockTournamentService.registerPlayer).toHaveBeenCalledWith(1, 3);
     });
   });
 
   describe('Player Management', () => {
     beforeEach(() => {
-      component.players = [...mockPlayers];
+      component.players = mockPlayers.map(p => ({
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        country: p.country,
+        ranking: p.ranking,
+        seed: p.seed,
+        age: 30,
+        height: 180,
+        weight: 75,
+        plays: 'Right-handed',
+        firstName: p.firstName,
+        lastName: p.lastName,
+        status: p.status
+      }));
     });
 
     it('should update player seed', () => {
@@ -204,17 +277,31 @@ describe('TournamentDetailComponent', () => {
     });
 
     it('should save seed', () => {
-      spyOn(console, 'log');
+      component.tournament = mockTournament;
+      component.players = mockPlayers.map(p => ({
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        country: p.country,
+        ranking: p.ranking,
+        seed: p.seed,
+        age: 30,
+        height: 180,
+        weight: 75,
+        plays: 'Right-handed',
+        firstName: p.firstName,
+        lastName: p.lastName,
+        status: p.status
+      }));
       component.saveSeed(1);
-      expect(console.log).toHaveBeenCalled();
+      expect(mockTournamentService.updateSeed).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('should withdraw player when confirmed', () => {
+      component.tournament = mockTournament;
       spyOn(window, 'confirm').and.returnValue(true);
       component.withdrawPlayer(1);
       
-      const player = component.players.find(p => p.id === 1);
-      expect(player?.status).toBe('Withdrawn');
+      expect(mockTournamentService.unregisterPlayer).toHaveBeenCalledWith(1, 1);
     });
 
     it('should not withdraw player when cancelled', () => {
@@ -231,8 +318,8 @@ describe('TournamentDetailComponent', () => {
   describe('Player Search', () => {
     beforeEach(() => {
       component.availablePlayers = [
-        { id: 3, firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', ranking: 3 },
-        { id: 4, firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', ranking: 4 }
+        { id: '3', firstName: 'Rafael', lastName: 'Nadal', country: 'Spain', rankingPoints: 3000, email: 'rafael@example.com', createdAt: '2024-01-01' },
+        { id: '4', firstName: 'Daniil', lastName: 'Medvedev', country: 'Russia', rankingPoints: 2500, email: 'daniil@example.com', createdAt: '2024-01-01' }
       ];
     });
 
@@ -259,16 +346,16 @@ describe('TournamentDetailComponent', () => {
 
   describe('Utility Methods', () => {
     it('should return correct surface icon', () => {
-      expect(component.getSurfaceIcon('grass')).toBe('🌱');
-      expect(component.getSurfaceIcon('clay')).toBe('🧱');
-      expect(component.getSurfaceIcon('hardcourt')).toBe('🏟️');
-      expect(component.getSurfaceIcon('unknown')).toBe('🎾');
+      expect(component.getSurfaceIcon(Surface.Grass)).toBe('🌱');
+      expect(component.getSurfaceIcon(Surface.Clay)).toBe('🧱');
+      expect(component.getSurfaceIcon(Surface.HardCourt)).toBe('🏟️');
+      expect(component.getSurfaceIcon(999 as Surface)).toBe('🎾');
     });
 
     it('should return correct surface color classes', () => {
-      expect(component.getSurfaceColor('grass')).toContain('grass');
-      expect(component.getSurfaceColor('clay')).toContain('clay');
-      expect(component.getSurfaceColor('hardcourt')).toContain('hard');
+      expect(component.getSurfaceColor(Surface.Grass)).toContain('grass');
+      expect(component.getSurfaceColor(Surface.Clay)).toContain('clay');
+      expect(component.getSurfaceColor(Surface.HardCourt)).toContain('hard');
     });
 
     it('should return correct status badge variant', () => {

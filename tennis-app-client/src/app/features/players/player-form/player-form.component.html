@@ -157,6 +157,7 @@
         type="submit" 
         class="btn btn-primary"
         [disabled]="submitting || playerForm.invalid"
+        data-cy="submit-player-btn"
       >
         @if (submitting) {
           <span class="spinner-small"></span>

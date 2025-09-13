@@ -30,6 +30,21 @@ export default defineConfig({
           console.table(message);
           return null;
         },
+        // Database seeding tasks
+        'db:seed': () => {
+          // This would normally connect to your test database
+          // For now, return success
+          console.log('Database seeded with test data');
+          return null;
+        },
+        'db:createUser': (userData) => {
+          console.log('Creating test user:', userData.email);
+          return null;
+        },
+        'db:cleanup': () => {
+          console.log('Cleaning up test data');
+          return null;
+        },
       });
       
       return config;

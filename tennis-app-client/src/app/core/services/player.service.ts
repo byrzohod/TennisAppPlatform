@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Player {
@@ -70,7 +71,20 @@ export class PlayerService {
     }
     params = params.set('sortDescending', sortDescending.toString());
 
-    return this.http.get<PagedResult<Player>>(this.apiUrl, { params });
+    return this.http.get<Player[]>(this.apiUrl, { params }).pipe(
+      map((players: Player[]) => {
+        const totalCount = players.length;
+        const totalPages = Math.ceil(totalCount / pageSize);
+        
+        return {
+          items: players,
+          totalCount,
+          pageNumber,
+          pageSize,
+          totalPages
+        } as PagedResult<Player>;
+      })
+    );
   }
 
   getPlayer(id: string): Observable<Player> {
