@@ -51,7 +51,7 @@ Cypress.Commands.add('waitForApi', () => {
   cy.request({
     url: `${Cypress.env('apiUrl')}/health`,
     failOnStatusCode: false,
-    timeout: 30000,
+    timeout: 5000,
   });
 });
 
@@ -97,7 +97,7 @@ Cypress.Commands.add('createOrGetTestUser', () => {
     url: `${Cypress.env('apiUrl')}/auth/register`,
     body: testUser,
     failOnStatusCode: false,
-    timeout: 30000
+    timeout: 5000
   }).then((response) => {
     if (response.status === 200 || response.status === 201) {
       // Successfully registered
@@ -117,7 +117,7 @@ Cypress.Commands.add('createOrGetTestUser', () => {
           password: testUser.password
         },
         failOnStatusCode: false,
-        timeout: 30000
+        timeout: 5000
       }).then((loginResponse) => {
         if (loginResponse.status === 200) {
           return {
@@ -157,7 +157,7 @@ Cypress.Commands.add('ensureTestUser', () => {
       password: testUser.password
     },
     failOnStatusCode: false,
-    timeout: 30000
+    timeout: 5000
   }).then((loginResponse) => {
     if (loginResponse.status === 200) {
       // User exists, return credentials
@@ -174,7 +174,7 @@ Cypress.Commands.add('ensureTestUser', () => {
         url: `${Cypress.env('apiUrl')}/auth/register`,
         body: testUser,
         failOnStatusCode: false,
-        timeout: 30000
+        timeout: 5000
       }).then((registerResponse) => {
         if (registerResponse.status === 200 || registerResponse.status === 201) {
           return {
