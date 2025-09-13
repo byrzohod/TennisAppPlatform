@@ -1,6 +1,18 @@
 describe('Simple Player Test', () => {
+  let testUser: { email: string; password: string };
+
+  before(() => {
+    // Create a test user for this test
+    cy.createOrGetTestUser().then((user) => {
+      testUser = user;
+    });
+  });
+
   it('should create a player', () => {
     const uniqueId = Date.now();
+    
+    // Login first with real authentication
+    cy.login(testUser.email, testUser.password);
     
     // Visit players page
     cy.visit('/players');

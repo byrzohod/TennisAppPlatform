@@ -9,8 +9,8 @@ Cypress.Commands.add('loginViaAPI', (email = 'test@example.com', password = 'Tes
     failOnStatusCode: false
   }).then((response) => {
     if (response.status === 200) {
-      // Store real token from API
-      window.localStorage.setItem('auth_token', response.body.token);
+      // Store real token from API (use authToken to match app)
+      window.localStorage.setItem('authToken', response.body.token);
       window.localStorage.setItem('user', JSON.stringify(response.body.user));
       
       // Also set any cookies if needed
@@ -55,56 +55,29 @@ Cypress.Commands.add('waitForApi', () => {
   });
 });
 
-// Login via UI with real authentication
+// Login via UI with real authentication - NO MOCKING
 Cypress.Commands.add('login', (email = 'test@example.com', password = 'Test123!') => {
   cy.visit('/login');
   
   // Wait for login page to load
   cy.contains('Sign in to your account').should('be.visible');
   
-  // Clear and fill in login form
-  cy.get('input[formControlName="email"]').clear().type(email);
-  cy.get('input[formControlName="password"]').clear().type(password);
+  // Clear and fill in login form using app-input components
+  cy.get('app-input[formControlName="email"] input, input[formControlName="email"]').clear().type(email);
+  cy.get('app-input[formControlName="password"] input, input[formControlName="password"]').clear().type(password);
   
-  // For now, intercept and mock the login request since backend might not be available
-  cy.intercept('POST', '**/auth/login', {
-    statusCode: 200,
-    body: {
-      token: 'mock-jwt-token-for-testing',
-      user: {
-        id: 1,
-        email: email,
-        firstName: 'Test',
-        lastName: 'User',
-        roles: ['user']
-      },
-      refreshToken: 'mock-refresh-token'
-    }
-  }).as('loginRequest');
+  // Submit form using app-button component
+  cy.get('app-button[type="submit"] button, button[type="submit"]').click();
   
-  // Submit form
-  cy.get('button[type="submit"]').contains('Sign in').click();
-  
-  // Wait for the intercepted request
-  cy.wait('@loginRequest');
-  
-  // Manually set localStorage since the app expects it
-  cy.window().then((win) => {
-    win.localStorage.setItem('auth_token', 'mock-jwt-token-for-testing');
-    win.localStorage.setItem('user', JSON.stringify({
-      id: 1,
-      email: email,
-      firstName: 'Test',
-      lastName: 'User',
-      roles: ['user']
-    }));
-  });
-  
-  // Navigate to dashboard after login
-  cy.visit('/dashboard');
-  
-  // Wait for redirect and dashboard to load
+  // Wait for redirect away from login (should go to dashboard)
+  cy.url({ timeout: 10000 }).should('not.include', '/login');
   cy.url().should('include', '/dashboard');
+  
+  // Verify auth token was stored
+  cy.window().then((win) => {
+    const token = win.localStorage.getItem('authToken');
+    expect(token).to.exist;
+  });
 });
 
 // Create or get test user via API
@@ -118,12 +91,13 @@ Cypress.Commands.add('createOrGetTestUser', () => {
     lastName: `Test${uniqueId}`
   };
 
-  // Try to register the user
+  // Try to register the user (with longer timeout for slow backend)
   cy.request({
     method: 'POST',
     url: `${Cypress.env('apiUrl')}/auth/register`,
     body: testUser,
-    failOnStatusCode: false
+    failOnStatusCode: false,
+    timeout: 30000
   }).then((response) => {
     if (response.status === 200 || response.status === 201) {
       // Successfully registered
@@ -142,7 +116,8 @@ Cypress.Commands.add('createOrGetTestUser', () => {
           email: testUser.email,
           password: testUser.password
         },
-        failOnStatusCode: false
+        failOnStatusCode: false,
+        timeout: 30000
       }).then((loginResponse) => {
         if (loginResponse.status === 200) {
           return {
@@ -173,7 +148,7 @@ Cypress.Commands.add('ensureTestUser', () => {
     lastName: 'E2E'
   };
 
-  // First try to login
+  // First try to login (with longer timeout for slow backend)
   cy.request({
     method: 'POST',
     url: `${Cypress.env('apiUrl')}/auth/login`,
@@ -181,7 +156,8 @@ Cypress.Commands.add('ensureTestUser', () => {
       email: testUser.email,
       password: testUser.password
     },
-    failOnStatusCode: false
+    failOnStatusCode: false,
+    timeout: 30000
   }).then((loginResponse) => {
     if (loginResponse.status === 200) {
       // User exists, return credentials
@@ -197,7 +173,8 @@ Cypress.Commands.add('ensureTestUser', () => {
         method: 'POST',
         url: `${Cypress.env('apiUrl')}/auth/register`,
         body: testUser,
-        failOnStatusCode: false
+        failOnStatusCode: false,
+        timeout: 30000
       }).then((registerResponse) => {
         if (registerResponse.status === 200 || registerResponse.status === 201) {
           return {
@@ -219,7 +196,7 @@ Cypress.Commands.add('ensureTestUser', () => {
 Cypress.Commands.add('ensureLoggedIn', () => {
   // Check if already logged in
   cy.window().then((win) => {
-    const token = win.localStorage.getItem('auth_token');
+    const token = win.localStorage.getItem('authToken');
     if (!token) {
       // Not logged in, perform login
       cy.loginViaAPI();
