@@ -23,7 +23,7 @@ describe('Main Application Flow - Real Backend', () => {
         lastName: `Test${uniqueId}`
       },
       failOnStatusCode: false,
-      timeout: 10000
+      timeout: 5000
     }).then((response) => {
       if (response.status === 200 || response.status === 201) {
         testUser.token = response.body.token;
@@ -37,7 +37,7 @@ describe('Main Application Flow - Real Backend', () => {
             password: testUser.password
           },
           failOnStatusCode: false,
-          timeout: 10000
+          timeout: 5000
         }).then((loginResponse) => {
           if (loginResponse.status === 200) {
             testUser.token = loginResponse.body.token;
@@ -75,7 +75,7 @@ describe('Main Application Flow - Real Backend', () => {
       cy.get('button[type="submit"]').click();
       
       // Should redirect to dashboard
-      cy.url({ timeout: 15000 }).should('not.include', '/login');
+      cy.url({ timeout: 5000 }).should('not.include', '/login');
       
       // Verify token is stored
       cy.window().then((win) => {
@@ -90,7 +90,7 @@ describe('Main Application Flow - Real Backend', () => {
       cy.get('input[formControlName="email"], input[type="email"]').clear().type(testUser.email);
       cy.get('input[formControlName="password"], input[type="password"]').clear().type(testUser.password);
       cy.get('button[type="submit"]').click();
-      cy.url({ timeout: 15000 }).should('not.include', '/login');
+      cy.url({ timeout: 5000 }).should('not.include', '/login');
       
       // Navigate to different pages
       cy.visit('/players');
@@ -111,7 +111,7 @@ describe('Main Application Flow - Real Backend', () => {
       cy.get('input[formControlName="email"], input[type="email"]').clear().type(testUser.email);
       cy.get('input[formControlName="password"], input[type="password"]').clear().type(testUser.password);
       cy.get('button[type="submit"]').click();
-      cy.url({ timeout: 15000 }).should('not.include', '/login');
+      cy.url({ timeout: 5000 }).should('not.include', '/login');
     });
 
     it('should access dashboard', () => {
@@ -146,7 +146,7 @@ describe('Main Application Flow - Real Backend', () => {
       cy.get('input[formControlName="email"], input[type="email"]').clear().type(testUser.email);
       cy.get('input[formControlName="password"], input[type="password"]').clear().type(testUser.password);
       cy.get('button[type="submit"]').click();
-      cy.url({ timeout: 15000 }).should('not.include', '/login');
+      cy.url({ timeout: 5000 }).should('not.include', '/login');
       
       // Find and click logout
       cy.get('button, a').contains(/logout|sign out/i).first().click({ force: true });

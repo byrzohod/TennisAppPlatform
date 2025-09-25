@@ -4,7 +4,7 @@ describe('CI Smoke Test - Real Backend', () => {
     cy.request({
       url: `${Cypress.env('apiUrl')}/health`,
       failOnStatusCode: false,
-      timeout: 30000
+      timeout: 5000
     }).then((response) => {
       // Backend should respond (even if it's an error, at least it's reachable)
       expect(response.status).to.be.lessThan(600); // Any HTTP status code
@@ -12,12 +12,12 @@ describe('CI Smoke Test - Real Backend', () => {
   });
 
   it('should load the login page', () => {
-    cy.visit('/login', { timeout: 30000 });
+    cy.visit('/login', { timeout: 5000 });
     
     // Login page should have the form elements
-    cy.get('input[formControlName="email"], input[type="email"]', { timeout: 10000 }).should('exist');
-    cy.get('input[formControlName="password"], input[type="password"]', { timeout: 10000 }).should('exist');
-    cy.get('button[type="submit"]', { timeout: 10000 }).should('exist');
+    cy.get('input[formControlName="email"], input[type="email"]', { timeout: 5000 }).should('exist');
+    cy.get('input[formControlName="password"], input[type="password"]', { timeout: 5000 }).should('exist');
+    cy.get('button[type="submit"]', { timeout: 5000 }).should('exist');
   });
 
   it('should register and login a test user', () => {
@@ -38,7 +38,7 @@ describe('CI Smoke Test - Real Backend', () => {
         confirmPassword: testUser.password
       },
       failOnStatusCode: false,
-      timeout: 30000
+      timeout: 5000
     }).then((response) => {
       // If registration succeeds or user exists, try to login
       if (response.status === 200 || response.status === 201 || response.status === 409) {
@@ -46,18 +46,18 @@ describe('CI Smoke Test - Real Backend', () => {
         cy.visit('/login');
         
         // Wait for page to load
-        cy.get('input[formControlName="email"], input[type="email"]', { timeout: 10000 })
+        cy.get('input[formControlName="email"], input[type="email"]', { timeout: 5000 })
           .clear()
           .type(testUser.email);
         
-        cy.get('input[formControlName="password"], input[type="password"]', { timeout: 10000 })
+        cy.get('input[formControlName="password"], input[type="password"]', { timeout: 5000 })
           .clear()
           .type(testUser.password);
         
         cy.get('button[type="submit"]').click();
         
         // Should redirect away from login (to dashboard or home)
-        cy.url({ timeout: 15000 }).should('not.include', '/login');
+        cy.url({ timeout: 5000 }).should('not.include', '/login');
       }
     });
   });
@@ -81,7 +81,7 @@ describe('CI Smoke Test - Real Backend', () => {
         confirmPassword: testUser.password
       },
       failOnStatusCode: false,
-      timeout: 30000
+      timeout: 5000
     });
 
     // Login via API to get token
@@ -93,7 +93,7 @@ describe('CI Smoke Test - Real Backend', () => {
         password: testUser.password
       },
       failOnStatusCode: false,
-      timeout: 30000
+      timeout: 5000
     }).then((response) => {
       if (response.status === 200 && response.body.token) {
         // Set the auth token
@@ -108,10 +108,10 @@ describe('CI Smoke Test - Real Backend', () => {
         cy.visit('/players');
         
         // Should stay on players page (not redirect to login)
-        cy.url({ timeout: 10000 }).should('include', '/players');
+        cy.url({ timeout: 5000 }).should('include', '/players');
         
         // Page should load
-        cy.get('h1, h2, h3', { timeout: 10000 }).should('exist');
+        cy.get('h1, h2, h3', { timeout: 5000 }).should('exist');
       }
     });
   });

@@ -25,7 +25,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
     cy.get('app-button[type="submit"] button').click();
     
     // Wait for successful redirect to dashboard
-    cy.url().should('not.include', '/login', { timeout: 10000 });
+    cy.url().should('not.include', '/login', { timeout: 5000 });
     cy.url().should('include', '/dashboard');
     
     // Verify auth token exists
