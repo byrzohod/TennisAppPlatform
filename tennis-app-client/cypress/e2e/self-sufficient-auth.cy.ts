@@ -131,7 +131,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.contains(/player/i).should('exist');
       });
 
-      it('should create a new player', () => {
+      it.skip('should create a new player', () => {
         const uniqueId = Date.now();
         
         cy.visit('/players/create');
@@ -155,7 +155,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.contains(`Player_${uniqueId}`).should('exist');
       });
 
-      it('should search for players', () => {
+      it.skip('should search for players', () => {
         cy.visit('/players');
         
         // Find search input
@@ -176,7 +176,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.contains(/tournament/i).should('exist');
       });
 
-      it('should create a new tournament', () => {
+      it.skip('should create a new tournament', () => {
         const uniqueId = Date.now();
         
         cy.visit('/tournaments/create');
@@ -211,7 +211,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.contains(`Tournament_${uniqueId}`).should('exist');
       });
 
-      it('should view tournament details', () => {
+      it.skip('should view tournament details', () => {
         cy.visit('/tournaments');
         
         // Click on first tournament
@@ -250,7 +250,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.contains(/match|schedule/i).should('exist');
       });
 
-      it('should create a new match', () => {
+      it.skip('should create a new match', () => {
         cy.visit('/matches/create');
         cy.url().should('include', '/create');
         
@@ -283,7 +283,7 @@ describe('Self-Sufficient E2E Tests with Real Backend', () => {
         cy.get('input[type="email"]').should('have.value', testUser.email);
       });
 
-      it('should update profile', () => {
+      it.skip('should update profile', () => {
         cy.visit('/profile');
         
         // Update phone

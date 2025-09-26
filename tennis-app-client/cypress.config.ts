@@ -9,9 +9,9 @@ export default defineConfig({
     viewportHeight: 720,
     video: true,
     screenshotOnRunFailure: true,
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
-    responseTimeout: 10000,
+    defaultCommandTimeout: 5000,
+    requestTimeout: 5000,
+    responseTimeout: 5000,
     env: {
       apiUrl: 'http://localhost:5221/api/v1',
     },
