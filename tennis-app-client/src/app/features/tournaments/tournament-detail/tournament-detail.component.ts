@@ -1,35 +1,20 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CardComponent } from '../../../shared/components/ui/card/card.component';
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../shared/components/ui/badge/badge.component';
 import { SkeletonComponent } from '../../../shared/components/ui/skeleton/skeleton.component';
+import { TournamentService, Tournament, Player as TournamentPlayer } from '../../../core/services/tournament.service';
+import { PlayerService, Player } from '../../../core/services/player.service';
+import { TournamentType, TournamentTypeLabels } from '../../../shared/enums/tournament-type.enum';
+import { Surface, SurfaceLabels } from '../../../shared/enums/surface.enum';
+import { finalize } from 'rxjs';
 
-interface Tournament {
-  id: number;
-  name: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  surface: string;
-  drawSize: number;
-  status: string;
-  prizeMoneyUSD?: number;
-  entryFee?: number;
-  description?: string;
-}
-
-interface Player {
-  id: number;
-  firstName: string;
-  lastName: string;
-  country: string;
-  ranking?: number;
-  seed?: number;
+interface EnrichedPlayer extends TournamentPlayer {
+  firstName?: string;
+  lastName?: string;
   status?: string;
 }
 
@@ -50,83 +35,82 @@ interface Player {
 export class TournamentDetailComponent implements OnInit {
   tournament: Tournament | null = null;
   activeTab = 'overview';
-  players: Player[] = [];
+  players: EnrichedPlayer[] = [];
   isAdmin = true; // For testing
   showRegisterModal = false;
   availablePlayers: Player[] = [];
-  selectedPlayerId: number | null = null;
+  selectedPlayerId: string | null = null;
   playerSearchTerm = '';
+  loading = false;
+  loadingPlayers = false;
+  error = '';
+  
+  tournamentTypeLabels = TournamentTypeLabels;
+  surfaceLabels = SurfaceLabels;
 
   private route = inject(ActivatedRoute);
   protected router = inject(Router);
-  private http = inject(HttpClient);
+  private tournamentService = inject(TournamentService);
+  private playerService = inject(PlayerService);
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-    this.loadTournament(+id); // Convert to number
-    this.loadPlayers();
-    this.loadAvailablePlayers();
+    this.loadTournament(+id);
   }
 
   loadTournament(id: number) {
-    // Mock data for now
-    this.tournament = {
-      id: id,
-      name: 'Wimbledon',
-      location: 'London, UK',
-      startDate: '2024-07-01',
-      endDate: '2024-07-14',
-      type: 'Grand Slam',
-      surface: 'Grass',
-      drawSize: 128,
-      status: 'Upcoming',
-      prizeMoneyUSD: 50000000,
-      description: 'The oldest tennis tournament in the world'
-    };
+    this.loading = true;
+    this.tournamentService.getTournament(id)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (tournament) => {
+          this.tournament = tournament;
+          this.loadPlayers();
+          this.loadAvailablePlayers();
+        },
+        error: (error) => {
+          console.error('Failed to load tournament:', error);
+          this.error = 'Failed to load tournament details';
+        }
+      });
   }
 
   loadPlayers() {
-    // Mock registered players
-    this.players = [
-      {
-        id: 1,
-        firstName: 'Novak',
-        lastName: 'Djokovic',
-        country: 'Serbia',
-        ranking: 1,
-        seed: 1,
-        status: 'Registered'
-      },
-      {
-        id: 2,
-        firstName: 'Carlos',
-        lastName: 'Alcaraz',
-        country: 'Spain',
-        ranking: 2,
-        seed: 2,
-        status: 'Registered'
-      }
-    ];
+    if (!this.tournament) return;
+    
+    this.loadingPlayers = true;
+    this.tournamentService.getRegisteredPlayers(this.tournament.id)
+      .pipe(finalize(() => this.loadingPlayers = false))
+      .subscribe({
+        next: (players) => {
+          this.players = players.map(p => ({
+            ...p,
+            firstName: p.name?.split(' ')[0] || '',
+            lastName: p.name?.split(' ').slice(1).join(' ') || '',
+            status: 'Registered'
+          }));
+        },
+        error: (error) => {
+          console.error('Failed to load registered players:', error);
+          this.players = [];
+        }
+      });
   }
 
   loadAvailablePlayers() {
-    // Mock available players for registration
-    this.availablePlayers = [
-      {
-        id: 3,
-        firstName: 'Rafael',
-        lastName: 'Nadal',
-        country: 'Spain',
-        ranking: 3
-      },
-      {
-        id: 4,
-        firstName: 'Daniil',
-        lastName: 'Medvedev',
-        country: 'Russia',
-        ranking: 4
-      }
-    ];
+    this.playerService.getPlayers(1, 100)
+      .subscribe({
+        next: (result) => {
+          const registeredIds = this.players.map(p => p.id);
+          this.availablePlayers = result.items.filter(p => 
+            !registeredIds.includes(parseInt(p.id))
+          );
+        },
+        error: (error) => {
+          console.error('Failed to load available players:', error);
+          this.availablePlayers = [];
+        }
+      });
   }
 
   selectTab(tab: string) {
@@ -140,14 +124,25 @@ export class TournamentDetailComponent implements OnInit {
   }
 
   deleteTournament() {
+    if (!this.tournament) return;
+    
     if (confirm('Are you sure you want to delete this tournament?')) {
-      // Delete logic here
-      this.router.navigate(['/tournaments']);
+      this.tournamentService.deleteTournament(this.tournament.id)
+        .subscribe({
+          next: () => {
+            this.router.navigate(['/tournaments']);
+          },
+          error: (error) => {
+            console.error('Failed to delete tournament:', error);
+            this.error = 'Failed to delete tournament';
+          }
+        });
     }
   }
 
   openRegisterModal() {
     this.showRegisterModal = true;
+    this.loadAvailablePlayers();
   }
 
   closeRegisterModal() {
@@ -156,23 +151,25 @@ export class TournamentDetailComponent implements OnInit {
     this.playerSearchTerm = '';
   }
 
-  selectPlayer(playerId: number) {
+  selectPlayer(playerId: string) {
     this.selectedPlayerId = playerId;
   }
 
   confirmRegistration() {
-    if (this.selectedPlayerId) {
-      const player = this.availablePlayers.find(p => p.id === this.selectedPlayerId);
-      if (player) {
-        this.players.push({
-          ...player,
-          seed: undefined,
-          status: 'Registered'
-        });
-        this.availablePlayers = this.availablePlayers.filter(p => p.id !== this.selectedPlayerId);
-        this.closeRegisterModal();
-      }
-    }
+    if (!this.selectedPlayerId || !this.tournament) return;
+    
+    const playerId = parseInt(this.selectedPlayerId);
+    this.tournamentService.registerPlayer(this.tournament.id, playerId)
+      .subscribe({
+        next: () => {
+          this.loadPlayers();
+          this.closeRegisterModal();
+        },
+        error: (error) => {
+          console.error('Failed to register player:', error);
+          this.error = 'Failed to register player';
+        }
+      });
   }
 
   updateSeed(playerId: number, seed: string) {
@@ -183,17 +180,37 @@ export class TournamentDetailComponent implements OnInit {
   }
 
   saveSeed(playerId: number) {
+    if (!this.tournament) return;
+    
     const player = this.players.find(p => p.id === playerId);
-    if (player) {
-      // Save seed logic here
-      console.log(`Seed updated for player ${playerId}: ${player.seed}`);
+    if (player && player.seed !== undefined) {
+      this.tournamentService.updateSeed(this.tournament.id, playerId, player.seed)
+        .subscribe({
+          next: () => {
+            console.log(`Seed updated for player ${playerId}: ${player.seed}`);
+          },
+          error: (error) => {
+            console.error('Failed to update seed:', error);
+            this.error = 'Failed to update seed';
+          }
+        });
     }
   }
 
   withdrawPlayer(playerId: number) {
-    const player = this.players.find(p => p.id === playerId);
-    if (player && confirm('Confirm withdrawal?')) {
-      player.status = 'Withdrawn';
+    if (!this.tournament) return;
+    
+    if (confirm('Confirm withdrawal?')) {
+      this.tournamentService.unregisterPlayer(this.tournament.id, playerId)
+        .subscribe({
+          next: () => {
+            this.loadPlayers();
+          },
+          error: (error) => {
+            console.error('Failed to withdraw player:', error);
+            this.error = 'Failed to withdraw player';
+          }
+        });
     }
   }
 
@@ -204,7 +221,8 @@ export class TournamentDetailComponent implements OnInit {
     const search = this.playerSearchTerm.toLowerCase();
     return this.availablePlayers.filter(p => 
       p.firstName.toLowerCase().includes(search) ||
-      p.lastName.toLowerCase().includes(search)
+      p.lastName.toLowerCase().includes(search) ||
+      (p.email && p.email.toLowerCase().includes(search))
     );
   }
 
@@ -212,22 +230,32 @@ export class TournamentDetailComponent implements OnInit {
     return this.tournament?.status === 'In Progress';
   }
 
-  getSurfaceIcon(surface: string): string {
-    switch(surface?.toLowerCase()) {
-      case 'grass': return '🌱';
-      case 'clay': return '🧱';
-      case 'hardcourt':
-      case 'hard': return '🏟️';
+  getTournamentTypeLabel(type: TournamentType): string {
+    return this.tournamentTypeLabels[type] || 'Unknown';
+  }
+
+  getSurfaceLabel(surface: Surface): string {
+    return this.surfaceLabels[surface] || 'Unknown';
+  }
+
+  getSurfaceIcon(surface: Surface): string {
+    switch(surface) {
+      case Surface.Grass: return '🌱';
+      case Surface.Clay: return '🧱';
+      case Surface.HardCourt: return '🏟️';
+      case Surface.Indoor: return '🏢';
+      case Surface.Carpet: return '🟫';
       default: return '🎾';
     }
   }
 
-  getSurfaceColor(surface: string): string {
-    switch(surface?.toLowerCase()) {
-      case 'grass': return 'bg-grass-100 text-grass-700 dark:bg-grass-900 dark:text-grass-300';
-      case 'clay': return 'bg-clay-100 text-clay-700 dark:bg-clay-900 dark:text-clay-300';
-      case 'hardcourt':
-      case 'hard': return 'bg-hard-100 text-hard-700 dark:bg-hard-900 dark:text-hard-300';
+  getSurfaceColor(surface: Surface): string {
+    switch(surface) {
+      case Surface.Grass: return 'bg-grass-100 text-grass-700 dark:bg-grass-900 dark:text-grass-300';
+      case Surface.Clay: return 'bg-clay-100 text-clay-700 dark:bg-clay-900 dark:text-clay-300';
+      case Surface.HardCourt: return 'bg-hard-100 text-hard-700 dark:bg-hard-900 dark:text-hard-300';
+      case Surface.Indoor: return 'bg-indoor-100 text-indoor-700 dark:bg-indoor-900 dark:text-indoor-300';
+      case Surface.Carpet: return 'bg-carpet-100 text-carpet-700 dark:bg-carpet-900 dark:text-carpet-300';
       default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
     }
   }

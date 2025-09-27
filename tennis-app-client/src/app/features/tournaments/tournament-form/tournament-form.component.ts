@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { TournamentService } from '../../../core/services/tournament.service';
 import { CustomValidators } from '../../../shared/validators/custom-validators';
+import { TournamentType, TournamentTypeLabels } from '../../../shared/enums/tournament-type.enum';
+import { Surface, SurfaceLabels } from '../../../shared/enums/surface.enum';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -20,6 +22,11 @@ export class TournamentFormComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
+  
+  tournamentTypes = Object.values(TournamentType).filter(value => typeof value === 'number') as TournamentType[];
+  tournamentTypeLabels = TournamentTypeLabels;
+  surfaces = Object.values(Surface).filter(value => typeof value === 'number') as Surface[];
+  surfaceLabels = SurfaceLabels;
 
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -60,8 +67,8 @@ export class TournamentFormComponent implements OnInit {
       endDate: ['', [
         Validators.required
       ]],
-      type: ['ATP250', [Validators.required]],
-      surface: ['HardCourt', [Validators.required]],
+      type: [TournamentType.ATP250, [Validators.required]],
+      surface: [Surface.HardCourt, [Validators.required]],
       drawSize: [32, [
         Validators.required,
         CustomValidators.tournamentDrawSize()
@@ -92,7 +99,13 @@ export class TournamentFormComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (tournament) => {
-          this.tournamentForm.patchValue(tournament);
+          // Convert dates to YYYY-MM-DD format for HTML date inputs
+          const formData = {
+            ...tournament,
+            startDate: tournament.startDate ? tournament.startDate.split('T')[0] : '',
+            endDate: tournament.endDate ? tournament.endDate.split('T')[0] : ''
+          };
+          this.tournamentForm.patchValue(formData);
         },
         error: (error) => {
           this.error = 'Failed to load tournament';
@@ -124,7 +137,16 @@ export class TournamentFormComponent implements OnInit {
           this.router.navigate(['/tournaments', tournament.id]);
         },
         error: (error) => {
-          this.error = error.message || 'Failed to save tournament';
+          console.error('Tournament creation error:', error);
+          if (error.error && error.error.errors) {
+            // Handle validation errors from the backend
+            const validationErrors = Object.values(error.error.errors).flat();
+            this.error = validationErrors.join(', ');
+          } else if (error.error && error.error.title) {
+            this.error = error.error.title;
+          } else {
+            this.error = error.message || 'Failed to save tournament';
+          }
         }
       });
   }

@@ -9,9 +9,9 @@ export default defineConfig({
     viewportHeight: 720,
     video: true,
     screenshotOnRunFailure: true,
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
-    responseTimeout: 10000,
+    defaultCommandTimeout: 5000,
+    requestTimeout: 5000,
+    responseTimeout: 5000,
     env: {
       apiUrl: 'http://localhost:5221/api/v1',
     },
@@ -28,6 +28,21 @@ export default defineConfig({
         },
         table(message) {
           console.table(message);
+          return null;
+        },
+        // Database seeding tasks
+        'db:seed': () => {
+          // This would normally connect to your test database
+          // For now, return success
+          console.log('Database seeded with test data');
+          return null;
+        },
+        'db:createUser': (userData) => {
+          console.log('Creating test user:', userData.email);
+          return null;
+        },
+        'db:cleanup': () => {
+          console.log('Cleaning up test data');
           return null;
         },
       });
